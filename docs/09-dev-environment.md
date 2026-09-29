@@ -21,9 +21,10 @@
 
 ## 2. Vị trí & cấu trúc repo
 
-- Repo (code + docs): **`/Users/apple/Desktop/MUSIC/music-app/`**, remote `origin` = `https://github.com/Thaidepzai0202/music_docs.git`
+- Repo (code + docs): **`/Users/apple/Desktop/MUSIC/MUSIC docs/`** (thư mục thật, đổi 29/09/2026 theo yêu cầu người dùng), remote `origin` = `https://github.com/Thaidepzai0202/music_docs.git`
 - Bộ docs này nằm **trong repo** tại `music-app/docs/`.
-- `/Users/apple/Desktop/MUSIC/MUSIC docs` là **symlink trỏ tới gốc repo `music-app/`** (đổi 29/09/2026, trước đó trỏ vào `docs/`). Đây là workspace VSCode, nên mở ra thấy toàn bộ dự án: `app/`, `engine/`, `docs/`, `scripts/`, `content/`.
+- `/Users/apple/Desktop/MUSIC/music-app` là **symlink tương thích** trỏ về `MUSIC docs` (để đường dẫn cũ còn chạy).
+- **Đường dẫn có dấu cách:** mọi script phải quote `"$ROOT"`; CMake dùng `$<LINK_LIBRARY:WHOLE_ARCHIVE,…>` thay cho `-Wl,-force_load,<path>` (chuỗi đó bị tách ở dấu cách). Sau khi chuyển thư mục: xoá `build/`, chạy `flutter clean` → `flutter pub get` → `flutter gen-l10n` → `pod install` (LANG=en_US.UTF-8).
 
 ```
 music-app/

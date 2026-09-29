@@ -99,9 +99,8 @@ if(LE_BUILD_HARNESS)
     file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/loopcore_dylib_stub.cpp "// trống: toàn bộ code đến từ -force_load\n")
     add_library(loopcore_dylib SHARED ${CMAKE_CURRENT_BINARY_DIR}/loopcore_dylib_stub.cpp)
     add_dependencies(loopcore_dylib loopcore le_juce)
-    target_link_libraries(loopcore_dylib PRIVATE
-      "-Wl,-force_load,$<TARGET_FILE:loopcore>" "-Wl,-force_load,$<TARGET_FILE:le_juce>"
-      loopcore)   # lấy framework + usage requirement; object đã có từ force_load nên không trùng
+    # WHOLE_ARCHIVE = -force_load trên Apple; CMake tự quote đường dẫn (repo nằm ở "MUSIC docs", có dấu cách).
+    target_link_libraries(loopcore_dylib PRIVATE "$<LINK_LIBRARY:WHOLE_ARCHIVE,loopcore,le_juce>")
     target_link_options(loopcore_dylib PRIVATE "LINKER:-exported_symbol,_le_*")   # chỉ export C API
     set_target_properties(loopcore_dylib PROPERTIES OUTPUT_NAME LoopCore)
   endif()

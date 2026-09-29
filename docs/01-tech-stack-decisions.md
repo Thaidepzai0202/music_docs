@@ -92,7 +92,7 @@ UI sửa project → worker thread dựng một `AudioGraphSnapshot` **bất bi�
 | Lưu project | Mỗi project là thư mục `MyJam.loopproj/` gồm `project.json` (grid, clip, nốt MIDI, FX, BPM) và `audio/*.caf`. Nằm trong Documents, hiện trong app Files, iCloud Drive đồng bộ miễn phí |
 
 ### 3.3 Cấu trúc repo đề xuất
-> Bản chi tiết và chính thức nằm ở [09-dev-environment.md](09-dev-environment.md) §2. Repo nằm ở `/Users/apple/Desktop/MUSIC/music-app/`.
+> Bản chi tiết và chính thức nằm ở [09-dev-environment.md](09-dev-environment.md) §2. Repo nằm ở `/Users/apple/Desktop/MUSIC/MUSIC docs/`.
 ```
 music-app/
 ├── engine/                 # C++20 + JUCE (git submodule)

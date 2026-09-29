@@ -1,0 +1,6 @@
+add_executable(le-harness main.cpp)
+target_include_directories(le-harness PRIVATE ${PROJECT_SOURCE_DIR}/src)
+target_link_libraries(le-harness PRIVATE loopcore)
+if(APPLE)
+  target_link_libraries(le-harness PRIVATE "-framework CoreFoundation")
+endif()

@@ -1,0 +1,46 @@
+[
+  {
+    "call": {
+      "op": "project.open",
+      "dir": "/docs/Projects/X.loopproj"
+    }
+  },
+  {
+    "send": "SET_BPM",
+    "d0": 90.5
+  },
+  {
+    "call": {
+      "op": "transport.setTimeSignature",
+      "num": 3,
+      "den": 4
+    }
+  },
+  {
+    "send": "SET_QUANTIZE"
+  },
+  {
+    "send": "METRONOME",
+    "f0": 0.5
+  },
+  {
+    "send": "SET_COUNT_IN"
+  },
+  {
+    "send": "MASTER_GAIN",
+    "f0": -1.5
+  },
+  {
+    "call": {
+      "op": "midi.setMappings",
+      "mappings": []
+    }
+  },
+  {
+    "call": {
+      "op": "link.enable",
+      "enabled": true,
+      "startStopSync": false
+    }
+  }
+]

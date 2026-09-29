@@ -1,0 +1,9 @@
+targets:
+  $default:
+    builders:
+      json_serializable:
+        options:
+          # Model lồng nhau toJson ra Map thật (so sánh round-trip được, 06 §3).
+          explicit_to_json: true
+          # Trường null không ghi ra file (ví dụ track audio không có "instrument").
+          include_if_null: false

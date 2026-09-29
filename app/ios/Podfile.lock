@@ -1,0 +1,22 @@
+PODS:
+  - engine_ffi (0.1.0):
+    - Flutter
+  - Flutter (1.0.0)
+
+DEPENDENCIES:
+  - engine_ffi (from `.symlinks/plugins/engine_ffi/ios`)
+  - Flutter (from `Flutter`)
+
+EXTERNAL SOURCES:
+  engine_ffi:
+    :path: ".symlinks/plugins/engine_ffi/ios"
+  Flutter:
+    :path: Flutter
+
+SPEC CHECKSUMS:
+  engine_ffi: e5ad7acc95c35da688e09bb98432d133df295ac7
+  Flutter: cabc95a1d2626b1b06e7179b784ebcf0c0cde467
+
+PODFILE CHECKSUM: 912e34f102da91123e38965ab4e5b3fb21e195f0
+
+COCOAPODS: 1.16.2

@@ -1,0 +1,15 @@
+[submodule "engine/third_party/SPSCQueue"]
+	path = engine/third_party/SPSCQueue
+	url = https://github.com/rigtorp/SPSCQueue
+[submodule "engine/third_party/Catch2"]
+	path = engine/third_party/Catch2
+	url = https://github.com/catchorg/Catch2
+[submodule "engine/third_party/signalsmith-stretch"]
+	path = engine/third_party/signalsmith-stretch
+	url = https://github.com/Signalsmith-Audio/signalsmith-stretch
+[submodule "engine/third_party/JUCE"]
+	path = engine/third_party/JUCE
+	url = https://github.com/juce-framework/JUCE
+[submodule "engine/third_party/signalsmith-linear"]
+	path = engine/third_party/signalsmith-linear
+	url = https://github.com/Signalsmith-Audio/linear.git

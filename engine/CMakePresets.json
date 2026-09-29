@@ -1,0 +1,143 @@
+{
+  "version": 6,
+  "cmakeMinimumRequired": { "major": 3, "minor": 25, "patch": 0 },
+  "configurePresets": [
+    {
+      "name": "base",
+      "hidden": true,
+      "binaryDir": "${sourceDir}/../build/${presetName}",
+      "cacheVariables": {
+        "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",
+        "CMAKE_OSX_DEPLOYMENT_TARGET": "15.0"
+      }
+    },
+    {
+      "name": "mac-base",
+      "hidden": true,
+      "inherits": "base",
+      "generator": "Ninja",
+      "condition": { "type": "equals", "lhs": "${hostSystemName}", "rhs": "Darwin" },
+      "cacheVariables": { "CMAKE_OSX_ARCHITECTURES": "arm64" }
+    },
+    {
+      "name": "mac-debug",
+      "displayName": "Mac Debug (Apple clang)",
+      "inherits": "mac-base",
+      "cacheVariables": { "CMAKE_BUILD_TYPE": "Debug" }
+    },
+    {
+      "name": "mac-release",
+      "displayName": "Mac Release (đo hiệu năng)",
+      "inherits": "mac-base",
+      "cacheVariables": { "CMAKE_BUILD_TYPE": "Release" }
+    },
+    {
+      "name": "mac-rtsan",
+      "displayName": "Mac RTSan (Homebrew clang, -fsanitize=realtime)",
+      "inherits": "mac-base",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "CMAKE_C_COMPILER": "/opt/homebrew/opt/llvm/bin/clang",
+        "CMAKE_CXX_COMPILER": "/opt/homebrew/opt/llvm/bin/clang++",
+        "CMAKE_OBJC_COMPILER": "/opt/homebrew/opt/llvm/bin/clang",
+        "CMAKE_OBJCXX_COMPILER": "/opt/homebrew/opt/llvm/bin/clang++",
+        "CMAKE_C_FLAGS": "-fsanitize=realtime",
+        "CMAKE_CXX_FLAGS": "-fsanitize=realtime",
+        "CMAKE_OBJC_FLAGS": "-fsanitize=realtime",
+        "CMAKE_OBJCXX_FLAGS": "-fsanitize=realtime",
+        "CMAKE_EXE_LINKER_FLAGS": "-fsanitize=realtime -L/opt/homebrew/opt/llvm/lib/c++ -Wl,-rpath,/opt/homebrew/opt/llvm/lib/c++",
+        "LE_RTSAN_SELFCHECK": "ON"
+      }
+    },
+    {
+      "name": "mac-tsan",
+      "displayName": "Mac TSan (queue, publisher)",
+      "inherits": "mac-base",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "CMAKE_C_FLAGS": "-fsanitize=thread",
+        "CMAKE_CXX_FLAGS": "-fsanitize=thread",
+        "CMAKE_OBJC_FLAGS": "-fsanitize=thread",
+        "CMAKE_OBJCXX_FLAGS": "-fsanitize=thread",
+        "CMAKE_EXE_LINKER_FLAGS": "-fsanitize=thread"
+      }
+    },
+    {
+      "name": "mac-asan",
+      "displayName": "Mac ASan + UBSan",
+      "inherits": "mac-base",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "CMAKE_C_FLAGS": "-fsanitize=address,undefined -fno-omit-frame-pointer",
+        "CMAKE_CXX_FLAGS": "-fsanitize=address,undefined -fno-omit-frame-pointer",
+        "CMAKE_OBJC_FLAGS": "-fsanitize=address,undefined -fno-omit-frame-pointer",
+        "CMAKE_OBJCXX_FLAGS": "-fsanitize=address,undefined -fno-omit-frame-pointer",
+        "CMAKE_EXE_LINKER_FLAGS": "-fsanitize=address,undefined"
+      }
+    },
+    {
+      "name": "ios-base",
+      "hidden": true,
+      "inherits": "base",
+      "generator": "Xcode",
+      "condition": { "type": "equals", "lhs": "${hostSystemName}", "rhs": "Darwin" },
+      "cacheVariables": {
+        "CMAKE_SYSTEM_NAME": "iOS",
+        "CMAKE_OSX_ARCHITECTURES": "arm64",
+        "CMAKE_OSX_DEPLOYMENT_TARGET": "17.0",
+        "CMAKE_XCODE_ATTRIBUTE_ONLY_ACTIVE_ARCH": "NO",
+        "CMAKE_XCODE_ATTRIBUTE_CODE_SIGNING_ALLOWED": "NO",
+        "CMAKE_XCODE_ATTRIBUTE_TARGETED_DEVICE_FAMILY": "2",
+        "CMAKE_XCODE_ATTRIBUTE_GCC_GENERATE_DEBUGGING_SYMBOLS": "YES",
+        "LE_BUILD_HARNESS": "OFF",
+        "LE_BUILD_TESTS": "OFF"
+      }
+    },
+    {
+      "name": "ios-device",
+      "displayName": "iOS device (arm64, static lib cho iPad)",
+      "inherits": "ios-base",
+      "cacheVariables": { "CMAKE_OSX_SYSROOT": "iphoneos" }
+    },
+    {
+      "name": "ios-sim",
+      "displayName": "iOS simulator (arm64, chỉ test UI)",
+      "inherits": "ios-base",
+      "cacheVariables": { "CMAKE_OSX_SYSROOT": "iphonesimulator" }
+    }
+  ],
+  "buildPresets": [
+    { "name": "mac-debug",   "configurePreset": "mac-debug" },
+    { "name": "mac-release", "configurePreset": "mac-release" },
+    { "name": "mac-rtsan",   "configurePreset": "mac-rtsan" },
+    { "name": "mac-tsan",    "configurePreset": "mac-tsan" },
+    { "name": "mac-asan",    "configurePreset": "mac-asan" },
+    { "name": "ios-device",  "configurePreset": "ios-device", "configuration": "Release", "targets": ["loopcore", "le_juce"] },
+    { "name": "ios-sim",     "configurePreset": "ios-sim",    "configuration": "Release", "targets": ["loopcore", "le_juce"] }
+  ],
+  "testPresets": [
+    {
+      "name": "test-base",
+      "hidden": true,
+      "output": { "outputOnFailure": true },
+      "execution": { "noTestsAction": "error" }
+    },
+    { "name": "mac-debug",   "inherits": "test-base", "configurePreset": "mac-debug" },
+    { "name": "mac-release", "inherits": "test-base", "configurePreset": "mac-release" },
+    {
+      "name": "mac-rtsan", "inherits": "test-base", "configurePreset": "mac-rtsan",
+      "environment": { "RTSAN_OPTIONS": "halt_on_error=true:print_stats_on_exit=false" }
+    },
+    {
+      "name": "mac-tsan", "inherits": "test-base", "configurePreset": "mac-tsan",
+      "environment": { "TSAN_OPTIONS": "halt_on_error=1:second_deadlock_stack=1" }
+    },
+    {
+      "name": "mac-asan", "inherits": "test-base", "configurePreset": "mac-asan",
+      "environment": {
+        "ASAN_OPTIONS": "halt_on_error=1:detect_stack_use_after_return=1",
+        "UBSAN_OPTIONS": "halt_on_error=1:print_stacktrace=1"
+      }
+    }
+  ]
+}

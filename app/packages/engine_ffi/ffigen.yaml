@@ -1,0 +1,38 @@
+# Sinh bindings từ HỢP ĐỒNG engine/include/le/engine_api.h (05 §2).
+# Không chạy tay: dùng scripts/gen_bindings.sh (sinh xong chạy luôn test hợp đồng).
+name: LoopCoreBindings
+description: |
+  Bindings cho LoopCore C API (engine/include/le/engine_api.h).
+  File sinh tự động — KHÔNG sửa tay. Chạy scripts/gen_bindings.sh.
+output: 'lib/src/loopcore_bindings.g.dart'
+headers:
+  entry-points:
+    - '../../../engine/include/le/engine_api.h'
+  include-directives:
+    - '../../../engine/include/le/engine_api.h'
+functions:
+  include:
+    - 'le_.*'
+structs:
+  include:
+    - 'Le.*'
+enums:
+  include:
+    - 'Le.*'
+  # LeCommand.type là uint16_t thô, nên enum sinh ra dạng hằng int cho tiện gán.
+  as-int:
+    include:
+      - '.*'
+macros:
+  include:
+    - 'LE_API_VERSION'
+    - 'LE_MAX_TRACKS'
+    - 'LE_MAX_SCENES'
+typedefs:
+  include:
+    - 'LeEventCallback'
+comments:
+  style: any
+  length: full
+preamble: |
+  // ignore_for_file: type=lint, unused_field, non_constant_identifier_names

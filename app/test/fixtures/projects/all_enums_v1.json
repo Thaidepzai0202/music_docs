@@ -1,0 +1,55 @@
+{
+  "schemaVersion": 1,
+  "id": "p_enums",
+  "name": "Mọi giá trị enum",
+  "createdAt": "2027-02-01T09:30:00.250Z",
+  "modifiedAt": "2027-02-01T09:31:00Z",
+  "appVersion": "0.1.0+3",
+  "transport": {
+    "bpm": 174.0,
+    "timeSignature": [7, 8],
+    "quantize": "1/16",
+    "metronome": { "mode": "on", "volume": 1.0 },
+    "countInBars": 2
+  },
+  "scenes": [ { "index": 7, "name": "Outro" } ],
+  "tracks": [
+    {
+      "id": "t_1", "index": 7, "name": "Bass", "color": "#7BD88F",
+      "kind": "audio",
+      "mixer": { "gainDb": -120.0, "pan": -1.0, "mute": true, "solo": true },
+      "monitor": "on",
+      "fx": [
+        { "type": "delay", "bypass": true, "params": { "0": 0.375, "1": 0.4 } },
+        { "type": "eq3", "bypass": false, "params": {} },
+        { "type": "comp", "bypass": false, "params": { "0": -18 } }
+      ],
+      "clips": [
+        {
+          "slot": 7, "id": "c_x", "kind": "audio", "name": "Riff",
+          "file": "audio/c_x.caf",
+          "lengthBeats": 4.0, "originalBpm": 100.0,
+          "warp": "repitch", "gainDb": 2.5,
+          "loop": { "startSample": 4800 }
+        },
+        { "slot": 3, "id": "c_y", "kind": "midi", "name": "Trống rỗng", "lengthBeats": 2.0, "notes": [] }
+      ]
+    }
+  ],
+  "userInstruments": [
+    {
+      "id": "i_2", "name": "Huýt sáo",
+      "source": "instruments/i_2/source.caf",
+      "rootNote": 72, "cents": -7.5, "confidence": 0.42,
+      "mode": "classic",
+      "envelope": { "a": 0.01, "d": 0.1, "s": 1.0, "r": 0.8 }
+    }
+  ],
+  "master": { "gainDb": 0.0, "eq3": [1.5, -2, 0], "limiterCeilingDb": -1.0 },
+  "midiMappings": [
+    { "src": { "device": "nanoKONTROL", "kind": "cc", "channel": 3, "number": 14 },
+      "target": { "kind": "fx", "track": 7, "slot": 0, "param": 1 } }
+  ],
+  "link": { "enabled": false, "startStopSync": true },
+  "launchLog": [ { "t": 12.5, "track": 7, "slot": 7 } ]
+}

@@ -1,0 +1,266 @@
+[
+  {
+    "call": {
+      "op": "project.open",
+      "dir": "/docs/Projects/X.loopproj"
+    }
+  },
+  {
+    "send": "SET_BPM",
+    "d0": 120.0
+  },
+  {
+    "call": {
+      "op": "transport.setTimeSignature",
+      "num": 4,
+      "den": 4
+    }
+  },
+  {
+    "send": "SET_QUANTIZE",
+    "i0": 5
+  },
+  {
+    "send": "METRONOME",
+    "i0": 2,
+    "f0": 0.7
+  },
+  {
+    "send": "SET_COUNT_IN",
+    "i0": 1
+  },
+  {
+    "send": "MASTER_GAIN"
+  },
+  {
+    "call": {
+      "op": "track.configure",
+      "track": 0,
+      "kind": "instrument",
+      "name": "Drums"
+    }
+  },
+  {
+    "call": {
+      "op": "track.setInstrument",
+      "track": 0,
+      "instrument": {
+        "path": "kits/808/808.sfz",
+        "kind": "sfz"
+      }
+    }
+  },
+  {
+    "send": "TRACK_GAIN",
+    "track": 0
+  },
+  {
+    "send": "TRACK_PAN",
+    "track": 0
+  },
+  {
+    "send": "TRACK_MUTE",
+    "track": 0
+  },
+  {
+    "send": "TRACK_SOLO",
+    "track": 0
+  },
+  {
+    "send": "TRACK_MONITOR",
+    "track": 0
+  },
+  {
+    "call": {
+      "op": "fx.set",
+      "track": 0,
+      "index": 0,
+      "type": "filter",
+      "params": {
+        "0": 0.0,
+        "1": 18000.0,
+        "2": 0.7
+      }
+    }
+  },
+  {
+    "call": {
+      "op": "clip.setMidi",
+      "track": 0,
+      "slot": 0,
+      "clipId": "c_91…",
+      "lengthBeats": 8.0,
+      "notes": [
+        {
+          "p": 36,
+          "v": 110,
+          "s": 0.0,
+          "d": 0.25
+        },
+        {
+          "p": 38,
+          "v": 100,
+          "s": 1.0,
+          "d": 0.25
+        }
+      ]
+    }
+  },
+  {
+    "call": {
+      "op": "track.configure",
+      "track": 1,
+      "kind": "audio",
+      "name": "Vocal"
+    }
+  },
+  {
+    "send": "TRACK_GAIN",
+    "track": 1,
+    "f0": -3.0
+  },
+  {
+    "send": "TRACK_PAN",
+    "track": 1,
+    "f0": 0.1
+  },
+  {
+    "send": "TRACK_MUTE",
+    "track": 1
+  },
+  {
+    "send": "TRACK_SOLO",
+    "track": 1
+  },
+  {
+    "send": "TRACK_MONITOR",
+    "track": 1,
+    "i0": 1
+  },
+  {
+    "call": {
+      "op": "fx.set",
+      "track": 1,
+      "index": 0,
+      "type": "reverb",
+      "params": {
+        "0": 0.6,
+        "1": 0.4,
+        "2": 1.0,
+        "3": 0.25
+      }
+    }
+  },
+  {
+    "call": {
+      "op": "clip.setAudio",
+      "track": 1,
+      "slot": 0,
+      "clipId": "c_3f…",
+      "file": "audio/c_3f….caf",
+      "lengthBeats": 16.0,
+      "originalBpm": 120.0,
+      "warp": "stretch",
+      "gain": 0.0
+    }
+  },
+  {
+    "call": {
+      "op": "track.configure",
+      "track": 2,
+      "kind": "instrument",
+      "name": "La Synth"
+    }
+  },
+  {
+    "call": {
+      "op": "track.setInstrument",
+      "track": 2,
+      "instrument": {
+        "id": "i_55…",
+        "kind": "user"
+      }
+    }
+  },
+  {
+    "send": "TRACK_GAIN",
+    "track": 2,
+    "f0": -6.0
+  },
+  {
+    "send": "TRACK_PAN",
+    "track": 2
+  },
+  {
+    "send": "TRACK_MUTE",
+    "track": 2
+  },
+  {
+    "send": "TRACK_SOLO",
+    "track": 2
+  },
+  {
+    "send": "TRACK_MONITOR",
+    "track": 2
+  },
+  {
+    "call": {
+      "op": "instrument.createFromRecording",
+      "instrumentId": "i_55…",
+      "file": "instruments/i_55…/source.caf",
+      "rootNote": 57,
+      "mode": "natural"
+    }
+  },
+  {
+    "call": {
+      "op": "midi.setMappings",
+      "mappings": [
+        {
+          "src": {
+            "device": "Launchpad X",
+            "kind": "note",
+            "channel": 0,
+            "number": 81
+          },
+          "target": {
+            "kind": "clip",
+            "track": 0,
+            "slot": 0
+          }
+        }
+      ]
+    }
+  },
+  {
+    "call": {
+      "op": "link.enable",
+      "enabled": false,
+      "startStopSync": true
+    }
+  },
+  {
+    "call": {
+      "op": "job.result",
+      "jobId": 1
+    }
+  },
+  {
+    "call": {
+      "op": "job.result",
+      "jobId": 2
+    }
+  },
+  {
+    "call": {
+      "op": "job.result",
+      "jobId": 3
+    }
+  },
+  {
+    "call": {
+      "op": "job.result",
+      "jobId": 4
+    }
+  }
+]

@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "id": "p_min",
+  "name": "Trống",
+  "createdAt": "2027-01-11T08:00:00Z",
+  "modifiedAt": "2027-01-11T08:00:00Z",
+  "appVersion": "0.1.0+1",
+  "transport": {
+    "bpm": 90.5,
+    "timeSignature": [3, 4],
+    "quantize": "none",
+    "metronome": { "mode": "off", "volume": 0.5 },
+    "countInBars": 0
+  },
+  "scenes": [],
+  "tracks": [],
+  "userInstruments": [],
+  "master": { "gainDb": -1.5, "eq3": [0, 0, 0], "limiterCeilingDb": -0.3 },
+  "midiMappings": [],
+  "link": { "enabled": true, "startStopSync": false },
+  "launchLog": []
+}

@@ -1,0 +1,178 @@
+[
+  {
+    "call": {
+      "op": "project.open",
+      "dir": "/docs/Projects/X.loopproj"
+    }
+  },
+  {
+    "send": "SET_BPM",
+    "d0": 174.0
+  },
+  {
+    "call": {
+      "op": "transport.setTimeSignature",
+      "num": 7,
+      "den": 8
+    }
+  },
+  {
+    "send": "SET_QUANTIZE",
+    "i0": 1
+  },
+  {
+    "send": "METRONOME",
+    "i0": 1,
+    "f0": 1.0
+  },
+  {
+    "send": "SET_COUNT_IN",
+    "i0": 2
+  },
+  {
+    "send": "MASTER_GAIN"
+  },
+  {
+    "call": {
+      "op": "track.configure",
+      "track": 7,
+      "kind": "audio",
+      "name": "Bass"
+    }
+  },
+  {
+    "send": "TRACK_GAIN",
+    "track": 7,
+    "f0": -120.0
+  },
+  {
+    "send": "TRACK_PAN",
+    "track": 7,
+    "f0": -1.0
+  },
+  {
+    "send": "TRACK_MUTE",
+    "track": 7,
+    "i0": 1
+  },
+  {
+    "send": "TRACK_SOLO",
+    "track": 7,
+    "i0": 1
+  },
+  {
+    "send": "TRACK_MONITOR",
+    "track": 7,
+    "i0": 2
+  },
+  {
+    "call": {
+      "op": "fx.set",
+      "track": 7,
+      "index": 0,
+      "type": "delay",
+      "params": {
+        "0": 0.375,
+        "1": 0.4
+      }
+    }
+  },
+  {
+    "send": "FX_BYPASS",
+    "track": 7,
+    "slot": 0,
+    "i0": 1
+  },
+  {
+    "call": {
+      "op": "fx.set",
+      "track": 7,
+      "index": 1,
+      "type": "eq3",
+      "params": {}
+    }
+  },
+  {
+    "call": {
+      "op": "fx.set",
+      "track": 7,
+      "index": 2,
+      "type": "comp",
+      "params": {
+        "0": -18.0
+      }
+    }
+  },
+  {
+    "call": {
+      "op": "clip.setMidi",
+      "track": 7,
+      "slot": 3,
+      "clipId": "c_y",
+      "lengthBeats": 2.0,
+      "notes": []
+    }
+  },
+  {
+    "call": {
+      "op": "clip.setAudio",
+      "track": 7,
+      "slot": 7,
+      "clipId": "c_x",
+      "file": "audio/c_x.caf",
+      "lengthBeats": 4.0,
+      "originalBpm": 100.0,
+      "warp": "repitch",
+      "gain": 2.5
+    }
+  },
+  {
+    "call": {
+      "op": "instrument.createFromRecording",
+      "instrumentId": "i_2",
+      "file": "instruments/i_2/source.caf",
+      "rootNote": 72,
+      "mode": "classic"
+    }
+  },
+  {
+    "call": {
+      "op": "midi.setMappings",
+      "mappings": [
+        {
+          "src": {
+            "device": "nanoKONTROL",
+            "kind": "cc",
+            "channel": 3,
+            "number": 14
+          },
+          "target": {
+            "kind": "fx",
+            "track": 7,
+            "slot": 0,
+            "param": 1
+          }
+        }
+      ]
+    }
+  },
+  {
+    "call": {
+      "op": "link.enable",
+      "enabled": false,
+      "startStopSync": true
+    }
+  },
+  {
+    "call": {
+      "op": "job.result",
+      "jobId": 1
+    }
+  },
+  {
+    "call": {
+      "op": "job.result",
+      "jobId": 2
+    }
+  }
+]

@@ -1,0 +1,19 @@
+{
+  "name": "spike_sine_ramp",
+  "description": "Hạ tầng P1-03: sine 1 kHz bật ở beat 1, tắt ở beat 3 (ramp 10ms). Sample đầu tiên của sine = 0 (sin 0) nên sample khác 0 đầu tiên là 24000 + 1.",
+  "sampleRate": 48000,
+  "blockSize": 128,
+  "bpm": 120,
+  "setup": [],
+  "timeline": [
+    { "atBeat": 1.0, "send": { "type": "SPIKE_SINE", "f0": 1000, "f1": 0.5 } },
+    { "atBeat": 3.0, "send": { "type": "SPIKE_SINE", "f0": 1000, "f1": 0.0 } }
+  ],
+  "renderBeats": 4,
+  "expect": {
+    "firstNonSilentSample": 24001,
+    "maxSampleJumpDb": -20,
+    "peakMaxDb": -5.9,
+    "peakMinDb": -6.1
+  }
+}

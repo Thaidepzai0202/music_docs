@@ -1,0 +1,66 @@
+import 'dart:ffi';
+
+import 'package:engine_ffi/engine_ffi.dart';
+import 'package:flutter_test/flutter_test.dart';
+
+void main() {
+  late FakeEngineClient fake;
+
+  setUp(() => fake = FakeEngineClient());
+  tearDown(() => fake.dispose());
+
+  test('ghi lại send và call theo đúng thứ tự', () {
+    fake.send(LeCommandType.LE_CMD_SET_BPM, d0: 120);
+    fake.call({'op': 'transport.setTimeSignature', 'num': 4, 'den': 4});
+    fake.send(LeCommandType.LE_CMD_TRACK_GAIN, track: 1, f0: -3);
+    expect(fake.log.map((e) => e.toJson()).toList(), [
+      {'send': 'SET_BPM', 'd0': 120.0},
+      {
+        'call': {'op': 'transport.setTimeSignature', 'num': 4, 'den': 4},
+      },
+      {'send': 'TRACK_GAIN', 'track': 1, 'f0': -3.0},
+    ]);
+  });
+
+  test('engine.info báo kích thước struct thật', () {
+    final info = fake.callOk('engine.info');
+    expect(info['apiVersion'], 1);
+    expect(info['stateSize'], 248);
+    expect(info['commandSize'], 32);
+  });
+
+  test('op job trả jobId, tự phát JobDone, job.result trả kết quả', () async {
+    final done = fake.events.firstWhere((e) => e is JobDone);
+    final id = fake.callJob('spike.latencyLoopback');
+    expect((await done as JobDone).jobId, id);
+    final r = fake.callOk('job.result', {'jobId': id});
+    expect(r['status'], 'done');
+    expect((r['result'] as Map)['measuredSamples'], 492);
+  });
+
+  test('failingJobOps → JobFailed', () async {
+    fake.failingJobOps.add('clip.setAudio');
+    final failed = fake.events.firstWhere((e) => e is JobFailed);
+    final id = fake.callJob('clip.setAudio', {'track': 0});
+    expect((await failed as JobFailed).jobId, id);
+    expect(fake.callOk('job.result', {'jobId': id})['status'], 'failed');
+  });
+
+  test('spike.setBufferSize chỉ nhận 64|128|256|512|1024', () {
+    fake.create(const EngineConfig(dataDir: '/d', libraryDir: '/l'));
+    expect(fake.callOk('spike.setBufferSize', {'frames': 256}), {'bufferSize': 256});
+    expect(fake.readState().bufferSize, 256);
+    expect(fake.call({'op': 'spike.setBufferSize', 'frames': 100})['ok'], false);
+  });
+
+  test('simulate: meter chỉ chạy khi audio đang chạy', () {
+    final sim = FakeEngineClient(simulate: true);
+    addTearDown(sim.dispose);
+    sim.create(const EngineConfig(dataDir: '/d', libraryDir: '/l'));
+    sim.send(LeCommandType.LE_CMD_SPIKE_SINE, f0: 440, f1: 0.8);
+    expect(sim.readState().masterPeak[0], 0);
+    sim.audioStart();
+    expect(sim.readState().masterPeak[0], greaterThan(0.5));
+    expect(sim.readState().cpuLoad, greaterThan(0));
+  });
+}

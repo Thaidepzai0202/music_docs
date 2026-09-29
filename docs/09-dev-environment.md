@@ -22,7 +22,8 @@
 ## 2. Vị trí & cấu trúc repo
 
 - Repo (code + docs): **`/Users/apple/Desktop/MUSIC/music-app/`**, remote `origin` = `https://github.com/Thaidepzai0202/music_docs.git`
-- Bộ docs này nằm **trong repo** tại `music-app/docs/`. `/Users/apple/Desktop/MUSIC/MUSIC docs` là symlink trỏ về đây, giữ lại để workspace VSCode và đường dẫn cũ vẫn dùng được (29/09/2026).
+- Bộ docs này nằm **trong repo** tại `music-app/docs/`.
+- `/Users/apple/Desktop/MUSIC/MUSIC docs` là **symlink trỏ tới gốc repo `music-app/`** (đổi 29/09/2026, trước đó trỏ vào `docs/`). Đây là workspace VSCode, nên mở ra thấy toàn bộ dự án: `app/`, `engine/`, `docs/`, `scripts/`, `content/`.
 
 ```
 music-app/

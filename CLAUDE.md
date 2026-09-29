@@ -1,6 +1,6 @@
 # LoopCore / Music Looper — hướng dẫn cho AI
 
-Docs (nguồn sự thật): `docs/` (thư mục thật trong repo; `../MUSIC docs` là symlink trỏ về đây). Đọc `docs/00-README.md` trước.
+Docs (nguồn sự thật): `docs/` (thư mục thật trong repo; `/Users/apple/Desktop/MUSIC/MUSIC docs` là symlink trỏ về GỐC repo, dùng làm workspace VSCode). Đọc `docs/00-README.md` trước.
 Hợp đồng FFI: `engine/include/le/engine_api.h` ↔ `docs/05-ffi-bridge.md` (sửa cả hai cùng lúc, hỏi trước khi sửa).
 Kế hoạch task: `docs/phases/P*.md`. Luôn làm theo mã task (VD `P0-03`) và DoD của task đó.
 

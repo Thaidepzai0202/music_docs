@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+  Privacy manifest của app Music Looper (P4-21). Rà `nm -u` từng binary trong Runner.app (build 2026-09-29):
+    Runner, App.framework (Dart AOT): không gọi required-reason API nào (Dart đọc file qua Dart VM trong
+      Flutter.framework — Flutter tự kèm privacy manifest).
+    engine_ffi.framework (plugin + engine C++/JUCE): _mach_absolute_time, _stat → khai ở đây và trong manifest
+      riêng của pod engine_ffi (ios/Resources/PrivacyInfo.xcprivacy).
+    share_plus, path_provider: plugin tự kèm manifest.
+  Không có Disk Space (statfs…), User Defaults (NSUserDefaults), Active Keyboards. Không tracking, không thu thập
+  dữ liệu: bản thu âm và project chỉ nằm trên máy.
+-->
+<plist version="1.0">
+<dict>
+	<key>NSPrivacyTracking</key>
+	<false/>
+	<key>NSPrivacyTrackingDomains</key>
+	<array/>
+	<key>NSPrivacyCollectedDataTypes</key>
+	<array/>
+	<key>NSPrivacyAccessedAPITypes</key>
+	<array>
+		<!--
+		  System Boot Time — mach_absolute_time():
+		    engine/src/core/HostTime.h (đồng hồ host cho timestamp lệnh/MIDI → frame offset),
+		    JUCE juce_core/native/juce_SystemStats_mac.mm (Time::getHighResolutionTicks / getMillisecondCounter),
+		    JUCE juce_audio_devices/native/juce_CoreMidi_mac.mm (timestamp CoreMIDI).
+		  35F9.1: đo thời gian trôi giữa các sự kiện trong app, không suy ra thời điểm khởi động máy.
+		-->
+		<dict>
+			<key>NSPrivacyAccessedAPIType</key>
+			<string>NSPrivacyAccessedAPICategorySystemBootTime</string>
+			<key>NSPrivacyAccessedAPITypeReasons</key>
+			<array>
+				<string>35F9.1</string>
+			</array>
+		</dict>
+		<!--
+		  File Timestamp — stat():
+		    JUCE juce_core/native/juce_SharedCode_posix.h (juce_stat trong File::exists/isDirectory/getSize…),
+		    dùng qua juce::File ở engine/src/core/Engine.cpp, EngineOps.cpp, io/AudioFileIO.cpp, io/CafWriter.cpp.
+		  C617.1: chỉ đọc thông tin file nằm trong container của app (Documents/Projects, Exports, bundle Library).
+		-->
+		<dict>
+			<key>NSPrivacyAccessedAPIType</key>
+			<string>NSPrivacyAccessedAPICategoryFileTimestamp</string>
+			<key>NSPrivacyAccessedAPITypeReasons</key>
+			<array>
+				<string>C617.1</string>
+			</array>
+		</dict>
+	</array>
+</dict>
+</plist>

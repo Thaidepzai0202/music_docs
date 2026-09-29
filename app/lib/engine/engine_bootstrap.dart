@@ -22,16 +22,23 @@ final class EngineBootstrap {
 /// Chọn engine thật nếu binary có symbol `le_*`, không thì dùng Fake (simulate) để UI vẫn chạy.
 /// Gọi `le_create` với Documents/ và `<bundle>/Library` (06 §1). Chưa start audio: phải xin quyền mic trước.
 Future<EngineBootstrap> bootstrapEngine({EnginePlatform platform = const EnginePlatform()}) async {
-  final real = EngineClient.tryOpen();
+  // `--dart-define=LOOPCORE_FAKE=true`: ép dùng FakeEngine (thử màn Session trên iPad khi engine chưa có lệnh clip).
+  const forceFake = bool.fromEnvironment('LOOPCORE_FAKE');
+  final real = forceFake ? null : EngineClient.tryOpen();
   final EngineApi engine = real ?? FakeEngineClient(simulate: true);
 
   final docs = await getApplicationDocumentsDirectory();
-  String? resources;
+  // Thư viện âm thanh = Flutter asset assets/library (P2-22); engine đọc theo đường dẫn thật trong bundle.
+  String? libraryDir;
   try {
-    resources = await platform.bundleResourcePath();
+    libraryDir = await platform.assetPath('assets/library');
+    libraryDir ??= switch (await platform.bundleResourcePath()) {
+      final r? => '$r/Library',
+      null => null,
+    };
   } on Exception {
-    resources = null;
+    libraryDir = null;
   }
-  final rc = engine.create(EngineConfig(dataDir: docs.path, libraryDir: resources == null ? '' : '$resources/Library'));
+  final rc = engine.create(EngineConfig(dataDir: docs.path, libraryDir: libraryDir ?? ''));
   return EngineBootstrap(engine: engine, isFake: real == null, createResult: rc, dataDir: docs.path);
 }

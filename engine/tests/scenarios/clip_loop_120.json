@@ -1,0 +1,47 @@
+{
+  "name": "clip_loop_120",
+  "description": "P1-12 DoD: sine stereo 4 beat @120 phát ở 120 BPM (tỉ lệ 1:1) → null test ĐÚNG TỪNG SAMPLE với file nguồn phát lặp (bỏ 2 ms fade-in), qua pan giữa −3 dB.",
+  "sampleRate": 48000,
+  "blockSize": 128,
+  "bpm": 120,
+  "setup": [
+    {
+      "call": {
+        "op": "clip.setAudio",
+        "track": 0,
+        "slot": 0,
+        "clipId": "c_0_0",
+        "file": "fixtures/clip_sine_4beats_120.wav",
+        "lengthBeats": 4,
+        "originalBpm": 120,
+        "warp": "repitch",
+        "gainDb": 0
+      }
+    }
+  ],
+  "timeline": [
+    {
+      "atSample": 0,
+      "send": {
+        "type": "CLIP_LAUNCH",
+        "track": 0,
+        "slot": 0
+      }
+    }
+  ],
+  "renderBeats": 12,
+  "expect": {
+    "reference": {
+      "file": "fixtures/clip_sine_4beats_120.wav",
+      "startSample": 0,
+      "skip": 96,
+      "loop": true,
+      "gain": 0.70710678,
+      "maxDiffDb": -100
+    },
+    "maxSampleJumpDb": -25
+  },
+  "requires": [
+    "audioClips"
+  ]
+}

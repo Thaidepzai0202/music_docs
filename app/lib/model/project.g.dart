@@ -61,6 +61,8 @@ _Transport _$TransportFromJson(Map<String, dynamic> json) => _Transport(
       ? const Metronome()
       : Metronome.fromJson(json['metronome'] as Map<String, dynamic>),
   countInBars: (json['countInBars'] as num?)?.toInt() ?? 1,
+  tempoMode: $enumDecodeNullable(_$TempoModeEnumMap, json['tempoMode']) ?? TempoMode.fixed,
+  firstLoopBeats: (json['firstLoopBeats'] as num?)?.toDouble(),
 );
 
 Map<String, dynamic> _$TransportToJson(_Transport instance) => <String, dynamic>{
@@ -69,6 +71,8 @@ Map<String, dynamic> _$TransportToJson(_Transport instance) => <String, dynamic>
   'quantize': _$QuantizeGridEnumMap[instance.quantize]!,
   'metronome': instance.metronome.toJson(),
   'countInBars': instance.countInBars,
+  'tempoMode': _$TempoModeEnumMap[instance.tempoMode]!,
+  'firstLoopBeats': ?instance.firstLoopBeats,
 };
 
 const _$QuantizeGridEnumMap = {
@@ -81,6 +85,8 @@ const _$QuantizeGridEnumMap = {
   QuantizeGrid.bar2: '2bar',
   QuantizeGrid.bar4: '4bar',
 };
+
+const _$TempoModeEnumMap = {TempoMode.fixed: 'fixed', TempoMode.firstLoop: 'firstLoop'};
 
 _Metronome _$MetronomeFromJson(Map<String, dynamic> json) => _Metronome(
   mode: $enumDecodeNullable(_$MetronomeModeEnumMap, json['mode']) ?? MetronomeMode.recordOnly,
@@ -222,6 +228,7 @@ AudioClip _$AudioClipFromJson(Map<String, dynamic> json) => AudioClip(
   warp: $enumDecodeNullable(_$WarpModeEnumMap, json['warp']) ?? WarpMode.stretch,
   gainDb: (json['gainDb'] as num?)?.toDouble() ?? 0.0,
   loop: json['loop'] == null ? const AudioLoop() : AudioLoop.fromJson(json['loop'] as Map<String, dynamic>),
+  tags: (json['tags'] as List<dynamic>?)?.map((e) => e as String).toList() ?? const <String>[],
   $type: json['kind'] as String?,
 );
 
@@ -235,6 +242,7 @@ Map<String, dynamic> _$AudioClipToJson(AudioClip instance) => <String, dynamic>{
   'warp': _$WarpModeEnumMap[instance.warp]!,
   'gainDb': instance.gainDb,
   'loop': instance.loop.toJson(),
+  'tags': instance.tags,
   'kind': instance.$type,
 };
 
@@ -300,12 +308,14 @@ Map<String, dynamic> _$EnvelopeToJson(_Envelope instance) => <String, dynamic>{
 _Master _$MasterFromJson(Map<String, dynamic> json) => _Master(
   gainDb: (json['gainDb'] as num?)?.toDouble() ?? 0.0,
   eq3: (json['eq3'] as List<dynamic>?)?.map((e) => (e as num).toDouble()).toList() ?? const <double>[0, 0, 0],
+  eq3Bypass: json['eq3Bypass'] as bool? ?? false,
   limiterCeilingDb: (json['limiterCeilingDb'] as num?)?.toDouble() ?? -0.3,
 );
 
 Map<String, dynamic> _$MasterToJson(_Master instance) => <String, dynamic>{
   'gainDb': instance.gainDb,
   'eq3': instance.eq3,
+  'eq3Bypass': instance.eq3Bypass,
   'limiterCeilingDb': instance.limiterCeilingDb,
 };
 

@@ -7,7 +7,8 @@ import 'package:music_looper/app/engine_lifecycle_scope.dart';
 import 'package:music_looper/app/router.dart';
 import 'package:music_looper/app/theme.dart';
 import 'package:music_looper/engine/engine_providers.dart';
-import 'package:music_looper/features/projects/projects_screen.dart';
+import 'package:music_looper/features/session/project_controller.dart';
+import 'package:music_looper/model/ids.dart';
 
 import '../test_utils.dart';
 
@@ -19,21 +20,24 @@ void main() {
     mockEnginePlatform();
   });
 
-  Future<ProviderContainer> pumpShell(WidgetTester tester, {String initialRoute = AppRoutes.projects}) async {
+  /// App tối giản: EngineLifecycleScope + router thật, màn đầu là [home] (tránh IO thật của màn Projects).
+  Future<ProviderContainer> pumpShell(WidgetTester tester, {ProviderContainer? container}) async {
     useIpad8Screen(tester);
+    final c = container ?? ProviderContainer(overrides: engineOverrides(fake));
+    addTearDown(c.dispose);
     await tester.pumpWidget(
-      ProviderScope(
-        overrides: engineOverrides(fake),
+      UncontrolledProviderScope(
+        container: c,
         child: EngineLifecycleScope(
           child: MaterialApp(
             theme: buildAppTheme(),
-            initialRoute: initialRoute,
+            home: const Scaffold(body: Text('home')),
             onGenerateRoute: AppRoutes.onGenerateRoute,
           ),
         ),
       ),
     );
-    return ProviderScope.containerOf(tester.element(find.byType(MaterialApp)));
+    return c;
   }
 
   Future<void> goThrough(WidgetTester tester, List<AppLifecycleState> states) async {
@@ -46,16 +50,17 @@ void main() {
   const toBackground = [AppLifecycleState.inactive, AppLifecycleState.hidden, AppLifecycleState.paused];
   const toForeground = [AppLifecycleState.hidden, AppLifecycleState.inactive, AppLifecycleState.resumed];
 
-  testWidgets('router: Projects → Session, Ticker chỉ chạy ở Session', (tester) async {
-    final c = await pumpShell(tester);
+  testWidgets('router → Session: Ticker chỉ chạy khi Session hiển thị (P2-02)', (tester) async {
+    final c = ProviderContainer(overrides: engineOverrides(fake));
+    await tester.runAsync(() => c.read(projectControllerProvider.notifier).open(newProject('Thử'), dir: '/p'));
+    await pumpShell(tester, container: c);
     final ticker = c.read(engineStateTickerProvider);
-    expect(find.byType(ProjectsScreen), findsOneWidget);
     expect(ticker.isActive, isFalse);
 
-    await tester.tap(find.byKey(const Key('projects.openSession')));
+    tester.state<NavigatorState>(find.byType(Navigator)).pushNamed(AppRoutes.session);
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 600));
-    expect(find.text('Chưa mở project'), findsOneWidget);
+    expect(find.byKey(const Key('session.grid')), findsOneWidget);
     expect(ticker.isActive, isTrue);
 
     tester.state<NavigatorState>(find.byType(Navigator)).pop();

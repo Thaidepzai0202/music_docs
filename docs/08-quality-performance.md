@@ -12,7 +12,7 @@
 | CPU audio thread, đỉnh (1 giây) | **< 50%** | `LeState.cpuPeak` |
 | Xrun | **0** trong 30 phút | `LeState.xrunCount` |
 | UI | 60 fps, không frame nào > 16.7ms khi đổi scene | Flutter DevTools, Performance overlay |
-| Chạm tới lúc xếp lệnh | < 1 frame | Instruments `os_signpost` từ pointer-down tới `le_send` |
+| Chạm tới lúc xếp lệnh | < 1 frame | Sự kiện Timeline `LoopCore.launch` (DevTools), đủ cho MVP. Khi cần xem cùng System Trace thì mới thêm `os_signpost` native |
 | Pre-render instrument (4 giây) | < 2 s | Thời gian job |
 | Warp render 1 clip 8 bar | < 1 s | Thời gian job |
 | RAM | < 600 MB | Instruments Allocations, `os_proc_available_memory` |
@@ -28,6 +28,8 @@
 - **Xrun:** (1) bộ đếm của JUCE `getXRunCount()` nếu có. (2) Tự phát hiện: khoảng cách host time giữa hai callback > 1.5 × thời lượng buffer. Mỗi xrun gửi event và tăng `xrunCount`. Bản debug hiện chấm đỏ ở top bar.
 - **Profile:** Instruments → Time Profiler cộng System Trace (thấy được thread audio bị preempt). Đặt `os_signpost` quanh `process()` và từng subsystem.
 - **UI:** `flutter run --profile` trên iPad 8, DevTools timeline, Highlight Repaints.
+- **Bench engine trên Mac:** `build/mac-release/tools/le-engine-bench --scenario engine/tests/scenarios/standard_load.json --blocks 128,256 --max-p99 25`. Chỉ dùng để bắt hồi quy. Số chuẩn phải đo trên iPad 8.
+  - Số đầu tiên (29/09, M3 Pro, chưa có FX, máy đang bận): block 128 TB 1.8% / p99 3.7%; block 256 TB 1.7% / p99 3.0%.
 
 ---
 
@@ -80,14 +82,24 @@ Kịch bản dạng JSON dùng **cùng lệnh** với app (05):
   "expect": {
     "golden": "golden/launch_quantized_1bar.wav",
     "nullTestMaxDb": -90,
-    "firstNonSilentSample": 96000
+    "firstNonSilentSample": 96000,
+    "stateAt": [
+      { "frame": 96000, "track": 0, "slot": 0, "clipState": "QUEUED_PLAY" },
+      { "frame": 96001, "track": 0, "slot": 0, "clipState": "PLAYING" }
+    ]
   }
 }
 ```
+- **Ngưỡng im lặng** cho `firstNonSilentSample` và `onsetSamples`: mặc định **−120 dBFS**, chỉnh được bằng `silenceThresholdDb`. Trước điểm bắt đầu, output của engine luôn là `0.0` tuyệt đối, còn sample đầu tiên sau fade-in 2ms chỉ bằng `data[0]/96`, nên ngưỡng −90 dB dễ báo nhầm là muộn 1 sample. **Không bỏ fade-in** để chữa kỳ vọng.
+- `onsetTolerance` (mặc định 0): **chỉ được dùng cho scenario có resample** (Re-Pitch, sample rate khác nhau), tối đa ±1 sample, vì nội suy Hermite sinh pre-ring hợp lệ. Scenario phát 1:1 bắt buộc chính xác ±0.
+- `onsetSamples: [0, 24000, 48000, …]`: danh sách sample mà tại đó một âm (click, nốt) phải **bắt đầu**, dùng cho metronome và nốt MIDI. Khi BPM không nguyên thì onset thứ k nằm ở `ceil(k · samplesPerBeat)`.
+- `stateAt`: trạng thái trong `LeState` **sau khi đã render đúng `frame` frame đầu tiên**. Runner tự chia block ở các frame này. Nhờ vậy kiểm được quantize chính xác tới từng sample mà không cần clip có tiếng (clip dựng bằng `clip.setMidi`).
 - `firstNonSilentSample: 96000`: launch ở beat 1.3, quantize 1 bar nên clip vào tại beat 4. Ở 120 BPM và 48 kHz: 4 × 24000 = **96000**. Đây là cách kiểm tra "đúng nhịp tuyệt đối" bằng con số.
 - **Null test:** lấy output trừ golden, RMS phải < −90 dBFS.
+- **`requires: ["feature", …]`**: mọi scenario ghi rõ tính năng cần có. Nếu binary chưa hỗ trợ (theo `ScenarioRunner::supportedFeatures()`), runner báo lỗi rõ ràng "thiếu tính năng X" thay vì so sai. Việc này tránh trường hợp binary cũ đọc phải scenario mới.
+- **`goldenRequired: false`**: scenario đã có kỳ vọng số (onset, stateAt…) nhưng golden **chưa được người dùng nghe duyệt**. Runner chỉ báo "CHỜ DUYỆT", không fail. Duyệt xong thì đổi thành `true`.
 - **Cập nhật golden:** `scripts/golden_update.sh <name>` → **bắt buộc nghe lại** file mới rồi mới commit.
-- Chạy mọi kịch bản với `blockSize` 64, 128, 256, 1024: kết quả phải giống nhau (bảo đảm chính xác tới từng sample bất kể kích thước block).
+- Chạy mọi kịch bản với `blockSize` 64, 128, 256, 1024 (và callback 4096 khi `maxBlock` = 1024): kết quả phải **giống từng bit**. Ngoại lệ duy nhất là scenario có đánh dấu `asyncMainSwap` (thu âm: main đổi buffer giữa hai lần process), được phép sai lệch ≤ 1e-7.
 
 ### 3.3 Build sanitizer
 | Preset | Cờ | Khi nào |
@@ -120,6 +132,11 @@ Kịch bản dạng JSON dùng **cùng lệnh** với app (05):
 | `IIR::Coefficients::make*` | Cấp phát | Tự tính hệ số biquad (04 §9) |
 | Obj-C, Swift, gọi vào Dart | Runtime có lock, autorelease | Không có ngoại lệ |
 | `throw` / `try` | Có thể cấp phát | Mã lỗi |
+
+**Bắt buộc thêm (từ rà soát RT 29/09):**
+- `le::core::ScopedFlushDenormals` (`core/Denormals.h`) ở đầu `RtEngine::process`: đặt FPCR.FZ trên arm64, FTZ|DAZ trên x86. Không dùng `juce::ScopedNoDenormals`, vì hàm đó không gắn `nonblocking` nên sẽ vỡ `-Werror=function-effects`.
+- **Chặn NaN/Inf** trước khi ra device: mẫu không hữu hạn → 0, tăng bộ đếm (báo qua `engine.info.nonFiniteSamples`). Mỗi FX IIR phát hiện state không hữu hạn thì tự `reset()`.
+- Build `loopcore` với `-Werror=function-effects`.
 
 **Được phép:** toán số, đọc snapshot, ghi vào buffer cấp phát sẵn, `std::atomic` kiểu nguyên thuỷ, SPSC `try_push/try_pop`, gọi virtual.
 

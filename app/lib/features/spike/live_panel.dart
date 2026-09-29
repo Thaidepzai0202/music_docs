@@ -4,6 +4,7 @@ import 'package:flutter/widgets.dart';
 
 import '../../app/theme.dart';
 import '../../engine/engine_state_ticker.dart';
+import '../../l10n/l10n.dart';
 
 /// Bảng số đo live 60fps (P0-05): SR, buffer, CPU trung bình/đỉnh, xrun, voice, latency,
 /// meter input + master + CPU.
@@ -22,12 +23,12 @@ class LivePanel extends StatefulWidget {
 
 class _LivePanelState extends State<LivePanel> {
   // Giữ painter qua các lần rebuild để cache TextPainter/Paint không bị tạo lại.
-  late LivePanelPainter _painter = LivePanelPainter(widget.ticker);
+  late LivePanelPainter _painter = LivePanelPainter(widget.ticker, font: painterFont(context));
 
   @override
   void didUpdateWidget(LivePanel old) {
     super.didUpdateWidget(old);
-    if (old.ticker != widget.ticker) _painter = LivePanelPainter(widget.ticker);
+    if (old.ticker != widget.ticker) _painter = LivePanelPainter(widget.ticker, font: painterFont(context));
   }
 
   @override
@@ -43,9 +44,14 @@ class _LivePanelState extends State<LivePanel> {
 }
 
 class LivePanelPainter extends CustomPainter {
-  LivePanelPainter(this.ticker) : super(repaint: ticker);
+  LivePanelPainter(this.ticker, {TextStyle font = const TextStyle()})
+    : _valueStyle = font.merge(_value0),
+      _labelStyle = font.merge(_label0),
+      super(repaint: ticker);
 
   final EngineStateTicker ticker;
+  final TextStyle _valueStyle;
+  final TextStyle _labelStyle;
 
   // Tạo sẵn 1 lần (07 §6.5: không tạo Paint/Path trong paint()).
   final _bg = Paint()..color = AppColors.surface;
@@ -57,8 +63,8 @@ class LivePanelPainter extends CustomPainter {
     ..color = AppColors.textPrimary
     ..strokeWidth = 2;
 
-  static const _valueStyle = TextStyle(color: AppColors.textPrimary, fontSize: 15, fontFeatures: AppText.tabular);
-  static const _labelStyle = TextStyle(color: AppColors.textSecondary, fontSize: 12);
+  static const _value0 = TextStyle(color: AppColors.textPrimary, fontSize: 15, fontFeatures: AppText.tabular);
+  static const _label0 = TextStyle(color: AppColors.textSecondary, fontSize: 12);
 
   final _sr = _CachedText();
   final _buf = _CachedText();
@@ -66,7 +72,7 @@ class LivePanelPainter extends CustomPainter {
   final _xrun = _CachedText();
   final _voices = _CachedText();
   final _lat = _CachedText();
-  final _meterNames = [
+  late final _meterNames = [
     for (final n in const ['IN', 'OUT L', 'OUT R', 'CPU']) _CachedText()..update(n.hashCode, () => n, _labelStyle),
   ];
 
@@ -84,7 +90,7 @@ class LivePanelPainter extends CustomPainter {
     _buf.update(s.bufferSize, () => 'Buffer  ${s.bufferSize} (${s.bufferMs.toStringAsFixed(1)} ms)', _valueStyle);
     final cpuAvg = (s.cpuLoad * 100).round();
     final cpuPeak = (s.cpuPeak * 100).round();
-    _cpu.update(cpuAvg * 1000 + cpuPeak, () => 'CPU  $cpuAvg% · đỉnh $cpuPeak%', _valueStyle);
+    _cpu.update(cpuAvg * 1000 + cpuPeak, () => S.spikeCpuDinh(cpuAvg, cpuPeak), _valueStyle);
     _xrun.update(s.xrunCount, () => 'Xrun  ${s.xrunCount}', _valueStyle);
     _voices.update(s.activeVoices, () => 'Voice  ${s.activeVoices}', _valueStyle);
     _lat.update(

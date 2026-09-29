@@ -10,43 +10,44 @@
 
 | TT | Mã | Việc | Tuần | Ước lượng | Phụ thuộc |
 |---|---|---|---|---|---|
-| [ ] | P1-01 | Khung engine: `Engine`, `DeviceIO`, `RtEngine::prepare/process` | W3 | 1.5d | M0 |
-| [ ] | P1-02 | Harness CLI: `render` / `play` | W3 | 1.5d | P1-01 |
-| [ ] | P1-03 | Render offline + scenario runner + hạ tầng golden | W3 | 2d | P1-02 |
-| [ ] | P1-04 | RtQueues + `le_send` [RT] | W4 | 1d | P1-01 |
-| [ ] | P1-05 | `CommandProcessor` + dispatch `le_call` JSON + JobSystem | W4 | 1.5d | P1-01 |
-| [ ] | P1-06 | GraphSnapshot + SnapshotBuilder + swap + ReleasePool [RT] | W4 | 1.5d | P1-04 |
-| [ ] | P1-07 | StatePublisher đầy đủ + event dispatch | W4 | 1d | P1-04 |
-| [ ] | P1-08 | Transport: BPM, neo, play/stop, toán beat [RT] | W5 | 1.5d | P1-06 |
-| [ ] | P1-09 | BlockSplitter [RT] | W5 | 1.5d | P1-08 |
-| [ ] | P1-10 | Metronome + count-in [RT] | W5 | 1d | P1-09 |
-| [ ] | P1-11 | AudioFileIO + job `clip.setAudio` | W6 | 1d | P1-05 |
-| [ ] | P1-12 | AudioClipPlayer [RT] | W6 | 2d | P1-09, P1-11 |
-| [ ] | P1-13 | Track + Mixer [RT] | W6 | 1d | P1-12 |
-| [ ] | P1-14 | Limiter master + meter [RT] | W6 | 0.5d | P1-13 |
-| [ ] | P1-15 | ClipScheduler: máy trạng thái + quantize [RT] | W7 | 2d | P1-09 |
-| [ ] | P1-16 | Scene launch, stop all, transport stop [RT] | W7 | 1d | P1-15 |
-| [ ] | P1-17 | LaunchLog | W7 | 0.5d | P1-15 |
-| [ ] | P1-18 | Arm + cấp phát RecordBuffer (main) | W8 | 0.5d | P1-06 |
-| [ ] | P1-19 | Recorder capture: độ dài cố định/tự do, count-in [RT] | W8 | 2d | P1-15, P1-18 |
-| [ ] | P1-20 | Bù latency [RT] | W8 | 1d | P1-19 |
-| [ ] | P1-21 | Ghi đĩa + `RECORDING_FINISHED` + `clip.info` | W8 | 1d | P1-19 |
-| [ ] | P1-22 | Overdub audio + undo 1 lớp [RT] | W9 | 2d | P1-21 |
-| [ ] | P1-23 | Input monitoring [RT] | W9 | 1d | P1-19 |
-| [ ] | P1-24 | PeakBuilder + `le_get_peaks` | W9 | 1d | P1-21 |
-| [ ] | P1-25 | Sampler: voice pool, zone, Hermite, stealing [RT] | W10 | 2d | P1-09 |
-| [ ] | P1-26 | ADSR + choke group + one-shot [RT] | W10 | 1d | P1-25 |
-| [ ] | P1-27 | SfzLoader (tập con) + job `track.setInstrument` | W10 | 1.5d | P1-11 |
-| [ ] | P1-28 | Fixture drum kit và nhạc cụ + golden | W10 | 0.5d | P1-27 |
-| [ ] | P1-29 | MidiClipPlayer: phát, bảng note-off, cắt ở loop [RT] | W11 | 1.5d | P1-25, P1-15 |
-| [ ] | P1-30 | Thu MIDI + quantize khi thu + overdub MIDI | W11 | 1.5d | P1-29 |
+| [x] | P1-01 | Khung engine: `Engine`, `DeviceIO`, `RtEngine::prepare/process` | W3 | 1.5d | M0 |
+| [x] | P1-02 | Harness CLI: `render` / `play` | W3 | 1.5d | P1-01 |
+| [x] | P1-03 | Render offline + scenario runner + hạ tầng golden | W3 | 2d | P1-02 |
+| [x] | P1-04 | RtQueues + `le_send` [RT] | W4 | 1d | P1-01 |
+| [x] | P1-05 | `CommandProcessor` + dispatch `le_call` JSON + JobSystem | W4 | 1.5d | P1-01 |
+| [x] | P1-06 | GraphSnapshot + SnapshotBuilder + swap + ReleasePool [RT] | W4 | 1.5d | P1-04 |
+| [x] | P1-07 | StatePublisher đầy đủ + event dispatch | W4 | 1d | P1-04 |
+| [x] | P1-08 | Transport: BPM, neo, play/stop, toán beat [RT] | W5 | 1.5d | P1-06 |
+| [x] | P1-09 | BlockSplitter [RT] | W5 | 1.5d | P1-08 |
+| [x] | P1-10 | Metronome + count-in [RT] | W5 | 1d | P1-09 |
+| [x] | P1-11 | AudioFileIO + job `clip.setAudio` | W6 | 1d | P1-05 |
+| [x] | P1-12 | AudioClipPlayer [RT] | W6 | 2d | P1-09, P1-11 |
+| [x] | P1-13 | Track + Mixer [RT] | W6 | 1d | P1-12 |
+| [x] | P1-14 | Limiter master + meter [RT] | W6 | 0.5d | P1-13 |
+| [x] | P1-15 | ClipScheduler: máy trạng thái + quantize [RT] | W7 | 2d | P1-09 |
+| [x] | P1-16 | Scene launch, stop all, transport stop [RT] | W7 | 1d | P1-15 |
+| [x] | P1-17 | LaunchLog | W7 | 0.5d | P1-15 |
+| [x] | P1-18 | Arm + cấp phát RecordBuffer (main) | W8 | 0.5d | P1-06 |
+| [x] | P1-19 | Recorder capture: độ dài cố định/tự do, count-in [RT] | W8 | 2d | P1-15, P1-18 |
+| [x] | P1-20 | Bù latency [RT] | W8 | 1d | P1-19 |
+| [x] | P1-21 | Ghi đĩa + `RECORDING_FINISHED` + `clip.info` | W8 | 1d | P1-19 |
+| [x] | P1-22 | Overdub audio + undo 1 lớp [RT] | W9 | 2d | P1-21 |
+| [x] | P1-23 | Input monitoring [RT] | W9 | 1d | P1-19 |
+| [x] | P1-24 | PeakBuilder + `le_get_peaks` | W9 | 1d | P1-21 |
+| [x] | P1-25 | Sampler: voice pool, zone, Hermite, stealing [RT] | W10 | 2d | P1-09 |
+| [x] | P1-26 | ADSR + choke group + one-shot [RT] | W10 | 1d | P1-25 |
+| [x] | P1-27 | SfzLoader (tập con) + job `track.setInstrument` | W10 | 1.5d | P1-11 |
+| [~] | P1-28 | Fixture drum kit và nhạc cụ + golden | W10 | 0.5d | P1-27 |
+| [x] | P1-29 | MidiClipPlayer: phát, bảng note-off, cắt ở loop [RT] | W11 | 1.5d | P1-25, P1-15 |
+| [x] | P1-30 | Thu MIDI + quantize khi thu + overdub MIDI | W11 | 1.5d | P1-29 |
 | [ ] | P1-31 | Đường NOTE_ON/OFF + map phím trong harness | W11 | 0.5d | P1-25 |
 | [ ] | P1-32 | `project.open` + kịch bản khôi phục project | W11 | 1d | P1-27, P1-11 |
 | [ ] | P1-33 | Build iOS cho full engine, thay engine trong shell spike | W12 | 1.5d | tất cả ở trên |
 | [ ] | P1-34 | Kịch bản tải chuẩn trên iPad 8 + đo | W12 | 1d | P1-33 |
-| [ ] | P1-35 | Prototype hiệu chỉnh latency trên máy | W12 | 1d | P1-33, P0-07 |
+| [~] | P1-35 | Prototype hiệu chỉnh latency trên máy | W12 | 1d | P1-33, P0-07 |
 | [ ] | P1-36 | Soak 30 phút (Mac + iPad) + sửa lỗi | W13 | 1.5d | P1-34 |
-| [ ] | P1-37 | Quét TSan/ASan, xoá code spike | W13 | 1d | – |
+| [~] | P1-37 | Quét TSan/ASan, xoá code spike | W13 | 1d | – |
+| [x] | P1-39 | **Pedal mode `FromFirstLoop`** (04 §2.5) + `transport.setTempoMode` + sửa clip MIDI đang phát (04 §7), người dùng yêu cầu 29/09 | W13 | 2d | P1-19, P1-29 |
 | [ ] | P1-38 | **Review M1** + cập nhật docs + retro | W14 | 2d + buffer | tất cả |
 
 ---
@@ -64,7 +65,7 @@
   - `1–8`: launch ô `(t, scene đang chọn)`
   - `Q–I`: chọn scene
   - `Space`: play/stop
-  - `R`: record ở track đang chọn
+  - `[` `]`: chọn track · `Shift+R`: record ở track đang chọn (vì `R` trùng với hàng Q–I dùng để chọn scene)
   - `O`: overdub
   - `Z–M`: nốt (P1-31)
   - Mỗi giây in dòng trạng thái (beat, CPU, xrun, trạng thái clip)
@@ -74,7 +75,7 @@
 - Scenario JSON theo 08 §3.2: `setup` (call/send), `timeline` (`atBeat`), `renderBeats`, `expect` (`golden`, `nullTestMaxDb`, `firstNonSilentSample`, `maxSampleJumpDb`).
 - Test Catch2 tự quét `tests/scenarios/*.json` và chạy mỗi file với block 64/128/256/1024.
 - `scripts/golden_update.sh`
-- **DoD:** 1 scenario (metronome 4 bar) xanh ở cả 4 kích thước block. Golden sai thì báo **sample đầu tiên bị lệch**.
+- **DoD:** 1 scenario (`spike_sine_ramp`) xanh ở cả 4 kích thước block. Golden sai thì báo **sample đầu tiên bị lệch**. Scenario metronome chuyển sang DoD của P1-10, vì phải có Transport.
 
 ## W4 — Các kênh giữa các thread
 
@@ -228,6 +229,7 @@
 - **DoD:** 0 xrun, 0 vi phạm RTSan, RAM phẳng.
 
 ### P1-37 · Quét sanitizer + dọn dẹp · 1d
+- **Kèm hardening từ rà soát RT (`engine/tools/docs/rt-review-2026-09-29.md`):** R5 (luôn prepare probe), R7 (buffer thu theo SR lớn nhất), R8 (`liveFade_` tính từ `kSwapFadeSec`), R9 (dọn `jobs_`), R10 (chỉ một producer MIDI).
 - **DoD:** TSan và ASan sạch. Xoá `src/spike/` (giữ `LatencyProbe` vì chuyển sang `io/`), xoá `LE_CMD_SPIKE_*` khỏi header (**tăng** `LE_API_VERSION` lên 2, cập nhật 05).
 
 ### P1-38 · Review M1 · 2d + buffer

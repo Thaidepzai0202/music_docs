@@ -1,0 +1,49 @@
+{
+  "name": "metronome_bpm_change",
+  "description": "P1-08: 120 BPM, đổi sang 90 BPM đúng beat 4 → click sau đó cách nhau 32000 sample, beat liên tục.",
+  "sampleRate": 48000,
+  "blockSize": 128,
+  "bpm": 120,
+  "setup": [
+    {
+      "send": {
+        "type": "METRONOME",
+        "i0": 1,
+        "f0": 0.5
+      }
+    }
+  ],
+  "timeline": [
+    {
+      "atBeat": 0,
+      "send": {
+        "type": "TRANSPORT_PLAY"
+      }
+    },
+    {
+      "atBeat": 4,
+      "send": {
+        "type": "SET_BPM",
+        "d0": 90
+      }
+    }
+  ],
+  "renderBeats": 10,
+  "expect": {
+    "onsetSamples": [
+      0,
+      24000,
+      48000,
+      72000,
+      96000,
+      128000,
+      160000,
+      192000,
+      224000,
+      256000
+    ]
+  },
+  "requires": [
+    "metronome"
+  ]
+}

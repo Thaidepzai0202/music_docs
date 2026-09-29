@@ -17,6 +17,12 @@
     }
   },
   {
+    "call": {
+      "op": "transport.setTempoMode",
+      "mode": "fixed"
+    }
+  },
+  {
     "send": "SET_QUANTIZE",
     "i0": 5
   },
@@ -34,10 +40,30 @@
   },
   {
     "call": {
+      "op": "instrument.createFromRecording",
+      "instrumentId": "i_55…",
+      "file": "instruments/i_55…/source.caf",
+      "rootNote": 57,
+      "mode": "natural"
+    }
+  },
+  {
+    "call": {
+      "op": "instrument.setEnvelope",
+      "instrumentId": "i_55…",
+      "a": 0.005,
+      "d": 0.2,
+      "s": 0.8,
+      "r": 0.3
+    }
+  },
+  {
+    "call": {
       "op": "track.configure",
       "track": 0,
       "kind": "instrument",
-      "name": "Drums"
+      "name": "Drums",
+      "color": "#FF7A59"
     }
   },
   {
@@ -80,7 +106,8 @@
         "0": 0.0,
         "1": 18000.0,
         "2": 0.7
-      }
+      },
+      "bypass": false
     }
   },
   {
@@ -111,7 +138,8 @@
       "op": "track.configure",
       "track": 1,
       "kind": "audio",
-      "name": "Vocal"
+      "name": "Vocal",
+      "color": "#59C3FF"
     }
   },
   {
@@ -148,7 +176,8 @@
         "1": 0.4,
         "2": 1.0,
         "3": 0.25
-      }
+      },
+      "bypass": false
     }
   },
   {
@@ -161,7 +190,7 @@
       "lengthBeats": 16.0,
       "originalBpm": 120.0,
       "warp": "stretch",
-      "gain": 0.0
+      "gainDb": 0.0
     }
   },
   {
@@ -169,7 +198,8 @@
       "op": "track.configure",
       "track": 2,
       "kind": "instrument",
-      "name": "La Synth"
+      "name": "La Synth",
+      "color": "#B98CFF"
     }
   },
   {
@@ -202,15 +232,6 @@
   {
     "send": "TRACK_MONITOR",
     "track": 2
-  },
-  {
-    "call": {
-      "op": "instrument.createFromRecording",
-      "instrumentId": "i_55…",
-      "file": "instruments/i_55…/source.caf",
-      "rootNote": 57,
-      "mode": "natural"
-    }
   },
   {
     "call": {
@@ -261,6 +282,11 @@
     "call": {
       "op": "job.result",
       "jobId": 4
+    }
+  },
+  {
+    "call": {
+      "op": "engine.info"
     }
   }
 ]

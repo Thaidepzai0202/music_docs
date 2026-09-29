@@ -10,6 +10,13 @@
 1. Mọi hàm `le_*` được gọi từ **main thread**. Từ Flutter 3.29, Dart chạy trên main thread của iOS, nên FFI gọi thẳng là đúng. Ngoại lệ duy nhất là `le_read_state`, gọi được từ thread bất kỳ.
 2. Mỗi hàm `le_*` phải trả về trong **< 1ms**. Việc gì lâu hơn phải thành **job** (trả `jobId` ngay).
 3. Không truyền con trỏ tới object Dart sang C. Chuỗi là UTF-8. Chuỗi do engine trả về phải được giải phóng bằng `le_free_string`.
+   - Engine **kiểm UTF-8 hợp lệ** ở biên (`le_call`, `le_get_peaks`) bằng `CharPointer_UTF8::isValidString`. Không hợp lệ thì trả `INVALID_ARG`.
+   - Sau đó engine **kiểm cú pháp JSON** bằng `util::JsonValidator`, **trước khi** gọi `juce::JSON::parse`. Key rỗng, JSON bị cắt, số sai dạng, độ sâu lồng > 32 hoặc request > 1 MB đều trả `INVALID_ARG`. Lý do: `juce::JSON::parse` assert với các trường hợp này (fuzz tìm ra 29/09).
+   - **Giới hạn của JSON do JUCE đọc:**
+     - Số nguyên có **tối đa 18 chữ số** (JUCE tràn int64 **không báo** khi dài hơn). Mọi id và số trong API đều nằm trong ±2^53, nên không ảnh hưởng.
+     - **Chuỗi không được chứa ký tự NUL** (`\u0000`), kể cả trong giá trị, vì JUCE không đọc được. UI lọc NUL ở ô nhập tên.
+   - Mọi chỗ đổi `const char*` sang `juce::String` phải dùng `juce::String::fromUTF8` (constructor `juce::String(const char*)` của JUCE hiểu chuỗi là **ASCII**, nên sẽ làm hỏng tiếng Việt và emoji).
+   - Tên project, đường dẫn và tên clip có dấu tiếng Việt hoặc emoji phải chạy đúng từ đầu đến cuối (có test).
 4. Callback event dùng **tham số truyền theo giá trị** (không truyền con trỏ), vì `NativeCallable.listener` là bất đồng bộ và con trỏ sẽ không còn hợp lệ khi Dart xử lý.
 5. Symbol được export bằng `LE_EXPORT` (visibility default + `used`). Ở phía iOS link bằng `-force_load` để linker không strip (09 §5).
 
@@ -75,6 +82,7 @@ typedef enum LeCommandType {
     LE_CMD_CLIP_RECORD    = 14,       /* track, slot, i0 = số bar (0 = tự do) */
     LE_CMD_RECORD_STOP    = 15,       /* track: kết thúc take tự do tại ranh giới quantize */
     LE_CMD_OVERDUB_TOGGLE = 16,       /* track */
+    LE_CMD_LOOP_BUTTON    = 17,       /* track, slot (-1 = tự chọn): một lần chạm nút LOOP/footswitch → engine xoay vòng thu → chốt → overdub → phát (thêm 29/09, không phá ABI) */
     /* Track */
     LE_CMD_TRACK_GAIN     = 20,       /* track, f0 = dB (-inf..+6), dùng -120 cho -inf */
     LE_CMD_TRACK_PAN      = 21,       /* track, f0 = -1..1 */
@@ -144,7 +152,7 @@ typedef enum LeEventType {
     LE_EVT_XRUN               = 5,    /* a = tổng số xrun */
     LE_EVT_AUDIO_INTERRUPTED  = 6,    /* a = 1 bắt đầu / 0 kết thúc */
     LE_EVT_ROUTE_CHANGED      = 7,    /* a = 1 nếu có tai nghe có dây/interface, b = 1 nếu Bluetooth */
-    LE_EVT_TEMPO_CHANGED      = 8,    /* value = bpm (từ Link) */
+    LE_EVT_TEMPO_CHANGED      = 8,    /* value = bpm (Link, hoặc pedal mode vừa suy ra); value = 0 → pedal mode trở về "chưa có tempo" */
     LE_EVT_LINK_PEERS         = 9,    /* a = số peer */
     LE_EVT_MIDI_DEVICES       = 10,   /* danh sách đổi → gọi midi.listDevices */
     LE_EVT_MIDI_LEARNED       = 11,   /* a = kind (0 note, 1 cc), b = number */
@@ -164,6 +172,7 @@ typedef enum LeError {
     LE_ERR_OUT_OF_MEMORY = -30, LE_ERR_QUEUE_FULL = -31,
     LE_ERR_JOB_CANCELLED = -40, LE_ERR_JOB_NOT_FOUND = -41,
     LE_ERR_PITCH_NOT_DETECTED = -50,
+    LE_ERR_OVERDUB_UNSUPPORTED = -60,   /* thêm 29/09 (không phá ABI): clip Re-Pitch/MIDI hoặc chưa có target → không vào OVERDUBBING */
     LE_ERR_INTERNAL = -99
 } LeError;
 
@@ -199,8 +208,13 @@ LE_EXPORT int32_t le_get_peaks(const char* clipId, int32_t level,
   - Lệnh tạo job trả `{"ok":true,"result":{"jobId":42}}`.
   - `job.result {jobId}` trả `{"ok":true,"result":{"status":"running","progress":0.4}}`, hoặc `{"ok":true,"result":{"status":"done","result":{...}}}`, hoặc `{"ok":true,"result":{"status":"failed","error":{"code":"...","message":"..."}}}`.
   - Job **thất bại** vẫn trả `ok:true`, vì bản thân lời gọi `job.result` thành công. `jobId` không tồn tại thì mới trả `ok:false` với mã `JOB_NOT_FOUND`.
+- **Thứ tự bảo đảm của job:** khi nhận `JOB_DONE`, model và snapshot **đã được áp dụng**. Các `le_call` gọi ngay sau đó (`clip.info`, `clip.getMidi`, `job.result`) thấy kết quả mới. Riêng **`LeState` có thể trễ tối đa 1 block** (khoảng 2.7ms ở 128 frame), vì audio thread nhận snapshot ở đầu block kế tiếp. Test đọc `LeState` sau `JOB_DONE` phải render thêm 1 block.
 - **`engine.info` (P0-03)** trả thêm `running, inputLatencySamples, outputLatencySamples, deviceXruns, configSize, rejectedCommands, droppedEvents, sessionMode`.
 - **Spike:** `LE_EVT_RECORDING_FINISHED` do `SPIKE_RECORD` sinh ra có `a = -1, b = -1, value = số frame đã thu`.
+- **`LE_CMD_LOOP_BUTTON` (máy trạng thái trong engine, dùng chung cho nút LOOP trên UI và footswitch):**
+  - Chọn ô đích: `slot ≥ 0` thì dùng ô đó. `slot = -1` thì ưu tiên ô đang Recording / Overdubbing / Playing của track, không có thì lấy ô trống đầu tiên.
+  - Chuyển trạng thái của ô: Empty → thu tự do (`CLIP_RECORD i0 = 0`) · Recording → chốt (`RECORD_STOP`) · Playing → bật overdub · Overdubbing → tắt overdub · Stopped/Queued → launch.
+  - **Không** có chạm đúp hay nhấn giữ trên LOOP. Dừng track và hoàn tác dùng nút riêng trên UI (07 §3.1b), hoặc target MIDI `trackStop` / `undoOverdub`.
 - **Khoá layout:** kích thước và offset đã được kiểm tra bằng compiler C: `LeCommand` = 32, `LeState` = 248, `LeConfig` = 40 byte. Offset của `LeState`: `beat@8, bpm@16, sampleRate@24, bufferSize@32, quantize@40, cpuLoad@48, xrunCount@56, inputPeak@64, masterPeak@68, trackPeak@76, clipState@140, trackPlayingSlot@204, trackClipProgress@212`. Cả test C++ (`static_assert(offsetof…)`) lẫn test Dart đều khoá các giá trị này.
 
 | op | Tham số | Kết quả | Phase |
@@ -209,35 +223,47 @@ LE_EXPORT int32_t le_get_peaks(const char* clipId, int32_t level,
 | `spike.setBufferSize` | `{frames: 128\|256}` | `{bufferSize}`: khởi động lại device | P0 |
 | `spike.setSessionMode` | `{mode:"default"\|"measurement"}` | `{mode, applied}`: áp dụng ngay | P0 |
 | `spike.sessionInfo` | – | `{supported, session:{category, mode, options:{mixWithOthers, defaultToSpeaker, allowBluetoothA2DP, allowBluetoothHFP, allowAirPlay}, sampleRate, ioBufferDuration, inputLatency, outputLatency, inputs:[…], outputs:[…]}}` | P0 |
-| `spike.latencyLoopback` | `{}` | `jobId` → `{measuredSamples, reportedSamples, runs:[...]}` | P0 |
-| `spike.stretchBench` | `{semitones:[-18,-15,-12,-9,-6,-3,0,3,6,9,12,15,18], formant:true, saveDir}`. `semitones` là **danh sách các giá trị cụ thể** (không phải cặp min/max). `saveDir` = `<Documents>/spike` | `jobId` → `{msTotal, msPerZone:[...], files:[...]}` | P0 |
-| `project.open` | `{dir}` | `{}`: reset model, `dir` là nơi lưu audio thu âm | P1 |
+| `spike.latencyLoopback` | `{}`. Audio phải đang chạy, nếu không trả `ok:false AUDIO_DEVICE` | `jobId` → `{ok, measuredSamples, measuredMs, reportedSamples, reportedMs, runs, validRuns, spreadSamples, spreadMs, score, inputPeak, sampleRate}` | P0 |
+| `spike.stretchBench` | `{semitones:[-18,-15,-12,-9,-6,-3,0,3,6,9,12,15,18], formant:true, saveDir}`. `semitones` là **danh sách các giá trị cụ thể** (không phải cặp min/max). `saveDir` = `<Documents>/spike`. Tuỳ chọn: `baseHz, blockMs, intervalMs, tonalityLimitHz, cheaper` | `jobId` → `{msTotal, msPerZone:[...], files:[...], …}` | P0 |
+| `project.open` | `{dir}` | `{}`. Reset **toàn bộ state của project** về mặc định: track trống, không FX, không nhạc cụ, master EQ phẳng, trần limiter −0.3, BPM 120, 4/4, quantize 1 bar, metronome tắt, count-in 0, mapping MIDI trống, lớp undo trống. **Không reset thiết lập toàn cục**: `midi.setRecordQuantize`, `latency.setOffset`, `audio.setInputEnabled`, buffer size, thiết bị MIDI đã bật. `dir` là nơi lưu audio thu âm | P1 |
 | `project.close` | – | `{}` | P1 |
 | `transport.setTimeSignature` | `{num, den}` | `{}` | P1 |
-| `track.configure` | `{track, kind:"audio"\|"instrument", name}` | `{}` | P1 |
+| `transport.setTempoMode` | `{mode:"fixed"\|"firstLoop", firstLoopBeats?}` | `{hasTempo, firstLoopBeats}`. `firstLoopBeats` = độ dài vòng đầu (beat), dùng để làm tròn các vòng sau, kể cả sau khi mở lại project. Khi trở về "chưa có tempo", engine phát `TEMPO_CHANGED(value = 0)`. Pedal mode, 04 §2.5. `engine.info.tempoState = {mode, hasTempo, firstLoopBeats}` (`firstLoopBeats = 0` nghĩa là chưa có vòng đầu). Với `firstLoop`: `hasTempo = true` khi model **đã có ≥ 1 clip**, BPM lấy từ model. UI đọc lại sau `TEMPO_CHANGED`, `RECORDING_FINISHED` và `project.open`. Khi mở project, gửi op này **ngay sau** `SET_BPM` / `transport.setTimeSignature` | P2 |
+| `track.configure` | `{track, kind:"audio"\|"instrument", name, color?:"#RRGGBB"}` | `{}`. `color` dùng để engine chọn màu LED Launchpad gần nhất (P4-05) | P1 |
 | `track.setInstrument` | `{track, instrument:{kind:"sfz", path} \| {kind:"user", id}}` | `jobId` | P1 |
-| `clip.setAudio` | `{track, slot, clipId, file, lengthBeats, originalBpm, warp:"stretch"\|"repitch", gain}` | `jobId` (decode) | P1 |
+| `clip.setAudio` | `{track, slot, clipId, file, lengthBeats, originalBpm, warp:"stretch"\|"repitch", gainDb}` (**dB**, cùng đơn vị với model) | `jobId` (decode) | P1 |
 | `clip.setMidi` | `{track, slot, clipId, lengthBeats, notes:[{p,v,s,d}]}` | `{}` | P1 |
 | `clip.getMidi` | `{track, slot}` | `{notes:[...]}` | P1 |
-| `clip.info` | `{track, slot}` | `{clipId, kind, file?, lengthBeats, originalBpm?, warp?, gain}` | P1 |
+| `clip.setParams` | `{track, slot, gainDb?, warp?}` | `{}`. Chỉ đổi tham số, **không decode lại**: dựng snapshot mới, audio thread dùng ramp để không click | P2 |
+| `clip.info` | `{track, slot}` | `{clipId, kind, file?, lengthBeats, originalBpm?, warp?, gainDb, hasUndo}`. Ô trống trả `{kind:"empty"}`. `hasUndo` = true khi ô có lớp `clip.undoOverdub`. **Chỉ clip audio có lớp undo**, clip MIDI luôn `false`. `stretchedBpm` = BPM của bản stretch đang dùng (0 nếu đang Re-Pitch) | P1 |
 | `clip.clear` | `{track, slot}` | `{}` | P1 |
 | `clip.undoOverdub` | `{track, slot}` | `{}` | P1 |
 | `clip.setLoopRegion` | `{track, slot, startSample, lengthBeats}` | `{}` | P2 |
+| `midi.setRecordQuantize` | `{grid: 0 \| 0.25 \| 0.5}` (beat, 0 = tắt) | `{}`. Áp dụng khi ghép nốt lúc **thu xong** (P1-30). Đây là **thiết lập toàn cục của engine: `project.open` KHÔNG reset.** UI gọi lệnh này khi mở app và khi đổi Settings | P1 |
 | `midiClip.quantize` | `{track, slot, grid:0.25}` | `{}` | P2 |
-| `capture.start` / `capture.stop` | `{path, maxSeconds}` / – | `{}` / `{file, seconds}`: thu một mẫu cho sampler (không tạo clip) | P3 |
-| `instrument.createFromRecording` | `{instrumentId, file, rootNote?, mode:"natural"\|"classic"}` | `jobId` → `{rootNote, cents, confidence, zones}` | P3 |
+| `capture.start` / `capture.stop` | `{path, maxSeconds}` / – | `{}` / `{file, seconds}`: thu một mẫu cho sampler (không tạo clip). Tới `maxSeconds` thì tự dừng và phát `RECORDING_FINISHED(a = -2, b = -2, value = frames)`. Gọi `capture.stop` sau đó vẫn trả đúng kết quả (idempotent). Meter lấy từ `LeState.inputPeak` | P3 |
+| `capture.analyze` | `{file}` | `jobId` → `{trimStartSample, trimEndSample, rootNote, cents, confidence, peaks:[min,max,…] (512 cặp)}`. Chạy SilenceTrimmer + Yin. UI dùng kết quả để vẽ waveform, hiện handle trim và nốt gốc **trước** khi tạo nhạc cụ | P3 |
+| `audio.setInputEnabled` | `{enabled}` | `{inputChannels}`. Khởi động lại device có hoặc không có input (category PlayAndRecord ↔ Playback). Dùng khi người dùng **từ chối quyền mic**: app vẫn phát được, chỉ tắt thu. Được quyền lại thì bật input | P2 |
+| `instrument.createFromRecording` | `{instrumentId, file, trimStartSample?, trimEndSample?, rootNote?, mode:"natural"\|"classic"}`. **Engine đăng ký `instrumentId` ngay khi nhận lệnh**, nên `instrument.setEnvelope` / `setMode` / `track.setInstrument {kind:"user"}` gửi trong lúc job chưa xong vẫn hợp lệ, và được áp dụng khi render xong. Không truyền trim thì tự trim. Không truyền `rootNote` mà confidence < 0.6 thì job failed `PITCH_NOT_DETECTED` | `jobId` → `{rootNote, cents, confidence, zones}` | P3 |
 | `instrument.setMode` | `{instrumentId, mode}` | `{}` | P3 |
-| `fx.set` | `{track (-1=master), index, type:"filter"\|"delay"\|"reverb"\|"eq3"\|"comp", params:{id:value}}` | `{}` | P3 |
-| `fx.remove` | `{track, index}` | `{}` | P3 |
-| `export.scene` | `{scene, bars, path, format:"wav"\|"m4a", stems:false}` | `jobId` | P3 |
-| `export.jamStart` / `export.jamStop` | `{path}` / – | `{}` / `{file, seconds}` | P3 |
-| `latency.calibrate` | – | `jobId` → `{roundTripSamples}` | P4 |
-| `latency.setOffset` | `{samples}` | `{}` | P4 |
-| `midi.listDevices` | – | `{inputs:[{id,name,enabled}], outputs:[...]}` | P4 |
-| `midi.enableDevice` | `{id, enabled}` | `{}` | P4 |
-| `midi.learnStart` / `midi.learnCancel` | `{target:{kind:"clip",track,slot} \| {kind:"fx",track,slot,param} \| ...}` | `{}` | P4 |
-| `midi.setMappings` | `{mappings:[...]}` | `{}` | P4 |
+| `instrument.setEnvelope` | `{instrumentId, a, d, s, r}` (giây, s là 0..1) | `{}`. Áp dụng cho mọi zone của nhạc cụ tự thu. Voice đang kêu giữ envelope cũ, nốt mới dùng envelope mới | P3 |
+| `fx.set` | `{track (0..7), index (0..2), type:"filter"\|"delay"\|"reverb"\|"eq3"\|"comp", params:{id:value}, bypass:false}`. **`"comp"` là tên chuẩn** (engine chấp nhận thêm `"compressor"` làm bí danh). **Master không có slot người dùng**: `track = -1` trả `INVALID_ARG`. Master cố định slot 0 = EQ3 (param 0/1/2 = low/mid/high dB), slot 1 = Limiter (param 0 = ceiling dB, 1 = release ms), chỉ chỉnh qua `LE_CMD_FX_PARAM track -1`. Khi mở project thì `bypass` đi kèm luôn trong lệnh này. `LE_CMD_FX_BYPASS` chỉ dùng để bật/tắt nhanh lúc đang chơi | `{}` | P3 |
+| `fx.remove` | `{track, index}` | `{}`. Slot **cố định**, engine không dồn slot. Xoá slot trống vẫn `ok`. UI tự dồn bằng cách gửi lại `fx.set` | P3 |
+| `export.scene` | `{scene, bars, path, format:"wav"\|"m4a", stems:false}` | `jobId` → `{file, seconds, stems?:[…]}`. Tên file stem: `<base>_t<n>.<ext>`, với n = **1..8** (số track đếm từ 1, dễ đọc với người dùng) | P3 |
+| `export.jamStart` / `export.jamStop` | `{path}` / – | `{}` / `{file, seconds}`. Gọi `jamStop` khi chưa start thì trả `INVALID_ARG` | P3 |
+| `latency.calibrate` | – | `jobId` → `{measuredSamples, reportedSamples, offsetSamples = measured − reported, spreadSamples, confidence}`. Thành công thì engine **áp dụng ngay** `offsetSamples`. Engine **không lưu** qua các lần mở app: app tự lưu offset và gửi lại bằng `latency.setOffset` khi khởi động | P4 |
+| `latency.setOffset` | `{samples}` | `{}`. **Dấu:** số dương = tăng độ trễ cần bù, tức là take bị dời **sớm lên** thêm. L thực tế = inputLatency + outputLatency (theo số device báo) + `samples` (04 §5.3) | P4 |
+| `midi.listDevices` | – | `{inputs:[{id,name,enabled,open}], outputs:[{id,name}]}` | P4 |
+| `midi.enableDevice` | `{id, enabled}` | `{}`. Thiết lập **toàn cục**. Engine nhớ cả thiết bị chưa cắm, cắm vào là tự mở. Cắm hoặc rút thì phát `LE_EVT_MIDI_DEVICES` | P4 |
+| `memory.pressure` | `{level:"warning"\|"critical"}` | `{freedMB, usedMB}`. Nhả bản stretched của clip không phát, nhạc cụ tự thu không track nào dùng, peaks thừa; mức critical nhả thêm lớp undo của ô không phát. Engine **tự** nghe `UIApplicationDidReceiveMemoryWarning` (xử lý như critical). Sau đó phát `LE_EVT_MEMORY_WARNING(a = 1 nếu critical, value = MB)`. `engine.info.memoryMB` | P4 |
+| `sim.midiIn` | `{bytes:[s,d1,d2]}` | `{}`. **Chỉ có ở bản build test** (`LE_ENABLE_SIM`): đưa message MIDI tổng hợp vào nguồn "virtual" | P4 (test) |
+| `midi.learnStart` / `midi.learnCancel` | `{target}` | `{}`. Các kind của `target`, khớp `midi::LearnAction`: `{kind:"clip",track,slot}` · `{kind:"scene",slot}` · `{kind:"transport",action:"play"\|"stop"\|"toggle"}` · `{kind:"stopAll"}` · `{kind:"trackGain",track,minDb?:-60,maxDb?:6}` · `{kind:"trackMute",track}` · `{kind:"fx",track(-1=master),slot,param,min?,max?}` · `{kind:"loopButton"}` (tác động lên track đang chọn, giống `LE_CMD_LOOP_BUTTON slot = -1`) · `{kind:"trackStop"}` (dừng track đang chọn) · `{kind:"undoOverdub"}` (hoàn tác overdub của ô đang phát trên track đang chọn). Ba target này để nối footswitch | P4 |
+| `midi.learnResult` | – | `{deviceId, deviceName, kind:"note"\|"cc", channel, number}`: nguồn của lần learn gần nhất. Gọi sau `LE_EVT_MIDI_LEARNED`, vì event chỉ có kind + number (header không đổi) | P4 |
+| `midi.setMappings` | `{mappings:[{src:{device, kind, channel, number}, target}]}` | `{}`. `device: ""` = mọi thiết bị, `channel: -1` = mọi kênh. `target` giống `midi.learnStart` | P4 |
 | `link.enable` | `{enabled, startStopSync}` | `{}` | P4 |
+| `launchLog.read` | `{sinceIndex}` | `{events:[{index, beat, track, slot, kind:"launch"\|"stop"\|"record"\|"scene"}], nextIndex}`. Giữ tối đa 4096 sự kiện gần nhất | P1 (P1-17) |
+| `sim.offline` | `{enabled, sampleRate:48000, blockSize:128}` | `{}`. **Chỉ có ở bản build test** (Mac, `LE_ENABLE_SIM`). Thay device thật bằng `OfflineDeviceIO`; phải gọi khi audio chưa chạy. Bản iOS release trả `NOT_IMPLEMENTED` | P1 (test) |
+| `sim.advance` | `{frames}` hoặc `{beats}` | `{beat, frames}`. Render **đồng bộ** trên main, output bị bỏ đi. Đây là ngoại lệ duy nhất của luật "< 1ms", vì chỉ dùng trong test. Để test hợp đồng Dart (vd. `clip_scheduler_contract.dart`) chạy được với engine thật | P1 (test) |
 | `job.result` | `{jobId}` | `{status:"running"\|"done"\|"failed", result?, error?}` | P1 |
 | `job.cancel` | `{jobId}` | `{}` | P1 |
 

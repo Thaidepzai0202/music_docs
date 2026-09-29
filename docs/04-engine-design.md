@@ -32,6 +32,7 @@ void RtEngine::process(const float* const* in, float* const* out, int numFrames,
 ```
 - **Segment** gồm `{startFrame, numFrames, startBeat, endBeat}`. Mỗi block có tối đa 16 segment. Nếu nhiều hơn thì gộp các sự kiện gần nhau (sai lệch ≤ 1 sample).
 - Mọi mảng tạm (buffer của track, segment list) được cấp phát trong `prepare(sampleRate, maxBlock)`, **không bao giờ** cấp phát trong `process`.
+- **Block lớn hơn `maxBlock`** (iOS có thể gửi, xem 03 §8): `process` tự **chia thành nhiều đoạn ≤ `maxBlock`** rồi xử lý lần lượt. Không crash, không cấp phát, không bỏ sample. Có test với callback 4096 frame khi `maxBlock` = 1024.
 
 ---
 
@@ -39,9 +40,21 @@ void RtEngine::process(const float* const* in, float* const* out, int numFrames,
 
 ### 2.1 Cơ sở thời gian
 - `int64 samplePos`: số sample đã phát kể từ lúc Play. Chỉ tăng, không bao giờ lùi.
+- **Đơn vị beat = nốt 1/den** của nhịp: 4/4 thì beat là nốt đen, 6/8 thì beat là nốt móc đơn. `beatsPerBar = num`, BPM đếm theo đơn vị đó (6/8 ở 120 BPM là 120 móc đơn mỗi phút). Quantize 1/16 ở 6/8 = 0.5 beat. Metronome click theo từng beat, phách mạnh ở đầu bar.
 - `double beatAtBlockStart`: tính lại **mỗi block** từ `samplePos` và BPM (có neo lại khi tempo đổi), **không cộng dồn** giá trị float qua từng block để tránh trôi.
 - `samplesPerBeat = 60.0 * sampleRate / bpm`.
 - Khi BPM đổi, lưu neo `(anchorSample, anchorBeat)`. Từ đó `beat(s) = anchorBeat + (s - anchorSample) / samplesPerBeat`.
+
+### 2.5 Pedal mode (`FromFirstLoop`, người dùng chọn 29/09)
+- Bật bằng `transport.setTempoMode {mode:"firstLoop"}`, lưu ở `transport.tempoMode` (06 §2). Chế độ ở trạng thái **"chưa có tempo"** khi project **chưa có clip nào**.
+- **Vòng đầu tiên** (khi chưa có tempo):
+  - `CLIP_RECORD(i0 = 0)` thu **ngay lập tức**: không quantize, không count-in, không metronome. Transport chưa chạy.
+  - `RECORD_STOP` chốt vòng: độ dài T (sample, đã bù latency như §5.3) **chính xác theo lúc bấm**, không làm tròn.
+  - Engine suy ra tempo: chọn số beat `nb = beatsPerBar · 2^k` (k ≥ 0) sao cho `bpm = 60·nb·sr/T` nằm trong **[80, 160)**. Nếu T quá ngắn để có bpm < 160 ngay cả với 1 bar thì lấy `nb = beatsPerBar`, và bpm tối đa là 300.
+  - Đặt `bpm`, gán `lengthBeats = nb`, rồi **khởi động transport sao cho beat 0 trùng sample đầu của take**. Clip phát tiếp ngay, liền mạch, không có khoảng trống. Phát event `TEMPO_CHANGED(value = bpm)` (dùng lại mã sẵn có) và `RECORDING_FINISHED`.
+- **Các vòng sau** (đã có tempo): thu tự do như §5.2, nhưng độ dài được **làm tròn lên bội số của vòng đầu** (tính theo beat). Bắt đầu thu theo quantize (mặc định 1 bar). Metronome theo cài đặt.
+- **Trở về "chưa có tempo"** khi transport dừng **và** mọi clip của project đã bị xoá. `project.open` thì đọc lại từ model.
+- Đổi BPM bằng tay sau khi đã có tempo: được, đi theo warp hybrid (§10). Nó **không** đưa project về trạng thái chưa có tempo.
 
 ### 2.2 Chia block (BlockSplitter)
 Đầu vào: `[beatStart, beatEnd)` của block. Tập ranh giới gồm:
@@ -62,7 +75,7 @@ Mỗi ranh giới được đổi ra frame offset: `offset = round((b - beatStar
 |---|---|---|
 | `Fixed` | ✅ | BPM do người dùng đặt (20–300), có tap tempo ở phía UI |
 | `Link` | ✅ (P4) | Beat và BPM lấy theo phiên Link (§14) |
-| `FromFirstLoop` | ⏳ phase 2 | Pedal mode: take đầu tiên quyết định BPM (thiết kế sẵn, chưa làm) |
+| `FromFirstLoop` | ✅ (thêm vào MVP 29/09) | Pedal mode: take đầu tiên quyết định BPM, xem §2.5 |
 
 ---
 
@@ -79,6 +92,8 @@ Mỗi ranh giới được đổi ra frame offset: `offset = round((b - beatStar
  Playing ──overdub──► Overdubbing ──overdub lần nữa──► Playing
 ```
 - `LeClipState`: `Empty=0, Stopped=1, QueuedPlay=2, Playing=3, QueuedStop=4, QueuedRecord=5, Recording=6, Overdubbing=7`.
+- **Launch vào ô trống** (không có clip, track không arm) = **dừng track** theo quantize, giống scene có ô trống (khớp với UI 07 §3.1).
+- **Launch lại clip đang Playing** = **retrigger**: phát lại từ đầu tại ranh giới quantize kế tiếp (chế độ Trigger mặc định của Ableton).
 - **Mỗi track chỉ có 1 clip Playing hoặc Recording tại một thời điểm.** Launch clip B trên track đang phát A: A chuyển sang QueuedStop, B chuyển sang QueuedPlay. Cả hai đổi trạng thái tại cùng một ranh giới.
 
 ### 3.2 Toán quantize
@@ -97,9 +112,12 @@ boundary(now) = (q == 0) ? now : ceil((now - ε) / q) * q     // ε = 1e-9: đan
 - `CLIP_STOP(track)` → QueuedStop theo quantize.
 - `STOP_ALL` → mọi track chuyển sang QueuedStop.
 - `TRANSPORT_STOP` → dừng ngay, fade 5ms, reset `samplePos`.
+  - Clip đang **Recording** → bỏ take dở, ô trở về Empty (hoặc về clip cũ nếu trước đó có).
+  - Clip đang **Overdubbing** → kết thúc overdub, **giữ** phần đã chồng (undo được).
+  - Clip Queued* → huỷ lệnh đang chờ.
 
 ### 3.5 LaunchLog (chuẩn bị cho Arrangement)
-Ring buffer 4096 sự kiện `{beat, track, slot, kind}`, audio thread ghi vào. Main thread copy ra định kỳ. MVP chỉ lưu vào project, chưa dùng.
+Ring buffer 4096 sự kiện `{beat, track, slot, kind}`, audio thread ghi vào. Main thread copy ra định kỳ. UI đọc qua `launchLog.read` (05 §3). MVP chỉ lưu vào project, chưa dùng.
 
 ---
 
@@ -143,13 +161,18 @@ Take cuối cùng = buffer[L ... L + lengthSamples)   → bỏ L sample đầu
 ### 5.4 Overdub & undo
 - Overdub trên clip audio đang Playing: tại vị trí phát hiện tại, `clip[i] = clip[i] + input[i]` (đã bù latency, ghi vào đúng vị trí của vòng lặp).
 - Không sửa buffer đang phát tại chỗ khi snapshot khác cũng đang tham chiếu tới nó. Cách làm: khi bắt đầu overdub, main thread **đã chuẩn bị sẵn** một bản sao (`overdubTarget`) và giữ bản gốc làm `undoLayer`. Audio thread ghi vào `overdubTarget` và phát từ đó.
-- Undo 1 lớp: swap về `undoLayer`, làm qua lệnh cấu trúc sinh ra snapshot mới.
+- Undo 1 lớp: swap về `undoLayer`, làm qua lệnh cấu trúc sinh ra snapshot mới. `project.open` và `project.close` xoá lớp undo.
+- **Giới hạn MVP (P1-22):** overdub **audio** chỉ chạy khi clip đang phát **1:1** (cùng sample rate, `originalBpm` bằng BPM hiện tại). Clip đang Re-Pitch thì không vào OVERDUBBING, và phát `LE_EVT_ERROR(a = LE_ERR_OVERDUB_UNSUPPORTED, b = track, value = slot)`. **Clip MIDI thì vẫn overdub nốt** (P1-30). Overdub audio lên clip đã stretch để phase 2.
+- **Giao thức "vé" (sửa R1):** mỗi lượt overdub có một vé `{session, slot, target}`. Main tạo vé và giữ target sống cho tới khi RT trả vé qua `OverdubFinished{session}`. Vé được trao bằng atomic exchange ở cả hai phía, nên mọi lúc chỉ một bên giữ vé. Bật lại khi RT chưa trả vé cũ → main **hoãn** lệnh bật. Mỗi lượt (kể cả MIDI) kết thúc đều phát `RECORDING_FINISHED(track, slot, value)`, để app đọc lại clip (audio: `clip.info` + peaks, MIDI: `clip.getMidi`).
+- Vị trí ghi: `p = (t − L − launchSample) mod lenFrames` (có bù latency L như §5.3).
 
 ### 5.5 Input monitoring
 Tuỳ chọn `Off / Auto / On` cho mỗi track. `Auto` = chỉ nghe khi track được arm **và** đang dùng tai nghe có dây hoặc interface. Mặc định là Off khi dùng loa trong máy (tránh hú).
 
 ### 5.6 Ghi đĩa
 Thu xong → buffer được chuyển qua `rtToNrt` → main thread gắn vào clip (snapshot mới) → worker ghi file `audio/<clipId>.caf` (float32) → tính peaks (§5.7) → event `RECORDING_FINISHED(track, slot)`.
+- **Hiện thực MVP (P1-21):** take nằm trong RAM cho tới khi thu xong, sau đó worker ghi cả file một lần bằng `io/CafWriter` tự viết (JUCE không ghi được CAF). Chưa dùng `ThreadedWriter`, vì chỉ cần khi cho phép take dài hơn 64 giây.
+- Vòng đầu tiên sau khi thu được phát **thẳng từ buffer thu**. Khi snapshot có bản copy thì crossfade cùng pha sang, nên không mất tiếng ở vòng đầu.
 
 ### 5.7 PeakBuilder
 Tính trên worker. Có 3 mức: 256, 2048, 16384 sample/điểm, mỗi điểm là cặp `(min, max)` float. Kết quả cache trong RAM và cả trên đĩa (`cache/<clipId>.peaks`). UI lấy qua `le_get_peaks`.
@@ -161,9 +184,12 @@ Tính trên worker. Có 3 mức: 256, 2048, 16384 sample/điểm, mỗi điểm 
 ### 6.1 Dữ liệu
 ```cpp
 struct Zone { int loKey, hiKey, loVel, hiVel; int rootKey; float tuneCents;
-              const AudioData* data; float gainDb; int64 loopStart = -1, loopEnd = -1; };
-struct Instrument { std::vector<Zone> zones;  // sắp theo loKey
-                    Adsr::Params env; int chokeGroups[128]; bool oneShot; // drum: one-shot
+              const AudioData* data; float gainDb, pan;
+              LoopMode loopMode;              // NoLoop | OneShot | LoopContinuous (SFZ loop_mode)
+              int64 loopStart = -1, loopEnd = -1;
+              Adsr::Params env;               // theo từng zone (SFZ ampeg_* của region)
+              int group = 0, offBy = 0; };    // choke theo zone (SFZ group / off_by)
+struct Instrument { std::vector<Zone> zones;  // sắp theo loKey; giá trị <global>/<group> đã được kế thừa xuống zone khi nạp
                     enum Mode { Natural, Classic } mode; int classicZone; };
 ```
 
@@ -198,6 +224,7 @@ ADSR: attack tuyến tính, decay và release theo hàm mũ (hệ số tính s�
 - **Stop clip:** gửi note-off cho mọi nốt đang kêu (all-notes-off của track đó).
 - **Thu MIDI:** audio thread ghi `NoteEvent {beat, pitch, vel, on/off}` vào ring buffer cố định (4096). Thu xong, main thread ghép on/off thành Note, áp **quantize khi thu** (tuỳ chọn: tắt, 1/16, 1/8), dựng clip rồi phát event.
 - **Overdub MIDI:** trộn nốt mới vào clip hiện có (phía main), rồi tạo snapshot mới.
+- **Sửa clip đang phát (`clip.setMidi` từ piano roll):** vẫn giữ phase. Nốt đang kêu mà **không còn** trong nội dung mới thì note-off ngay, có fade release. Nốt mới có `startBeat` đã qua trong vòng hiện tại thì kêu từ vòng sau. Không nốt treo, không phát trùng.
 
 ---
 
@@ -213,7 +240,8 @@ file thu (mono) ─► SilenceTrimmer (ngưỡng -45 dBFS, giữ 5ms pre-roll)
                      setTransposeSemitones(k - cents/100)   // đồng thời chỉnh cho đúng cao độ tuyệt đối
                      giữ formant: setFormantFactor(1, compensatePitch=true) + setFormantBase(f0 / sampleRate)
                    ─► ĐO LẠI cao độ của từng zone bằng Yin → ghi độ lệch vào Zone.tuneCents (bù sai số của stretch)
-                   ─► CHUẨN HOÁ âm lượng từng zone (RMS) về mức của zone gốc
+                   ─► CHUẨN HOÁ âm lượng từng zone (RMS) về mức của zone gốc, kẹp ±12 dB
+                   (nếu Yin không chắc cao độ của một zone thì KHÔNG bù tuneCents cho zone đó)
                    zone k áp dụng cho các phím [root+k-1, root+k+1]
                ─► Instrument(mode=Natural, classicZone = zone 0) → snapshot mới
                ─► cache: instruments/<id>/zone_<k>.caf (render lại được khi thiếu)
@@ -221,7 +249,11 @@ file thu (mono) ─► SilenceTrimmer (ngưỡng -45 dBFS, giữ 5ms pre-roll)
 - **Kết quả P0-09 (agent 80, đo trên Mac, 29/09):**
   - **Thời gian:** 13 zone cho mẫu 4 giây mất khoảng 240ms khi tắt formant, khoảng 380ms khi bật formant.
   - **Giữ formant hoạt động:** nguyên âm dịch +12 nửa cung, trọng tâm phổ vẫn ở 1376 Hz (gốc 1437 Hz). Khi tắt formant, trọng tâm nhảy lên 2887 Hz, nghe như chipmunk.
-  - **⚠️ Sai cao độ:** preset mặc định lệch tới 22 cent (trung bình 4.8 cent), nốt trầm lệch nhiều nhất. Dùng block/interval 200/50ms thì còn ≤ 8 cent, CPU không đổi, nhưng phụ âm có thể bị nhoè. **Chọn bằng tai ở P0-12.** Dù chọn cách nào vẫn bù thêm bằng `tuneCents` như ở trên.
+  - **Cao độ (đã đính chính sau P3-01, đo bằng Yin):** âm có hoạ âm (nguyên âm, giọng hát) lệch **≤ 1.7 cent**, cả khi bật lẫn tắt formant.
+    - Mức lệch 10–25 cent **chỉ** gặp với âm gần như sine (huýt sáo, "uuu" nhẹ) ở các zone thấp.
+    - Block/interval 200/50ms giảm lệch xuống ≤ 8 cent nhưng có thể làm phụ âm bị nhoè → chọn bằng tai ở P0-12.
+    - Vẫn giữ bước đo lại bằng Yin rồi ghi vào `tuneCents` (tốn khoảng 85ms cho 13 zone trên Mac).
+    - Zone −18 với formant bật có dấu hiệu lệch lớn khi thử bằng giọng TTS: **phải kiểm lại bằng giọng hát thật** (fixture `voice_la_*.wav`).
   - **⚠️ Âm lượng:** bật formant thì zone cao nhỏ tiếng hơn (zone +18 hụt khoảng −12 dB), nên bắt buộc phải có bước chuẩn hoá.
   - Chi tiết: `engine/tools/docs/signalsmith-notes.md`.
 - Ngân sách: mẫu 4 giây → 13 zone < 2 giây trên A12. Có event tiến độ để hiện progress bar.
@@ -245,8 +277,14 @@ public:
     virtual int  latencySamples() const noexcept { return 0; }
 };
 ```
-- `FxChain` mỗi track có **3 slot**. Master có EQ3 + Limiter cố định. Thêm hoặc bớt FX là **lệnh cấu trúc**: main thread tạo `Processor` mới, gọi `prepare()`, đưa vào snapshot. Xoá FX thì bản cũ được thu hồi qua ReleasePool.
+- `FxChain` mỗi track có **3 slot cố định** (xoá slot thì engine không dồn). Master **không có slot người dùng**: slot 0 = EQ3, slot 1 = Limiter, cố định, chỉ chỉnh tham số. Thêm hoặc bớt FX là **lệnh cấu trúc**: main thread tạo `Processor` mới, gọi `prepare()`, đưa vào snapshot. Xoá FX thì bản cũ được thu hồi qua ReleasePool.
 - Tham số từ UI đi qua `LE_CMD_FX_PARAM(track, slot, paramId, value)` → `setParam` → `juce::SmoothedValue` (20ms).
+- **Hành vi FxChain (P3-12, đã hiện thực):**
+  - `fx.set` cùng loại với FX đang có ở slot → **giữ instance**, không cắt đuôi reverb/delay. Khác loại hoặc slot trống → tạo Processor mới trên main (create → prepare → setParam → reset), đưa vào snapshot, RT crossfade 20ms.
+  - Main tự gắn `instanceId` vào `d0` của `FX_PARAM`/`FX_BYPASS`. RT chỉ áp lệnh cho đúng instance, lệnh tới trước snapshot thì được giữ tạm. `le_send` trả `false` nếu slot trống hoặc `paramId` không có ở loại FX đó.
+  - **Bypass:** crossfade dry/wet 10ms. Khi đã bypass hẳn, processor vẫn chạy nhưng nhận im lặng, nên đuôi tắt tự nhiên. **Bypass không giảm CPU**: tải tệ nhất không phụ thuộc bypass.
+  - `TRANSPORT_STOP` không reset FX, đuôi vẫn ngân. Sample rate đổi thì prepare lại mọi Processor, giữ nguyên tham số. Processor được gọi theo khúc ≤ 256 frame.
+  - **Master:** EQ3 phẳng thì hoàn toàn không xử lý (output giống hệt từng bit, golden cũ vẫn khớp). **Được bypass EQ master** (`FX_BYPASS track -1 slot 0`), nhưng **Limiter master không bao giờ bypass được**, vì đây là lớp bảo vệ cuối cùng.
 
 | FX | Tham số (id: dải) | Hiện thực |
 |---|---|---|
@@ -276,6 +314,15 @@ BPM đổi (UI hoặc Link)
 - Nếu BPM lại đổi trong lúc đang render: huỷ job cũ (`job.cancel`) rồi xếp job mới sau debounce.
 - Mỗi clip giữ tối đa 1 `stretchedData` (theo BPM gần nhất). Có thêm bản đệm tạm thời trong lúc chuyển đổi. RAM tối đa khoảng 2× dữ liệu clip.
 - Loop có sẵn trong thư viện (đã biết `originalBpm`) đi theo đúng đường này ngay khi được gán vào clip.
+- **Hiện thực (P3-08/10/11):**
+  - Cache `<project>/cache/stretched/<clipId>@<bpm>.caf` được kiểm theo độ dài + sample rate. Mỗi clip giữ **1 bản stretched gần nhất**, nên quay lại BPM cũ thì dùng ngay, không render lại.
+  - Khi audio đổi (overdub, undo, setAudio) thì bản stretched bị bỏ.
+  - `clip.setAudio` hoặc `setParams warp = stretch` render **ngay** khi gán, không debounce.
+  - Offline: debounce tính theo số frame đã render, nên kết quả tất định.
+- **Giới hạn đã biết:** phase vocoder làm nhoè đầu tiếng của âm có transient mạnh (loop trống bị pre-echo khoảng −27 dB trong 10ms trước click). Xử lý:
+  - (a) Loop trống trong thư viện khai `defaultWarp: "repitch"` (06 §4), UI gợi ý Re-Pitch cho clip trống.
+  - (b) WarpRenderer đo mật độ onset rồi chọn preset block/interval ngắn (khoảng 40/10ms) cho clip nhiều transient.
+  - (c) Chế độ "Beats" (warp theo lát cắt) để **phase 2**.
 
 ---
 

@@ -19,8 +19,8 @@ sealed class EngineEvent {
     LeEventType.LE_EVT_LINK_PEERS => LinkPeersChanged(peers: a),
     LeEventType.LE_EVT_MIDI_DEVICES => const MidiDevicesChanged(),
     LeEventType.LE_EVT_MIDI_LEARNED => MidiLearned(isCc: a == 1, number: b),
-    LeEventType.LE_EVT_ERROR => EngineErrorEvent(errorCode: a),
-    LeEventType.LE_EVT_MEMORY_WARNING => MemoryWarning(megabytes: value),
+    LeEventType.LE_EVT_ERROR => EngineErrorEvent(errorCode: a, track: b, slot: value.round()),
+    LeEventType.LE_EVT_MEMORY_WARNING => MemoryWarning(megabytes: value, critical: a == 1),
     _ => UnknownEngineEvent(type: type, a: a, b: b, jobId: jobId, value: value),
   };
 }
@@ -120,19 +120,28 @@ final class MidiLearned extends EngineEvent {
 }
 
 final class EngineErrorEvent extends EngineEvent {
-  const EngineErrorEvent({required this.errorCode});
+  const EngineErrorEvent({required this.errorCode, this.track = -1, this.slot = -1});
 
   /// `LeError`
   final int errorCode;
+
+  /// Ô liên quan (vd `OVERDUB_UNSUPPORTED`: b = track, value = slot); −1 nếu lỗi không gắn với ô nào.
+  final int track;
+  final int slot;
   @override
-  String toString() => 'EngineErrorEvent(errorCode: $errorCode)';
+  String toString() => 'EngineErrorEvent(errorCode: $errorCode, track: $track, slot: $slot)';
 }
 
 final class MemoryWarning extends EngineEvent {
-  const MemoryWarning({required this.megabytes});
+  const MemoryWarning({required this.megabytes, this.critical = false});
+
+  /// Bộ nhớ engine đang dùng sau khi đã giải phóng (MB).
   final double megabytes;
+
+  /// a = 1: mức critical (iOS sắp đóng app); a = 0: warning.
+  final bool critical;
   @override
-  String toString() => 'MemoryWarning(megabytes: $megabytes)';
+  String toString() => 'MemoryWarning(megabytes: $megabytes, critical: $critical)';
 }
 
 /// Loại event chưa biết (header mới hơn wrapper). Giữ nguyên số liệu thô.

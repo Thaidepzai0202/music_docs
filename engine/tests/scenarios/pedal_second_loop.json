@@ -1,0 +1,87 @@
+{
+  "name": "pedal_second_loop",
+  "description": "P1-39: vòng đầu 2 s (4 beat @120). Vòng sau thu tự do theo quantize (bắt đầu ở bar kế: beat 8 = 192000), bấm dừng sau 1.3 × vòng đầu → làm tròn LÊN bội số vòng đầu = 8 beat.",
+  "sampleRate": 48000,
+  "blockSize": 128,
+  "bpm": 120,
+  "inputChannels": 1,
+  "input": "fixtures/clip_click_4beats_120.wav",
+  "inputLoop": true,
+  "setup": [
+    {
+      "call": {
+        "op": "transport.setTempoMode",
+        "mode": "firstLoop"
+      }
+    }
+  ],
+  "timeline": [
+    {
+      "atSample": 0,
+      "send": {
+        "type": "CLIP_RECORD",
+        "track": 0,
+        "slot": 0,
+        "i0": 0
+      }
+    },
+    {
+      "atSample": 96000,
+      "send": {
+        "type": "RECORD_STOP",
+        "track": 0
+      }
+    },
+    {
+      "atSample": 100000,
+      "send": {
+        "type": "CLIP_RECORD",
+        "track": 1,
+        "slot": 0,
+        "i0": 0
+      }
+    },
+    {
+      "atSample": 316800,
+      "send": {
+        "type": "RECORD_STOP",
+        "track": 1
+      }
+    }
+  ],
+  "renderSeconds": 11,
+  "expect": {
+    "clipInfo": [
+      {
+        "track": 0,
+        "slot": 0,
+        "kind": "audio",
+        "lengthBeats": 4
+      },
+      {
+        "track": 1,
+        "slot": 0,
+        "kind": "audio",
+        "lengthBeats": 8
+      }
+    ],
+    "stateAt": [
+      {
+        "frame": 320000,
+        "track": 1,
+        "slot": 0,
+        "clipState": "RECORDING"
+      },
+      {
+        "frame": 384128,
+        "track": 1,
+        "slot": 0,
+        "clipState": "PLAYING"
+      }
+    ]
+  },
+  "requires": [
+    "recording",
+    "pedal"
+  ]
+}

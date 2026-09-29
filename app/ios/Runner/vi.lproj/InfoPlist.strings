@@ -1,0 +1,2 @@
+/* Câu iOS hiện khi xin quyền (07 §8: en + vi). */
+"NSMicrophoneUsageDescription" = "Music Looper cần micro để thu âm vào clip và biến giọng của bạn thành nhạc cụ chơi được.";

@@ -1,0 +1,57 @@
+{
+  "name": "clip_gain_change",
+  "description": "clip.setParams (05 §3): đổi gainDb 0 → −6 dB lúc sine đang phát → gain trượt 20 ms, không bước nhảy (không decode lại).",
+  "sampleRate": 48000,
+  "blockSize": 128,
+  "bpm": 120,
+  "setup": [
+    {
+      "call": {
+        "op": "clip.setAudio",
+        "track": 0,
+        "slot": 0,
+        "clipId": "s",
+        "file": "fixtures/clip_sine_4beats_120.wav",
+        "lengthBeats": 4,
+        "originalBpm": 120,
+        "warp": "repitch",
+        "gainDb": 0
+      }
+    }
+  ],
+  "timeline": [
+    {
+      "atSample": 0,
+      "send": {
+        "type": "CLIP_LAUNCH",
+        "track": 0,
+        "slot": 0
+      }
+    },
+    {
+      "atBeat": 2,
+      "call": {
+        "op": "clip.setParams",
+        "track": 0,
+        "slot": 0,
+        "gainDb": -6
+      }
+    }
+  ],
+  "renderBeats": 4,
+  "expect": {
+    "maxSampleJumpDb": -28,
+    "reference": {
+      "file": "fixtures/clip_sine_4beats_120.wav",
+      "startSample": 0,
+      "skip": 49200,
+      "loop": true,
+      "gain": 0.3543928883824194,
+      "maxDiffDb": -100,
+      "endSample": 96000
+    }
+  },
+  "requires": [
+    "audioClips"
+  ]
+}

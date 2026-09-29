@@ -22,7 +22,7 @@ String? _findDylib() {
   return File(p).existsSync() ? p : null;
 }
 
-/// Mọi op trong bảng 05 §3.
+/// Mọi op trong bảng 05 §3 (trừ `sim.*`: chỉ dành cho test, đổi device của engine).
 const allOps = [
   'engine.info',
   'spike.setBufferSize',
@@ -42,11 +42,16 @@ const allOps = [
   'clip.clear',
   'clip.undoOverdub',
   'clip.setLoopRegion',
+  'clip.setParams',
+  'midi.setRecordQuantize',
   'midiClip.quantize',
   'capture.start',
   'capture.stop',
+  'capture.analyze',
+  'audio.setInputEnabled',
   'instrument.createFromRecording',
   'instrument.setMode',
+  'instrument.setEnvelope',
   'fx.set',
   'fx.remove',
   'export.scene',
@@ -58,8 +63,11 @@ const allOps = [
   'midi.enableDevice',
   'midi.learnStart',
   'midi.learnCancel',
+  'midi.learnResult',
   'midi.setMappings',
   'link.enable',
+  'launchLog.read',
+  'memory.pressure',
   'job.result',
   'job.cancel',
 ];
@@ -142,6 +150,33 @@ void main() {
     final parsed = jsonDecode(raw) as Map<String, dynamic>;
     expectEnvelope(parsed, op: '(JSON hỏng)');
     expect(parsed['ok'], isFalse);
+  }, skip: skip);
+
+  test('le_call: JSON có byte UTF-8 hỏng → INVALID_ARG; id + tên có dấu + emoji round-trip đúng từng byte', () {
+    // 0xC3 phải đi kèm byte tiếp nối 0x80..0xBF — 0xC3 0x28 là UTF-8 không hợp lệ (05 §1 mục 3).
+    final bytes = [...utf8.encode('{"op":"engine.info","x":"'), 0xC3, 0x28, ...utf8.encode('"}'), 0];
+    final raw = using((a) {
+      final p = a<Uint8>(bytes.length);
+      p.asTypedList(bytes.length).setAll(0, bytes);
+      final r = b.le_call(p.cast());
+      final s = r.cast<Utf8>().toDartString();
+      b.le_free_string(r);
+      return s;
+    });
+    final parsed = jsonDecode(raw) as Map<String, dynamic>;
+    expectEnvelope(parsed, op: '(UTF-8 hỏng)');
+    expect(parsed['ok'], isFalse);
+    expect((parsed['error'] as Map)['code'], 'INVALID_ARG');
+
+    const id = 'c_Trống_ạ_🥁';
+    final dir = Directory('${dataDir.path}/Bài hát 🥁.loopproj')..createSync(recursive: true);
+    client.callOk('project.open', {'dir': dir.path});
+    client.callOk('track.configure', {'track': 0, 'kind': 'instrument', 'name': 'Đàn 🎹 ồ'});
+    client.callOk('clip.setMidi', {'track': 0, 'slot': 0, 'clipId': id, 'lengthBeats': 4, 'notes': []});
+    final info = client.callOk('clip.info', {'track': 0, 'slot': 0});
+    expect(utf8.encode(info['clipId'] as String), utf8.encode(id));
+    client.callOk('clip.clear', {'track': 0, 'slot': 0});
+    client.callOk('project.close');
   }, skip: skip);
 
   test('job.result / job.cancel với jobId lạ → JOB_NOT_FOUND', () {

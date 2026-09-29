@@ -6,6 +6,12 @@
 	<true/>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
+	<!-- 07 §8: en + vi → Cài đặt iOS có mục đổi ngôn ngữ riêng cho app; không có màn chọn ngôn ngữ trong app. -->
+	<key>CFBundleLocalizations</key>
+	<array>
+		<string>en</string>
+		<string>vi</string>
+	</array>
 	<key>CFBundleDisplayName</key>
 	<string>Music Looper</string>
 	<key>CFBundleExecutable</key>
@@ -29,7 +35,7 @@
 	<key>LSSupportsOpeningDocumentsInPlace</key>
 	<true/>
 	<key>NSMicrophoneUsageDescription</key>
-	<string>Ứng dụng cần micro để thu âm vào clip và tạo nhạc cụ từ giọng của bạn.</string>
+	<string>Music Looper uses the microphone to record audio into clips and turn your voice into playable instruments.</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>

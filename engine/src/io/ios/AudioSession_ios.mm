@@ -7,6 +7,7 @@
 #if TARGET_OS_IPHONE
 
 #import <AVFoundation/AVFoundation.h>
+#import <UIKit/UIKit.h>
 
 #include <sstream>
 
@@ -121,6 +122,12 @@ void installObservers() {
     [g_observers addObject:[centre addObserverForName:AVAudioSessionMediaServicesWereResetNotification object:s queue:nil
                                            usingBlock:^(NSNotification*) {
         counters().mediaServicesReset.fetch_add(1, std::memory_order_relaxed);
+    }]];
+
+    // P4-17: hệ thống sắp thiếu RAM → main (pump) nhả cache của engine trước khi bị jetsam kill.
+    [g_observers addObject:[centre addObserverForName:UIApplicationDidReceiveMemoryWarningNotification object:nil queue:nil
+                                           usingBlock:^(NSNotification*) {
+        counters().memoryWarnings.fetch_add(1, std::memory_order_relaxed);
     }]];
 }
 

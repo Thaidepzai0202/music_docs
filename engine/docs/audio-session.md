@@ -40,8 +40,8 @@ Sau **mỗi** lần JUCE mở device (`JuceDeviceIO::start` và `restart`), engi
 ```
 
 - **Không HFP**: bỏ `AllowBluetoothHFP`. AirPods chỉ còn là đầu ra A2DP; mic vẫn là mic trong máy.
-- **Không AirPlay**: độ trễ AirPlay (~2 giây) vô dụng với looper. Nếu muốn giữ thì thêm lại một bit.
-- **Giữ `MixWithOthers`** như JUCE (chạy cùng app nhạc khác, cần cho Link ở P4). **Chưa chốt**: xem §4.
+- **Không AirPlay**: độ trễ AirPlay (~2 giây) vô dụng với looper. **Đã chốt** (người dùng, 29/09/2026).
+- **Giữ `MixWithOthers`** như JUCE (chạy cùng app nhạc khác, cần cho Link ở P4). **Đã chốt** (người dùng, 29/09/2026).
 - Đổi category trong lúc session đang active sẽ sinh route change với lý do `CategoryChange`. JUCE gọi
   `audioDeviceError`, engine chỉ đếm. Observer của engine **bỏ qua** lý do này, để không phát `LE_EVT_ROUTE_CHANGED` giả.
 - Đổi mode lúc đang chạy: `le_call {"op":"spike.setSessionMode","mode":"default"|"measurement"}`, áp dụng ngay.
@@ -65,13 +65,12 @@ Timer 30Hz trên main so sánh bộ đếm với lần trước rồi phát:
 **Kết luận tạm (chờ nghe thử trên iPad 8):** spike mặc định dùng `default`. Nếu `measurement` thu sạch hơn và
 loa ngoài không nhỏ đi rõ rệt thì chuyển mặc định sang `measurement` (ít nhất khi thu mẫu cho sampler, P3).
 
-## 4. Việc chưa chốt / rủi ro cần kiểm ở P0-10
-1. **MixWithOthers**: giữ (chạy cùng app khác) hay bỏ (app được ưu tiên, có Now Playing)? Ảnh hưởng tới interruption.
-2. **Interruption kết thúc**: JUCE tự `AudioOutputUnitStart` nhưng không báo `audioDeviceAboutToStart`. Cần xem sau Siri /
+## 4. Rủi ro cần kiểm ở P0-10
+1. **Interruption kết thúc**: JUCE tự `AudioOutputUnitStart` nhưng không báo `audioDeviceAboutToStart`. Cần xem sau Siri /
    FaceTime âm thanh có tự chạy lại không (bảng P0-10).
-3. **Media services reset**: JUCE không tạo lại AudioUnit → nhiều khả năng mất tiếng. Nếu gặp thì engine phải `stop()` + `start()`.
-4. **RT**: `AudioDeviceManager::audioDeviceIOCallbackInt` giữ `ScopedLock audioCallbackLock` (lock chặn thật) trên audio
+2. **Media services reset**: JUCE không tạo lại AudioUnit → nhiều khả năng mất tiếng. Engine xử lý bằng cách `stop()` + `start()` device trên main khi nhận `AVAudioSessionMediaServicesWereResetNotification` (P1, Engine::pump).
+3. **RT**: `AudioDeviceManager::audioDeviceIOCallbackInt` giữ `ScopedLock audioCallbackLock` (lock chặn thật) trên audio
    thread. Lock này chỉ bị tranh chấp khi main đổi callback hoặc cấu hình device. Callback RemoteIO của JUCE dùng `ScopedTryLock`.
    Ngoài ra, nếu iOS gửi block **lớn hơn** buffer đã cấp phát, JUCE sẽ resize buffer ngay trên audio thread (`setFloatBufferSize`,
    ~1104). Nếu P0 thấy xrun lúc khoá màn hình hoặc đổi route thì đây là nghi phạm đầu tiên → cân nhắc Plan B (03 §8).
-5. Phía Flutter: **không** plugin nào khác được gọi `setCategory` / `setActive` (chỉ xin quyền mic).
+4. Phía Flutter: **không** plugin nào khác được gọi `setCategory` / `setActive` (chỉ xin quyền mic).

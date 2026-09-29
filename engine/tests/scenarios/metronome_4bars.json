@@ -1,0 +1,57 @@
+{
+  "name": "metronome_4bars",
+  "description": "P1-10: metronome 4 bar 4/4 @120 BPM. Click beat k rơi đúng sample k × 24000 (samplesPerBeat).",
+  "sampleRate": 48000,
+  "blockSize": 128,
+  "bpm": 120,
+  "setup": [
+    {
+      "send": {
+        "type": "SET_BPM",
+        "d0": 120
+      }
+    },
+    {
+      "send": {
+        "type": "METRONOME",
+        "i0": 1,
+        "f0": 0.8
+      }
+    }
+  ],
+  "timeline": [
+    {
+      "atBeat": 0,
+      "send": {
+        "type": "TRANSPORT_PLAY"
+      }
+    }
+  ],
+  "renderBeats": 16,
+  "expect": {
+    "onsetSamples": [
+      0,
+      24000,
+      48000,
+      72000,
+      96000,
+      120000,
+      144000,
+      168000,
+      192000,
+      216000,
+      240000,
+      264000,
+      288000,
+      312000,
+      336000,
+      360000
+    ],
+    "firstNonSilentSample": 0,
+    "peakMaxDb": -2.5,
+    "peakMinDb": -4.0
+  },
+  "requires": [
+    "metronome"
+  ]
+}

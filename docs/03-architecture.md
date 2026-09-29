@@ -96,6 +96,10 @@ main (Timer 30Hz): while (rtToNrt.pop(msg)) if (msg is Retire) delete msg.ptr;
 - Buffer âm thanh (sample, clip) nằm trong `std::shared_ptr<const AudioData>`, **do snapshot giữ**. Audio thread chỉ dùng **con trỏ thô**, không bao giờ copy hay huỷ `shared_ptr`.
 - Snapshot cũ vẫn giữ tham chiếu tới buffer cho tới khi ReleasePool huỷ nó. Vì vậy audio thread luôn đọc được dữ liệu hợp lệ.
 - Nếu main tạo 2 snapshot liên tiếp trước khi audio thread kịp lấy bản đầu thì dùng `exchange` trên `pending`: bản chưa được dùng bị lấy ra và huỷ ngay trên main thread.
+- **Thu hồi có điều kiện (không đoán theo thời gian):** voice đang fade hoặc clip đang crossfade vẫn có thể đọc dữ liệu của snapshot **cũ**.
+  - Mỗi snapshot có `generation`. Voice và clip player ghi lại generation mà chúng đang đọc.
+  - Audio thread giữ các snapshot cũ trong một mảng cố định `retiring[4]`. Mỗi block, snapshot nào không còn voice hay clip nào dùng generation của nó thì mới `push Retire`.
+  - Nếu `retiring` đầy: fade nhanh (3ms) các voice cũ nhất để giải phóng. Không bao giờ block và không bao giờ `delete` trên RT.
 
 ### 4.3 Buffer lớn khi thu âm
 Mỗi lần arm để thu, bộ nhớ đã được **cấp phát sẵn trên main thread** (độ dài tối đa của take cộng thêm lề latency). Audio thread chỉ ghi vào vùng đó. Thu xong thì buffer được chuyển sang NRT qua `rtToNrt` để gắn vào clip.
@@ -147,9 +151,9 @@ Build debug: bật `jassert` và RTSan. Build release: tắt assert nhưng giữ
 ```
 le::api      engine_api.cpp          C API → Engine facade
 le::core     Engine, RtEngine, CommandProcessor, EngineModel, GraphSnapshot, SnapshotBuilder,
-             ReleasePool, StatePublisher, RtQueues, Transport, ClipScheduler, JobSystem
+             ReleasePool, StatePublisher, RtQueues, Transport, ClipScheduler, JobSystem, Metronome
 le::dsp      Track, AudioClipPlayer, MidiClipPlayer, Sampler, Voice, Instrument/Zone, Adsr,
-             Interpolators, FxChain, Processor(interface), fx/*, Mixer, Metronome, Limiter
+             Interpolators, FxChain, Processor(interface), fx/*, Mixer, Limiter
 le::io       DeviceIO (JUCE AudioDeviceManager | Plan B: CoreAudioIO), Recorder, AudioFileIO,
              SfzLoader, Exporter
 le::render   PitchRenderer, WarpRenderer, Yin, SilenceTrimmer, PeakBuilder
@@ -168,7 +172,8 @@ Chuyển sang Plan B khi P0 cho thấy JUCE `AudioDeviceManager` hoặc `Message
 1. `AudioDeviceManager::audioDeviceIOCallbackInt` giữ một `ScopedLock` (lock chặn thật) **trên audio thread**. Lock này chỉ bị tranh chấp khi main thread đổi callback hoặc cấu hình device → **quy tắc: không đổi cấu hình device trong lúc đang biểu diễn**.
 2. Nếu iOS gửi block **lớn hơn** buffer đã cấp phát, JUCE resize buffer ngay trên audio thread (có cấp phát bộ nhớ).
 3. Sau khi hết interruption, JUCE tự chạy lại RemoteIO nhưng không gọi `audioDeviceAboutToStart`.
-4. Sau **media services reset**, JUCE không tạo lại AudioUnit → nhiều khả năng mất tiếng. Engine phải tự `stop()` rồi `start()` lại.
+4. Sau **media services reset**, JUCE không tạo lại AudioUnit → nhiều khả năng mất tiếng. Engine phải tự `stop()` rồi `start()` lại (đã làm).
+5. `AudioDeviceManager` gọi `tempBuffer.setSize()` **trên audio thread** (có malloc) ở callback đầu tiên và mỗi khi block lớn lên (80, rà soát RT R4). Chấp nhận cho MVP. Muốn sạch hẳn thì đăng ký callback thẳng vào `AudioIODevice::start()`, bỏ qua `AudioDeviceManager` (cách này bỏ luôn lock ở điểm 1). Để dành cho Plan B.
 
 → **Tín hiệu để kích hoạt Plan B:** P0-10 hoặc soak test (P1-36) thấy xrun khi khoá màn hình hay đổi route, hoặc không khôi phục được sau interruption hay media reset, trong khi đã xử lý điểm 4.
 

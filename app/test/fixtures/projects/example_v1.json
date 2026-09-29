@@ -10,7 +10,8 @@
     "timeSignature": [4, 4],
     "quantize": "1bar",
     "metronome": { "mode": "recordOnly", "volume": 0.7 },
-    "countInBars": 1
+    "countInBars": 1,
+    "tempoMode": "fixed"
   },
   "scenes": [
     { "index": 0, "name": "Verse" }, { "index": 1, "name": "Chorus" }
@@ -44,7 +45,7 @@
           "slot": 0, "id": "c_3f…", "kind": "audio", "name": "Hát 1",
           "file": "audio/c_3f….caf",
           "lengthBeats": 16.0, "originalBpm": 120.0,
-          "warp": "stretch", "gainDb": 0.0,
+          "warp": "stretch", "gainDb": 0.0, "tags": [],
           "loop": { "startSample": 0 }
         }
       ]
@@ -66,7 +67,7 @@
       "envelope": { "a": 0.005, "d": 0.2, "s": 0.8, "r": 0.3 }
     }
   ],
-  "master": { "gainDb": 0.0, "eq3": [0, 0, 0], "limiterCeilingDb": -0.3 },
+  "master": { "gainDb": 0.0, "eq3": [0, 0, 0], "eq3Bypass": false, "limiterCeilingDb": -0.3 },
   "midiMappings": [
     { "src": { "device": "Launchpad X", "kind": "note", "channel": 0, "number": 81 },
       "target": { "kind": "clip", "track": 0, "slot": 0 } }

@@ -23,10 +23,17 @@ Pod::Spec.new do |s|
   s.swift_version    = '5.0'
 
   # Framework hệ thống JUCE + engine cần (danh sách chốt ở P0-03; QuartzCore do juce_audio_formats).
+  # CoreAudioKit: CABTMIDICentralViewController (màn ghép Bluetooth MIDI, P4-03) trong plugin Swift.
   s.frameworks = 'AVFoundation', 'AudioToolbox', 'CoreAudio', 'CoreMIDI', 'Accelerate',
-                 'QuartzCore', 'UIKit', 'Foundation'
+                 'QuartzCore', 'UIKit', 'Foundation', 'CoreAudioKit'
   s.libraries  = 'c++'
+  # Privacy manifest (P4-21): mach_absolute_time + stat từ engine/JUCE — xem Resources/PrivacyInfo.xcprivacy.
+  s.resource_bundles = { 'engine_ffi_privacy' => ['Resources/PrivacyInfo.xcprivacy'] }
 
+  # Slice simulator của LoopCore.xcframework chỉ có arm64: `flutter run -d <simulator>` (Debug, chỉ arch đang chạy)
+  # dùng được; `flutter build ios --simulator` (đích chung, build cả x86_64) cần engine thêm slice x86_64.
+  # KHÔNG loại x86_64 bằng EXCLUDED_ARCHS ở đây: Xcode bỏ luôn target engine_ffi khỏi đồ thị phụ thuộc
+  # ("Module 'engine_ffi' not found").
   s.pod_target_xcconfig = {
     'DEFINES_MODULE' => 'YES',
     'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'i386',

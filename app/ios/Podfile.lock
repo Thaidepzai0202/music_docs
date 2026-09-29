@@ -2,21 +2,33 @@ PODS:
   - engine_ffi (0.1.0):
     - Flutter
   - Flutter (1.0.0)
+  - integration_test (0.0.1):
+    - Flutter
+  - share_plus (0.0.1):
+    - Flutter
 
 DEPENDENCIES:
   - engine_ffi (from `.symlinks/plugins/engine_ffi/ios`)
   - Flutter (from `Flutter`)
+  - integration_test (from `.symlinks/plugins/integration_test/ios`)
+  - share_plus (from `.symlinks/plugins/share_plus/ios`)
 
 EXTERNAL SOURCES:
   engine_ffi:
     :path: ".symlinks/plugins/engine_ffi/ios"
   Flutter:
     :path: Flutter
+  integration_test:
+    :path: ".symlinks/plugins/integration_test/ios"
+  share_plus:
+    :path: ".symlinks/plugins/share_plus/ios"
 
 SPEC CHECKSUMS:
-  engine_ffi: e5ad7acc95c35da688e09bb98432d133df295ac7
+  engine_ffi: 207a9162dba3f544040cffbe32c17671edcc9887
   Flutter: cabc95a1d2626b1b06e7179b784ebcf0c0cde467
+  integration_test: 4a889634ef21a45d28d50d622cf412dc6d9f586e
+  share_plus: 50da8cb520a8f0f65671c6c6a99b3617ed10a58a
 
-PODFILE CHECKSUM: 912e34f102da91123e38965ab4e5b3fb21e195f0
+PODFILE CHECKSUM: b9f33265ad4738edb7ce8edb3de0e7360712bcc2
 
 COCOAPODS: 1.16.2

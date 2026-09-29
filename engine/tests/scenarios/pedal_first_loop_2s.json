@@ -1,0 +1,77 @@
+{
+  "name": "pedal_first_loop_2s",
+  "description": "P1-39 (04 §2.5): pedal mode, chưa có tempo. CLIP_RECORD thu NGAY (transport chưa chạy với UI, không metronome); RECORD_STOP sau đúng 2.0 s → 4 beat @120 BPM, beat 0 = sample đầu của take. Vòng phát tiếp LIỀN MẠCH từ 96000: click đúng mỗi 24000 sample, không có sample im lặng giữa take và vòng đầu.",
+  "sampleRate": 48000,
+  "blockSize": 128,
+  "bpm": 120,
+  "inputChannels": 1,
+  "input": "fixtures/clip_click_4beats_120.wav",
+  "inputLoop": true,
+  "setup": [
+    {
+      "call": {
+        "op": "transport.setTempoMode",
+        "mode": "firstLoop"
+      }
+    }
+  ],
+  "timeline": [
+    {
+      "atSample": 0,
+      "send": {
+        "type": "CLIP_RECORD",
+        "track": 0,
+        "slot": 0,
+        "i0": 0
+      }
+    },
+    {
+      "atSample": 96000,
+      "send": {
+        "type": "RECORD_STOP",
+        "track": 0
+      }
+    }
+  ],
+  "renderSeconds": 6,
+  "expect": {
+    "clipInfo": [
+      {
+        "track": 0,
+        "slot": 0,
+        "kind": "audio",
+        "lengthBeats": 4
+      }
+    ],
+    "firstNonSilentSample": 96000,
+    "onsetSamples": [
+      96000,
+      120000,
+      144000,
+      168000,
+      192000,
+      216000,
+      240000,
+      264000
+    ],
+    "stateAt": [
+      {
+        "frame": 48000,
+        "playing": false
+      },
+      {
+        "frame": 96000,
+        "playing": false
+      },
+      {
+        "frame": 96128,
+        "playing": true,
+        "bpm": 120
+      }
+    ]
+  },
+  "requires": [
+    "recording",
+    "pedal"
+  ]
+}

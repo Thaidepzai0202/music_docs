@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'migrations/project_migrator.dart';
+import 'names.dart';
 import 'project.dart';
 
 final class DecodedProject {
@@ -21,7 +22,8 @@ class ProjectCodec {
     final raw = jsonDecode(text);
     if (raw is! Map<String, dynamic>) throw const FormatException('project.json phải là object');
     final m = _migrator.migrate(raw);
-    return DecodedProject(Project.fromJson(m.json), readOnly: m.readOnly, fromVersion: m.fromVersion);
+    // Tên có ký tự điều khiển (file cũ / sửa tay) được làm sạch ngay khi đọc (05 §1: engine từ chối NUL).
+    return DecodedProject(cleanNames(Project.fromJson(m.json)), readOnly: m.readOnly, fromVersion: m.fromVersion);
   }
 
   String encode(Project project) => const JsonEncoder.withIndent('  ').convert(project.toJson());

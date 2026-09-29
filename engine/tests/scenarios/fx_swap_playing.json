@@ -1,0 +1,113 @@
+{
+  "name": "fx_swap_playing",
+  "description": "P3-12: thêm / bypass / đổi loại / chỉnh / xoá FX trong lúc sine đang phát → không click (crossfade 20 ms, bypass 10 ms). Xoá xong → bus giống hệt dry.",
+  "sampleRate": 48000,
+  "blockSize": 128,
+  "bpm": 120,
+  "setup": [
+    {
+      "call": {
+        "op": "clip.setAudio",
+        "track": 0,
+        "slot": 0,
+        "clipId": "s",
+        "file": "fixtures/clip_sine_4beats_120.wav",
+        "lengthBeats": 4,
+        "originalBpm": 120,
+        "warp": "repitch",
+        "gainDb": 0
+      }
+    }
+  ],
+  "timeline": [
+    {
+      "atSample": 0,
+      "send": {
+        "type": "CLIP_LAUNCH",
+        "track": 0,
+        "slot": 0
+      }
+    },
+    {
+      "atBeat": 0.5,
+      "call": {
+        "op": "fx.set",
+        "track": 0,
+        "index": 0,
+        "type": "filter",
+        "params": {
+          "0": 0,
+          "1": 400,
+          "2": 0.707
+        }
+      }
+    },
+    {
+      "atBeat": 1,
+      "send": {
+        "type": "FX_BYPASS",
+        "track": 0,
+        "slot": 0,
+        "i0": 1
+      }
+    },
+    {
+      "atBeat": 1.5,
+      "send": {
+        "type": "FX_BYPASS",
+        "track": 0,
+        "slot": 0,
+        "i0": 0
+      }
+    },
+    {
+      "atBeat": 2,
+      "call": {
+        "op": "fx.set",
+        "track": 0,
+        "index": 0,
+        "type": "eq3",
+        "params": {
+          "0": 6,
+          "1": -6,
+          "2": 3
+        }
+      }
+    },
+    {
+      "atBeat": 2.5,
+      "send": {
+        "type": "FX_PARAM",
+        "track": 0,
+        "slot": 0,
+        "i0": 1,
+        "f0": 6
+      }
+    },
+    {
+      "atBeat": 3,
+      "call": {
+        "op": "fx.remove",
+        "track": 0,
+        "index": 0
+      }
+    }
+  ],
+  "renderBeats": 4,
+  "expect": {
+    "maxSampleJumpDb": -28,
+    "reference": {
+      "file": "fixtures/clip_sine_4beats_120.wav",
+      "startSample": 0,
+      "skip": 73200,
+      "loop": true,
+      "gain": 0.7071067811865476,
+      "maxDiffDb": -100,
+      "endSample": 96000
+    }
+  },
+  "requires": [
+    "audioClips",
+    "fx"
+  ]
+}

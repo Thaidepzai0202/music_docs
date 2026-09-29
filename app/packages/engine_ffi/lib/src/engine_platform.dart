@@ -26,6 +26,34 @@ class EnginePlatform {
   /// Mở trang Settings của app (khi người dùng đã từ chối quyền mic).
   Future<bool> openAppSettings() async => await channel.invokeMethod<bool>('openAppSettings') ?? false;
 
+  /// Giữ màn hình sáng (tắt idle timer) khi đang phát — 07 §3.4.
+  Future<void> setKeepScreenOn(bool on) async {
+    try {
+      await channel.invokeMethod<void>('setKeepScreenOn', on);
+    } on MissingPluginException {
+      // Không chạy trên iOS (test) — bỏ qua.
+    }
+  }
+
+  /// Đường dẫn tuyệt đối của Flutter asset [asset] (ví dụ `assets/library`), null nếu không có.
+  Future<String?> assetPath(String asset) async {
+    try {
+      return await channel.invokeMethod<String>('assetPath', asset);
+    } on MissingPluginException {
+      return null;
+    }
+  }
+
+  /// Mở màn ghép Bluetooth MIDI của iOS (`CABTMIDICentralViewController`, P4-03); xong khi người dùng đóng màn.
+  /// Không chạy trên iOS (test) → bỏ qua.
+  Future<void> showBluetoothMidi() async {
+    try {
+      await channel.invokeMethod<bool>('showBluetoothMidi');
+    } on MissingPluginException {
+      // test / không phải iOS
+    }
+  }
+
   /// `Bundle.main.resourcePath` — gốc của thư viện âm thanh đóng gói (06 §1).
   Future<String?> bundleResourcePath() => channel.invokeMethod<String>('bundleResourcePath');
 }

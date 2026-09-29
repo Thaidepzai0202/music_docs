@@ -1,0 +1,693 @@
+{
+  "name": "standard_load",
+  "description": "Kịch bản tải chuẩn 08 §1 (bản P1, chưa có FX): 4 track audio (2 Re-Pitch 100→120 BPM qua Hermite, 1 track 1:1, 1 track OVERDUB từ beat 4 = 'track đang thu'), 4 track instrument inst_synth × 16 nốt giữ = 64 voice. Mọi sự kiện ở biên bar (chia hết block 128/256) để tools/le-engine-bench đo đúng từng block. Mặc định render ngắn cho scenario_test; bench tự kéo dài (--seconds). Thêm 3 FX/track + requires 'fx' khi có FxChain.",
+  "sampleRate": 48000,
+  "blockSize": 128,
+  "bpm": 120,
+  "inputChannels": 1,
+  "input": "fixtures/clip_click_4beats_120.wav",
+  "inputLoop": true,
+  "asyncMainSwap": true,
+  "latencySamples": 0,
+  "inputDelaySamples": 0,
+  "setup": [
+    {
+      "send": {
+        "type": "SET_QUANTIZE",
+        "i0": "LE_Q_NONE"
+      }
+    },
+    {
+      "call": {
+        "op": "clip.setAudio",
+        "track": 0,
+        "slot": 0,
+        "clipId": "load_a0",
+        "file": "fixtures/clip_click_4beats_100.wav",
+        "lengthBeats": 4,
+        "originalBpm": 100,
+        "warp": "repitch",
+        "gainDb": -12
+      }
+    },
+    {
+      "call": {
+        "op": "clip.setAudio",
+        "track": 1,
+        "slot": 0,
+        "clipId": "load_a1",
+        "file": "fixtures/clip_sine_4beats_120.wav",
+        "lengthBeats": 4,
+        "originalBpm": 120,
+        "warp": "repitch",
+        "gainDb": -12
+      }
+    },
+    {
+      "call": {
+        "op": "clip.setAudio",
+        "track": 2,
+        "slot": 0,
+        "clipId": "load_a2",
+        "file": "fixtures/clip_click_4beats_100.wav",
+        "lengthBeats": 4,
+        "originalBpm": 100,
+        "warp": "repitch",
+        "gainDb": -12
+      }
+    },
+    {
+      "call": {
+        "op": "clip.setAudio",
+        "track": 3,
+        "slot": 0,
+        "clipId": "load_a3",
+        "file": "fixtures/clip_silence_4beats_120.wav",
+        "lengthBeats": 4,
+        "originalBpm": 120,
+        "warp": "repitch",
+        "gainDb": -12
+      }
+    },
+    {
+      "call": {
+        "op": "track.configure",
+        "track": 4,
+        "kind": "instrument",
+        "name": "Inst 4"
+      }
+    },
+    {
+      "call": {
+        "op": "track.setInstrument",
+        "track": 4,
+        "instrument": {
+          "kind": "sfz",
+          "path": "fixtures/inst_synth/inst_synth.sfz"
+        }
+      }
+    },
+    {
+      "call": {
+        "op": "clip.setMidi",
+        "track": 4,
+        "slot": 0,
+        "clipId": "load_m4",
+        "lengthBeats": 4,
+        "notes": [
+          {
+            "p": 36,
+            "v": 90,
+            "s": 0.0,
+            "d": 3.99
+          },
+          {
+            "p": 37,
+            "v": 90,
+            "s": 0.0,
+            "d": 3.99
+          },
+          {
+            "p": 38,
+            "v": 90,
+            "s": 0.0,
+            "d": 3.99
+          },
+          {
+            "p": 39,
+            "v": 90,
+            "s": 0.0,
+            "d": 3.99
+          },
+          {
+            "p": 40,
+            "v": 90,
+            "s": 0.0,
+            "d": 3.99
+          },
+          {
+            "p": 41,
+            "v": 90,
+            "s": 0.0,
+            "d": 3.99
+          },
+          {
+            "p": 42,
+            "v": 90,
+            "s": 0.0,
+            "d": 3.99
+          },
+          {
+            "p": 43,
+            "v": 90,
+            "s": 0.0,
+            "d": 3.99
+          },
+          {
+            "p": 44,
+            "v": 90,
+            "s": 0.0,
+            "d": 3.99
+          },
+          {
+            "p": 45,
+            "v": 90,
+            "s": 0.0,
+            "d": 3.99
+          },
+          {
+            "p": 46,
+            "v": 90,
+            "s": 0.0,
+            "d": 3.99
+          },
+          {
+            "p": 47,
+            "v": 90,
+            "s": 0.0,
+            "d": 3.99
+          },
+          {
+            "p": 48,
+            "v": 90,
+            "s": 0.0,
+            "d": 3.99
+          },
+          {
+            "p": 49,
+            "v": 90,
+            "s": 0.0,
+            "d": 3.99
+          },
+          {
+            "p": 50,
+            "v": 90,
+            "s": 0.0,
+            "d": 3.99
+          },
+          {
+            "p": 51,
+            "v": 90,
+            "s": 0.0,
+            "d": 3.99
+          }
+        ]
+      }
+    },
+    {
+      "send": {
+        "type": "TRACK_GAIN",
+        "track": 4,
+        "f0": -18
+      }
+    },
+    {
+      "call": {
+        "op": "track.configure",
+        "track": 5,
+        "kind": "instrument",
+        "name": "Inst 5"
+      }
+    },
+    {
+      "call": {
+        "op": "track.setInstrument",
+        "track": 5,
+        "instrument": {
+          "kind": "sfz",
+          "path": "fixtures/inst_synth/inst_synth.sfz"
+        }
+      }
+    },
+    {
+      "call": {
+        "op": "clip.setMidi",
+        "track": 5,
+        "slot": 0,
+        "clipId": "load_m5",
+        "lengthBeats": 4,
+        "notes": [
+          {
+            "p": 52,
+            "v": 90,
+            "s": 0.0,
+            "d": 3.99
+          },
+          {
+            "p": 53,
+            "v": 90,
+            "s": 0.0,
+            "d": 3.99
+          },
+          {
+            "p": 54,
+            "v": 90,
+            "s": 0.0,
+            "d": 3.99
+          },
+          {
+            "p": 55,
+            "v": 90,
+            "s": 0.0,
+            "d": 3.99
+          },
+          {
+            "p": 56,
+            "v": 90,
+            "s": 0.0,
+            "d": 3.99
+          },
+          {
+            "p": 57,
+            "v": 90,
+            "s": 0.0,
+            "d": 3.99
+          },
+          {
+            "p": 58,
+            "v": 90,
+            "s": 0.0,
+            "d": 3.99
+          },
+          {
+            "p": 59,
+            "v": 90,
+            "s": 0.0,
+            "d": 3.99
+          },
+          {
+            "p": 60,
+            "v": 90,
+            "s": 0.0,
+            "d": 3.99
+          },
+          {
+            "p": 61,
+            "v": 90,
+            "s": 0.0,
+            "d": 3.99
+          },
+          {
+            "p": 62,
+            "v": 90,
+            "s": 0.0,
+            "d": 3.99
+          },
+          {
+            "p": 63,
+            "v": 90,
+            "s": 0.0,
+            "d": 3.99
+          },
+          {
+            "p": 64,
+            "v": 90,
+            "s": 0.0,
+            "d": 3.99
+          },
+          {
+            "p": 65,
+            "v": 90,
+            "s": 0.0,
+            "d": 3.99
+          },
+          {
+            "p": 66,
+            "v": 90,
+            "s": 0.0,
+            "d": 3.99
+          },
+          {
+            "p": 67,
+            "v": 90,
+            "s": 0.0,
+            "d": 3.99
+          }
+        ]
+      }
+    },
+    {
+      "send": {
+        "type": "TRACK_GAIN",
+        "track": 5,
+        "f0": -18
+      }
+    },
+    {
+      "call": {
+        "op": "track.configure",
+        "track": 6,
+        "kind": "instrument",
+        "name": "Inst 6"
+      }
+    },
+    {
+      "call": {
+        "op": "track.setInstrument",
+        "track": 6,
+        "instrument": {
+          "kind": "sfz",
+          "path": "fixtures/inst_synth/inst_synth.sfz"
+        }
+      }
+    },
+    {
+      "call": {
+        "op": "clip.setMidi",
+        "track": 6,
+        "slot": 0,
+        "clipId": "load_m6",
+        "lengthBeats": 4,
+        "notes": [
+          {
+            "p": 68,
+            "v": 90,
+            "s": 0.0,
+            "d": 3.99
+          },
+          {
+            "p": 69,
+            "v": 90,
+            "s": 0.0,
+            "d": 3.99
+          },
+          {
+            "p": 70,
+            "v": 90,
+            "s": 0.0,
+            "d": 3.99
+          },
+          {
+            "p": 71,
+            "v": 90,
+            "s": 0.0,
+            "d": 3.99
+          },
+          {
+            "p": 72,
+            "v": 90,
+            "s": 0.0,
+            "d": 3.99
+          },
+          {
+            "p": 73,
+            "v": 90,
+            "s": 0.0,
+            "d": 3.99
+          },
+          {
+            "p": 74,
+            "v": 90,
+            "s": 0.0,
+            "d": 3.99
+          },
+          {
+            "p": 75,
+            "v": 90,
+            "s": 0.0,
+            "d": 3.99
+          },
+          {
+            "p": 76,
+            "v": 90,
+            "s": 0.0,
+            "d": 3.99
+          },
+          {
+            "p": 77,
+            "v": 90,
+            "s": 0.0,
+            "d": 3.99
+          },
+          {
+            "p": 78,
+            "v": 90,
+            "s": 0.0,
+            "d": 3.99
+          },
+          {
+            "p": 79,
+            "v": 90,
+            "s": 0.0,
+            "d": 3.99
+          },
+          {
+            "p": 80,
+            "v": 90,
+            "s": 0.0,
+            "d": 3.99
+          },
+          {
+            "p": 81,
+            "v": 90,
+            "s": 0.0,
+            "d": 3.99
+          },
+          {
+            "p": 82,
+            "v": 90,
+            "s": 0.0,
+            "d": 3.99
+          },
+          {
+            "p": 83,
+            "v": 90,
+            "s": 0.0,
+            "d": 3.99
+          }
+        ]
+      }
+    },
+    {
+      "send": {
+        "type": "TRACK_GAIN",
+        "track": 6,
+        "f0": -18
+      }
+    },
+    {
+      "call": {
+        "op": "track.configure",
+        "track": 7,
+        "kind": "instrument",
+        "name": "Inst 7"
+      }
+    },
+    {
+      "call": {
+        "op": "track.setInstrument",
+        "track": 7,
+        "instrument": {
+          "kind": "sfz",
+          "path": "fixtures/inst_synth/inst_synth.sfz"
+        }
+      }
+    },
+    {
+      "call": {
+        "op": "clip.setMidi",
+        "track": 7,
+        "slot": 0,
+        "clipId": "load_m7",
+        "lengthBeats": 4,
+        "notes": [
+          {
+            "p": 44,
+            "v": 90,
+            "s": 0.0,
+            "d": 3.99
+          },
+          {
+            "p": 45,
+            "v": 90,
+            "s": 0.0,
+            "d": 3.99
+          },
+          {
+            "p": 46,
+            "v": 90,
+            "s": 0.0,
+            "d": 3.99
+          },
+          {
+            "p": 47,
+            "v": 90,
+            "s": 0.0,
+            "d": 3.99
+          },
+          {
+            "p": 48,
+            "v": 90,
+            "s": 0.0,
+            "d": 3.99
+          },
+          {
+            "p": 49,
+            "v": 90,
+            "s": 0.0,
+            "d": 3.99
+          },
+          {
+            "p": 50,
+            "v": 90,
+            "s": 0.0,
+            "d": 3.99
+          },
+          {
+            "p": 51,
+            "v": 90,
+            "s": 0.0,
+            "d": 3.99
+          },
+          {
+            "p": 52,
+            "v": 90,
+            "s": 0.0,
+            "d": 3.99
+          },
+          {
+            "p": 53,
+            "v": 90,
+            "s": 0.0,
+            "d": 3.99
+          },
+          {
+            "p": 54,
+            "v": 90,
+            "s": 0.0,
+            "d": 3.99
+          },
+          {
+            "p": 55,
+            "v": 90,
+            "s": 0.0,
+            "d": 3.99
+          },
+          {
+            "p": 56,
+            "v": 90,
+            "s": 0.0,
+            "d": 3.99
+          },
+          {
+            "p": 57,
+            "v": 90,
+            "s": 0.0,
+            "d": 3.99
+          },
+          {
+            "p": 58,
+            "v": 90,
+            "s": 0.0,
+            "d": 3.99
+          },
+          {
+            "p": 59,
+            "v": 90,
+            "s": 0.0,
+            "d": 3.99
+          }
+        ]
+      }
+    },
+    {
+      "send": {
+        "type": "TRACK_GAIN",
+        "track": 7,
+        "f0": -18
+      }
+    }
+  ],
+  "timeline": [
+    {
+      "atSample": 0,
+      "send": {
+        "type": "TRANSPORT_PLAY"
+      }
+    },
+    {
+      "atSample": 0,
+      "send": {
+        "type": "CLIP_LAUNCH",
+        "track": 0,
+        "slot": 0
+      }
+    },
+    {
+      "atSample": 0,
+      "send": {
+        "type": "CLIP_LAUNCH",
+        "track": 1,
+        "slot": 0
+      }
+    },
+    {
+      "atSample": 0,
+      "send": {
+        "type": "CLIP_LAUNCH",
+        "track": 2,
+        "slot": 0
+      }
+    },
+    {
+      "atSample": 0,
+      "send": {
+        "type": "CLIP_LAUNCH",
+        "track": 3,
+        "slot": 0
+      }
+    },
+    {
+      "atSample": 0,
+      "send": {
+        "type": "CLIP_LAUNCH",
+        "track": 4,
+        "slot": 0
+      }
+    },
+    {
+      "atSample": 0,
+      "send": {
+        "type": "CLIP_LAUNCH",
+        "track": 5,
+        "slot": 0
+      }
+    },
+    {
+      "atSample": 0,
+      "send": {
+        "type": "CLIP_LAUNCH",
+        "track": 6,
+        "slot": 0
+      }
+    },
+    {
+      "atSample": 0,
+      "send": {
+        "type": "CLIP_LAUNCH",
+        "track": 7,
+        "slot": 0
+      }
+    },
+    {
+      "atBeat": 4,
+      "send": {
+        "type": "OVERDUB_TOGGLE",
+        "track": 3
+      }
+    }
+  ],
+  "renderBeats": 8,
+  "expect": {
+    "peakMinDb": -40,
+    "peakMaxDb": 0
+  },
+  "requires": [
+    "audioClips",
+    "midiClips",
+    "sampler",
+    "recording",
+    "mixer",
+    "overdub"
+  ]
+}

@@ -6,6 +6,8 @@ import 'package:engine_ffi/engine_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../app/router.dart';
+import '../settings/app_settings.dart';
 import '../../app/theme.dart';
 import '../../engine/engine_audio.dart';
 import '../../engine/engine_bootstrap.dart';
@@ -14,6 +16,7 @@ import '../../engine/engine_state_ticker.dart';
 import '../../engine/job_tracker.dart';
 import 'live_panel.dart';
 import 'spike_results.dart';
+import '../../l10n/l10n.dart';
 
 /// P0-05: màn spike duy nhất, không cần đẹp. Mọi control gửi lệnh TRƯỚC rồi mới cập nhật UI (07 §6.6).
 ///
@@ -59,7 +62,7 @@ class _SpikeScreenState extends ConsumerState<SpikeScreen> {
 
   void _refreshInfo() {
     final res = _engine.call({'op': 'engine.info'});
-    _info.value = res['ok'] == true ? (res['result'] as Map).cast<String, dynamic>() : {'lỗi': res['error']};
+    _info.value = res['ok'] == true ? (res['result'] as Map).cast<String, dynamic>() : {S.spikeLoi: res['error']};
   }
 
   Future<void> _toggleAudio() async {
@@ -67,30 +70,33 @@ class _SpikeScreenState extends ConsumerState<SpikeScreen> {
       _audio.stop();
       return;
     }
-    final r = await _audio.start();
+    // Màn đo P0 cần mic (loopback, passthrough) → hỏi quyền TRƯỚC khi bật audio (P0-06); từ chối → chỉ phát.
+    final r = await _audio.ensureMic() ? const AudioStartResult(AudioStartStatus.started) : await _audio.start();
     if (!mounted) return;
     switch (r.status) {
       case AudioStartStatus.started:
         _refreshInfo();
-      case AudioStartStatus.micDenied:
+      case AudioStartStatus.outputOnly:
+        _refreshInfo(); // audio vẫn chạy (chỉ phát), đo loopback thì cần mic
         await _showMicDeniedDialog();
       case AudioStartStatus.engineError:
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text('le_audio_start lỗi: ${leErrorName(r.errorCode)}')));
+        ).showSnackBar(SnackBar(content: Text(S.spikeLeAudioStartLoi(leErrorName(r.errorCode)))));
     }
   }
 
   void _onEvent(EngineEvent e) {
     final line = switch (e) {
-      RouteChanged(:final wiredOrInterface, :final bluetooth) =>
-        'Route đổi: tai nghe dây/interface=${wiredOrInterface ? 'có' : 'không'}, '
-            'Bluetooth=${bluetooth ? 'có ⚠ latency cao' : 'không'}',
-      AudioInterrupted(:final began) => began ? 'Audio bị ngắt (Siri/cuộc gọi…)' : 'Hết ngắt audio',
-      XrunOccurred(:final totalXruns) => 'Xrun (tổng $totalXruns)',
-      EngineErrorEvent(:final errorCode) => 'Lỗi engine: ${leErrorName(errorCode)}',
-      MemoryWarning(:final megabytes) => 'Cảnh báo bộ nhớ: ${megabytes.toStringAsFixed(0)} MB',
-      RecordingFinished(:final frames) => 'Thu xong: $frames frame (${_seconds(frames)} s)',
+      RouteChanged(:final wiredOrInterface, :final bluetooth) => S.spikeRouteDoiTaiNgheDay(
+        wiredOrInterface ? S.spikeCo : S.spikeKhong,
+        bluetooth ? S.spikeCoLatencyCao : S.spikeKhong,
+      ),
+      AudioInterrupted(:final began) => began ? S.spikeAudioBiNgatSiriCuoc : S.spikeHetNgatAudio,
+      XrunOccurred(:final totalXruns) => S.spikeXrunTong(totalXruns),
+      EngineErrorEvent(:final errorCode) => S.spikeLoiEngine(leErrorName(errorCode)),
+      MemoryWarning(:final megabytes) => S.spikeCanhBaoBoNhoMb(megabytes.toStringAsFixed(0)),
+      RecordingFinished(:final frames) => S.spikeThuXong(frames, _seconds(frames)),
       _ => null,
     };
     if (line == null) return;
@@ -113,20 +119,17 @@ class _SpikeScreenState extends ConsumerState<SpikeScreen> {
   Future<void> _showMicDeniedDialog() => showDialog<void>(
     context: context,
     builder: (ctx) => AlertDialog(
-      title: const Text('Cần quyền micro'),
-      content: const Text(
-        'App cần micro để thu âm và đo latency.\n'
-        'Mở Cài đặt → Music Looper → bật Micro, rồi quay lại bấm Start.',
-      ),
+      title: Text(S.spikeCanQuyenMicro),
+      content: Text(S.spikeAppCanMicroDeThu),
       actions: [
-        TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Để sau')),
+        TextButton(onPressed: () => Navigator.pop(ctx), child: Text(S.spikeDeSau)),
         FilledButton(
           key: const Key('spike.openSettings'),
           onPressed: () {
             Navigator.pop(ctx);
             _audio.openAppSettings();
           },
-          child: const Text('Mở Cài đặt'),
+          child: Text(S.spikeMoCaiDat),
         ),
       ],
     ),
@@ -191,13 +194,13 @@ class _SpikeScreenState extends ConsumerState<SpikeScreen> {
           final info = _info.value;
           return Row(
             children: [
-              Text('LoopCore spike', style: Theme.of(context).textTheme.titleMedium),
+              Text(S.spikeLoopcoreSpike, style: Theme.of(context).textTheme.titleMedium),
               const SizedBox(width: 16),
-              Text('apiVersion = ${_engine.apiVersion}', style: AppText.numeric),
+              Text(S.spikeApiversion(_engine.apiVersion), style: AppText.numeric),
               if (!_boot.ok) ...[
                 const SizedBox(width: 16),
                 Text(
-                  'le_create lỗi: ${leErrorName(_boot.createResult)}',
+                  S.spikeLeCreateLoi(leErrorName(_boot.createResult)),
                   style: const TextStyle(color: AppColors.record),
                 ),
               ],
@@ -205,19 +208,28 @@ class _SpikeScreenState extends ConsumerState<SpikeScreen> {
               Flexible(
                 child: Text(
                   _boot.isFake
-                      ? 'FakeEngine (chưa có LoopCore.xcframework)'
-                      : 'device: ${info['device'] ?? '?'} · in ${info['inputChannels'] ?? '?'} kênh',
+                      ? S.spikeFakeengineChuaCoLoopcoreXcframework
+                      : S.spikeDeviceInKenh(info['device'] ?? '?', info['inputChannels'] ?? '?'),
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(color: _boot.isFake ? AppColors.queued : AppColors.textSecondary),
                 ),
               ),
               const Spacer(),
+              TextButton(
+                key: const Key('spike.devProjects'),
+                onPressed: () => Navigator.pushNamed(
+                  context,
+                  AppRoutes.projectsEntry(onboardingDone: ref.read(settingsProvider).onboardingDone),
+                ),
+                child: Text(S.spikeProjectsDev),
+              ),
+              const SizedBox(width: 8),
               FilledButton.icon(
                 key: const Key('spike.audio'),
                 style: FilledButton.styleFrom(backgroundColor: _audio.isRunning ? AppColors.record : AppColors.play),
                 onPressed: _toggleAudio,
                 icon: Icon(_audio.isRunning ? Icons.stop : Icons.play_arrow),
-                label: Text(_audio.isRunning ? 'Stop audio' : 'Start audio'),
+                label: Text(_audio.isRunning ? S.spikeStopAudio : S.spikeStartAudio),
               ),
             ],
           );
@@ -233,7 +245,7 @@ class _SpikeScreenState extends ConsumerState<SpikeScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text('Kết quả', style: small),
+          Text(S.spikeKetQua, style: small),
           Expanded(
             flex: 3,
             child: SingleChildScrollView(
@@ -248,7 +260,7 @@ class _SpikeScreenState extends ConsumerState<SpikeScreen> {
             ),
           ),
           const Divider(),
-          Text('Event (route, ngắt, xrun)', style: small),
+          Text(S.spikeEventRouteNgatXrun, style: small),
           Expanded(
             flex: 2,
             child: ValueListenableBuilder<List<String>>(
@@ -325,7 +337,9 @@ class _SpikeControlsState extends State<_SpikeControls> {
   void _setBufferSize(int frames) {
     final res = _engine.call({'op': 'spike.setBufferSize', 'frames': frames});
     if (res['ok'] != true) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('spike.setBufferSize lỗi: ${res['error']}')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(S.spikeSpikeSetbuffersizeLoi(S.errorText('${(res['error'] as Map?)?['code']}')))),
+      );
       return;
     }
     widget.onBufferSizeChanged();
@@ -381,7 +395,7 @@ class _SpikeControlsState extends State<_SpikeControls> {
   void _setSessionMode(String mode) {
     final res = _engine.call({'op': 'spike.setSessionMode', 'mode': mode});
     if (res['ok'] != true) {
-      widget.result.value = 'spike.setSessionMode lỗi: ${res['error']}';
+      widget.result.value = S.spikeSpikeSetsessionmodeLoi(S.errorText('${(res['error'] as Map?)?['code']}'));
       return;
     }
     final r = (res['result'] as Map).cast<String, dynamic>();
@@ -421,20 +435,20 @@ class _SpikeControlsState extends State<_SpikeControls> {
     try {
       jobId = _engine.callJob(op, params);
     } on EngineCallException catch (e) {
-      final hint = e.code == 'AUDIO_DEVICE' ? '\nAudio chưa chạy → bấm Start audio trước.' : '';
+      final hint = e.code == 'AUDIO_DEVICE' ? S.spikeNaudioChuaChayBamStart : '';
       widget.result.value = '$op → ${e.code}\n${e.message}$hint';
       return;
     }
-    widget.result.value = '$op: job $jobId đang chạy…';
+    widget.result.value = S.spikeJobDangChay(op, jobId);
     setState(() => setBusy(true));
     final progress = widget.jobs.progress
         .where((p) => p.jobId == jobId)
-        .listen((p) => widget.result.value = '$op: job $jobId đang chạy… ${(p.progress * 100).round()}%');
+        .listen((p) => widget.result.value = S.spikeJobDangChay2(op, jobId, (p.progress * 100).round()));
     try {
       final r = await widget.jobs.awaitJob(jobId);
       widget.result.value = '${summary(r)}\n\n$op (job $jobId)\n${const JsonEncoder.withIndent('  ').convert(r)}';
     } on EngineJobException catch (e) {
-      widget.result.value = '$op (job $jobId) thất bại: ${e.code} ${e.message}';
+      widget.result.value = S.spikeJobThatBai(op, jobId, e.code, e.message);
     } finally {
       unawaited(progress.cancel()); // không cần đợi; broadcast stream huỷ ngay
     }
@@ -445,14 +459,14 @@ class _SpikeControlsState extends State<_SpikeControls> {
       await showDialog<bool>(
         context: context,
         builder: (ctx) => AlertDialog(
-          title: const Text('Cắm tai nghe trước'),
-          content: const Text('Passthrough đưa mic ra loa. Không cắm tai nghe sẽ bị hú (feedback).'),
+          title: Text(S.spikeCamTaiNgheTruoc),
+          content: Text(S.spikePassthroughDuaMicRaLoa),
           actions: [
-            TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Huỷ')),
+            TextButton(onPressed: () => Navigator.pop(ctx, false), child: Text(S.spikeHuy)),
             FilledButton(
               key: const Key('spike.passthrough.confirm'),
               onPressed: () => Navigator.pop(ctx, true),
-              child: const Text('Đã cắm, bật'),
+              child: Text(S.spikeDaCamBat),
             ),
           ],
         ),
@@ -481,13 +495,13 @@ class _SpikeControlsState extends State<_SpikeControls> {
         SwitchListTile(
           key: const Key('spike.sine.on'),
           contentPadding: EdgeInsets.zero,
-          title: Text('Sine ${_hzOf(_freqT).round()} Hz · gain ${_gain.toStringAsFixed(2)}', style: AppText.numeric),
+          title: Text(S.spikeSineHzGain(_hzOf(_freqT).round(), _gain.toStringAsFixed(2)), style: AppText.numeric),
           value: _sineOn,
           onChanged: _onSineToggle,
         ),
         Row(
           children: [
-            SizedBox(width: 72, child: Text('Tần số', style: secondary)),
+            SizedBox(width: 72, child: Text(S.spikeTanSo, style: secondary)),
             Expanded(
               child: Slider(key: const Key('spike.sine.freq'), value: _freqT, onChanged: _onFreqChanged),
             ),
@@ -495,13 +509,13 @@ class _SpikeControlsState extends State<_SpikeControls> {
         ),
         Row(
           children: [
-            SizedBox(width: 72, child: Text('Gain', style: secondary)),
+            SizedBox(width: 72, child: Text(S.spikeGain, style: secondary)),
             Expanded(
               child: Slider(key: const Key('spike.sine.gain'), value: _gain, onChanged: _onGainChanged),
             ),
           ],
         ),
-        _section('Tải giả lập: $_voices voice'),
+        _section(S.spikeTaiGiaLapVoice(_voices)),
         Slider(
           key: const Key('spike.voices'),
           value: _voices.toDouble(),
@@ -521,17 +535,17 @@ class _SpikeControlsState extends State<_SpikeControls> {
               style: FilledButton.styleFrom(backgroundColor: AppColors.record),
               onPressed: _recording ? null : _record,
               icon: const Icon(Icons.fiber_manual_record),
-              label: Text(_recording ? 'Đang thu 4 giây…' : 'Thu 4 giây'),
+              label: Text(_recording ? S.spikeDangThu4Giay : S.spikeThu4Giay),
             ),
             FilterChip(
               key: const Key('spike.loop'),
-              label: const Text('Phát loop'),
+              label: Text(S.spikePhatLoop),
               selected: _loopOn,
               onSelected: _onLoopToggle,
             ),
             FilterChip(
               key: const Key('spike.passthrough'),
-              label: const Text('Passthrough (cần tai nghe)'),
+              label: Text(S.spikePassthroughCanTaiNghe),
               selected: _passthrough,
               onSelected: _onPassthroughToggle,
             ),
@@ -545,9 +559,9 @@ class _SpikeControlsState extends State<_SpikeControls> {
           children: [
             SegmentedButton<String>(
               key: const Key('spike.sessionMode'),
-              segments: const [
-                ButtonSegment(value: 'default', label: Text('Mode default')),
-                ButtonSegment(value: 'measurement', label: Text('Mode measurement')),
+              segments: [
+                ButtonSegment(value: 'default', label: Text(S.spikeModeDefault)),
+                ButtonSegment(value: 'measurement', label: Text(S.spikeModeMeasurement)),
               ],
               selected: {_sessionMode},
               onSelectionChanged: (s) => _setSessionMode(s.first),
@@ -555,11 +569,11 @@ class _SpikeControlsState extends State<_SpikeControls> {
             OutlinedButton(
               key: const Key('spike.sessionInfo'),
               onPressed: _showSessionInfo,
-              child: const Text('Session info'),
+              child: Text(S.spikeSessionInfo),
             ),
           ],
         ),
-        _section('Đo'),
+        _section(S.spikeDo),
         Wrap(
           spacing: 12,
           runSpacing: 8,
@@ -568,39 +582,35 @@ class _SpikeControlsState extends State<_SpikeControls> {
             OutlinedButton(
               key: const Key('spike.latency'),
               onPressed: _busyLatency ? null : _runLatency,
-              child: Text(_busyLatency ? 'Đang đo…' : 'Đo latency'),
+              child: Text(_busyLatency ? S.spikeDangDo : S.spikeDoLatency),
             ),
             OutlinedButton(
               key: const Key('spike.stretch'),
               onPressed: _busyStretch ? null : _runStretch,
-              child: Text(_busyStretch ? 'Đang chạy…' : 'Stretch bench'),
+              child: Text(_busyStretch ? S.spikeDangChay : S.spikeStretchBench),
             ),
             FilterChip(
               key: const Key('spike.formant'),
-              label: const Text('Formant'),
+              label: Text(S.spikeFormant),
               selected: _formant,
               onSelected: (v) => setState(() => _formant = v),
             ),
             FilterChip(
               key: const Key('spike.stretch.fineBlock'),
-              label: const Text('Block 200 / 50 ms'),
+              label: Text(S.spikeBlock20050Ms),
               selected: _stretchFineBlock,
               onSelected: (v) => setState(() => _stretchFineBlock = v),
             ),
             FilterChip(
               key: const Key('spike.stretch.cheaper'),
-              label: const Text('Cheaper'),
+              label: Text(S.spikeCheaper),
               selected: _stretchCheaper,
               onSelected: (v) => setState(() => _stretchCheaper = v),
             ),
           ],
         ),
         const SizedBox(height: 6),
-        Text(
-          'Đo latency: bỏ tai nghe, loa ngoài, phòng yên tĩnh (~3 giây, sine/loop tạm tắt). '
-          'Stretch bench dùng bản vừa thu 4 giây.',
-          style: secondary,
-        ),
+        Text(S.spikeDoLatencyBoTaiNghe, style: secondary),
       ],
     );
   }

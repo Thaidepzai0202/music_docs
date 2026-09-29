@@ -54,6 +54,9 @@ enum QuantizeGrid {
 
 enum WarpMode { stretch, repitch }
 
+/// `transport.tempoMode` (04 §2.4–2.5): `firstLoop` = pedal mode, vòng đầu quyết định BPM.
+enum TempoMode { fixed, firstLoop }
+
 enum InstrumentMode { natural, classic }
 
 enum FxType { filter, delay, reverb, eq3, comp }
@@ -100,6 +103,11 @@ abstract class Transport with _$Transport {
     @Default(QuantizeGrid.bar1) QuantizeGrid quantize,
     @Default(Metronome()) Metronome metronome,
     @Default(1) int countInBars,
+    @Default(TempoMode.fixed) TempoMode tempoMode,
+
+    /// Độ dài vòng đầu (beat) của pedal mode: các vòng sau làm tròn lên bội số của nó, kể cả sau khi mở lại project
+    /// (05 §3 `transport.setTempoMode {firstLoopBeats}`). null = chưa có vòng đầu.
+    double? firstLoopBeats,
   }) = _Transport;
 
   factory Transport.fromJson(Map<String, dynamic> json) => _$TransportFromJson(json);
@@ -218,6 +226,10 @@ sealed class Clip with _$Clip {
     @Default(WarpMode.stretch) WarpMode warp,
     @Default(0.0) double gainDb,
     @Default(AudioLoop()) AudioLoop loop,
+
+    /// Tag thư viện (06 §2/§4: id tiếng Anh cố định, vd `drums`) chép khi gán loop; take tự thu `[]`.
+    /// Gợi ý "loop trống → Re-Pitch" đọc từ đây (còn sau khi mở lại project).
+    @Default(<String>[]) List<String> tags,
   }) = AudioClip;
 
   factory Clip.fromJson(Map<String, dynamic> json) => _$ClipFromJson(json);
@@ -275,6 +287,9 @@ abstract class Master with _$Master {
   const factory Master({
     @Default(0.0) double gainDb,
     @Default(<double>[0, 0, 0]) List<double> eq3,
+
+    /// Bypass EQ3 master (`FX_BYPASS track −1 slot 0`). Limiter không bypass được.
+    @Default(false) bool eq3Bypass,
     @Default(-0.3) double limiterCeilingDb,
   }) = _Master;
 

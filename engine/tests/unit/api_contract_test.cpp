@@ -148,9 +148,14 @@ TEST_CASE("le_call: envelope lỗi", "[api]") {
         REQUIRE(errorCode(call(R"({"op":"job.result"})")) == "INVALID_ARG");
         REQUIRE(errorCode(call(R"({"op":"job.result","jobId":424242})")) == "JOB_NOT_FOUND");
         REQUIRE(errorCode(call(R"({"op":"job.cancel","jobId":424242})")) == "JOB_NOT_FOUND");
+        // L2 (le-fuzz-api): không phải số nguyên hữu hạn trong ±2^53 → INVALID_ARG (không UB khi ép kiểu)
+        REQUIRE(errorCode(call(R"({"op":"job.result","jobId":-1e308})")) == "INVALID_ARG");
+        REQUIRE(errorCode(call(R"({"op":"job.result","jobId":1e300})")) == "INVALID_ARG");
+        REQUIRE(errorCode(call(R"({"op":"job.result","jobId":1.5})")) == "INVALID_ARG");
+        REQUIRE(errorCode(call(R"({"op":"job.cancel","jobId":-1e308})")) == "INVALID_ARG");
     }
     SECTION("op chưa làm → NOT_IMPLEMENTED") {
-        for (const char* op : {"project.open", "clip.setAudio", "track.setInstrument", "fx.set", "no.such.op"}) {
+        for (const char* op : {"link.enable", "no.such.op"}) {
             const auto v = call(std::string(R"({"op":")") + op + R"("})");
             REQUIRE_FALSE((bool) v["ok"]);
             REQUIRE(errorCode(v) == "NOT_IMPLEMENTED");
@@ -205,8 +210,9 @@ TEST_CASE("le_send: validate và queue đầy", "[api]") {
     badTrack.track = 8;
     REQUIRE_FALSE(le_send(&badTrack));
 
-    auto notYet = cmd(LE_CMD_TRANSPORT_PLAY);   // P1-04
-    REQUIRE_FALSE(le_send(&notYet));
+    auto bpmTooHigh = cmd(LE_CMD_SET_BPM);
+    bpmTooHigh.d0 = 400.0;
+    REQUIRE_FALSE(le_send(&bpmTooHigh));
 
     // Audio chưa chạy → không ai pop: đúng 1024 lệnh vào được, lệnh thứ 1025 bị từ chối.
     auto sine = cmd(LE_CMD_SPIKE_SINE, 0, 440.0f, 0.1f);
@@ -217,9 +223,14 @@ TEST_CASE("le_send: validate và queue đầy", "[api]") {
     REQUIRE((int) call(R"({"op":"engine.info"})")["result"]["rejectedCommands"] > 0);
 }
 
-TEST_CASE("le_get_peaks chưa làm", "[api]") {
+TEST_CASE("le_get_peaks: chưa tạo engine / tham số sai / clip lạ", "[api]") {
     float buf[4];
-    REQUIRE(le_get_peaks("c_1", 0, buf, 2) == LE_ERR_NOT_IMPLEMENTED);
+    REQUIRE(le_get_peaks("c_1", 0, buf, 2) == LE_ERR_NOT_CREATED);
+    EngineScope e;
+    REQUIRE(le_get_peaks("c_1", 0, buf, 2) == LE_ERR_INVALID_ARG);   // clip lạ
+    REQUIRE(le_get_peaks(nullptr, 0, buf, 2) == LE_ERR_INVALID_ARG);
+    REQUIRE(le_get_peaks("c_1", 3, buf, 2) == LE_ERR_INVALID_ARG);   // chỉ có 3 mức
+    REQUIRE(le_get_peaks("c_1", 0, nullptr, 2) == LE_ERR_INVALID_ARG);
 }
 
 namespace {
@@ -285,4 +296,21 @@ TEST_CASE("spike.stretchBench chưa có bản thu → job failed INVALID_ARG + J
         REQUIRE(gotFailed);
     }
     le_set_event_callback(nullptr);
+}
+
+TEST_CASE("05 §1: UTF-8 không hợp lệ ở biên le_call / le_get_peaks → INVALID_ARG (không jassert, không rác)", "[api][utf8]") {
+    EngineScope e;
+    const char bad[] = "{\"op\":\"\xc3(\"}";   // le-fuzz-api seed 1
+    REQUIRE(errorCode(call(bad)) == "INVALID_ARG");
+    REQUIRE(call(bad)["error"]["message"].toString() == "invalid UTF-8");
+    const char badTail[] = "{\"op\":\"engine.info\",\"x\":\"\xf0\x9f\x8e\"}";   // emoji bị cắt giữa chừng
+    REQUIRE(errorCode(call(badTail)) == "INVALID_ARG");
+    float buf[4] = {};
+    REQUIRE(le_get_peaks("c\xff", 0, buf, 2) == LE_ERR_INVALID_ARG);
+    REQUIRE((bool) call(R"({"op":"engine.info","ghi chú":"Bài hát 🥁"})")["ok"]);   // UTF-8 đúng: bình thường
+    // util::JsonValidator (80): input fuzz làm JUCE jassert → INVALID_ARG sạch
+    REQUIRE(errorCode(call(R"({"op":"engine.info","":1})")) == "INVALID_ARG");                  // key rỗng (seed 5)
+    REQUIRE(errorCode(call(R"({"op": "track.setInstrument", "track": -)")) == "INVALID_ARG");    // số cụt (seed 27)
+    REQUIRE(errorCode(call(R"({"op":"job.result","jobId":12345678901234567890})")) == "INVALID_ARG");   // tràn int64
+    REQUIRE(call(R"({"op":"engine.info","":1})")["error"]["message"].toString().startsWith("invalid JSON request"));
 }

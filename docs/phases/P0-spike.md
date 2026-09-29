@@ -11,16 +11,16 @@
 | Trạng thái | Mã | Việc | Người làm | Ước lượng | Phụ thuộc |
 |---|---|---|---|---|---|
 | [ ] | P0-01 | Công cụ & hành chính | **Bạn** | 0.5d (+ chờ) | – |
-| [ ] | P0-02 | Repo, submodule, CMake preset, script | AI `68` | 1d | – |
-| [ ] | P0-03 | Engine spike: C API tối thiểu, JUCE device, StatePublisher, XCFramework | AI `68` | 2d | P0-02 |
+| [x] | P0-02 | Repo, submodule, CMake preset, script | AI `68` | 1d | – |
+| [x] | P0-03 | Engine spike: C API tối thiểu, JUCE device, StatePublisher, XCFramework | AI `68` | 2d | P0-02 |
 | [~] | P0-04 | App Flutter + plugin `engine_ffi` + ffigen + EngineClient (**29/09: code xong, 26 test xanh, đang dùng Fake. Còn chờ XCFramework của 68 và `flutter run` trên iPad**) | AI `77` | 1.5d | header (có sẵn), P0-03 để link |
 | [~] | P0-05 | UI spike + ticker state 60fps (**29/09: code xong, test repaint tự động xanh. Còn chờ bạn đo 60fps trên iPad**) | AI `77` | 1d | P0-04 |
 | [~] | P0-06 | Mic: quyền, AVAudioSession, thu/phát lại (**29/09: phía Flutter xong. Còn chờ ghi chú session của 68 và bạn test thu/phát**) | AI `68` + `77` | 1d | P0-03, P0-04 |
-| [ ] | P0-07 | LatencyProbe (loopback + cross-correlation) | AI `80` (+`68` nối vào) | 1d | P0-03 |
-| [ ] | P0-08 | LoadGenerator + thử buffer 128/256 | AI `80` (+`68`) | 1d | P0-03 |
-| [ ] | P0-09 | StretchBench (Signalsmith, 13 zone, formant) | AI `80` (+`68`) | 1.5d | P0-02 |
+| [~] | P0-07 | LatencyProbe (loopback + cross-correlation) (**code + nối vào xong, còn chờ bạn đo trên iPad**) | AI `80` (+`68` nối vào) | 1d | P0-03 |
+| [~] | P0-08 | LoadGenerator + thử buffer 128/256 (**code xong, còn chờ bạn đo trên iPad**) | AI `80` (+`68`) | 1d | P0-03 |
+| [~] | P0-09 | StretchBench (Signalsmith, 13 zone, formant) (**code xong, còn chờ bạn nghe và đo trên iPad**) | AI `80` (+`68`) | 1.5d | P0-02 |
 | [ ] | P0-10 | Test interruption & route trên iPad | **Bạn** + `77` | 0.5d | P0-06 |
-| [ ] | P0-11 | Preset RTSan chạy được với JUCE | AI `68` | 0.5d | P0-02 |
+| [x] | P0-11 | Preset RTSan chạy được với JUCE | AI `68` | 0.5d | P0-02 |
 | [ ] | P0-12 | Báo cáo spike & go/no-go | **Bạn** | 0.5d | tất cả |
 
 > AI build và test được trên Mac, và build được cho iOS. **Chạy trên iPad 8, đo và nghe là việc của bạn.** Mỗi task AI phải ghi rõ "bước bạn cần làm trên máy thật".

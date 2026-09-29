@@ -9,28 +9,28 @@
 
 | TT | Mã | Việc | Tuần | Ước lượng |
 |---|---|---|---|---|
-| [ ] | P4-01 | `MidiInputRouter`: thiết bị, bật/tắt, SPSC, timestamp → offset [RT] | W29 | 1.5d |
-| [ ] | P4-02 | Nốt từ controller → track đang chọn (`SELECT_TRACK`) | W29 | 0.5d |
-| [ ] | P4-03 | Ghép nối BLE MIDI (Swift `CABTMIDICentralViewController`) | W29 | 0.5d |
-| [ ] | P4-04 | MIDI learn (clip, scene, transport, gain track, tham số FX) + lưu mapping | W29 | 1.5d |
-| [ ] | P4-05 | Preset Launchpad + đèn LED phản hồi (Timer 30Hz trên main) | W29 | 1d |
+| [~] | P4-01 | `MidiInputRouter`: thiết bị, bật/tắt, SPSC, timestamp → offset [RT] | W29 | 1.5d |
+| [~] | P4-02 | Nốt từ controller → track đang chọn (`SELECT_TRACK`) | W29 | 0.5d |
+| [~] | P4-03 | Ghép nối BLE MIDI (Swift `CABTMIDICentralViewController`) | W29 | 0.5d |
+| [~] | P4-04 | MIDI learn (clip, scene, transport, gain track, tham số FX) + lưu mapping | W29 | 1.5d |
+| [~] | P4-05 | Preset Launchpad + đèn LED phản hồi (Timer 30Hz trên main) | W29 | 1d |
 | [ ] | P4-06 | Tích hợp LinkKit: vendored, entitlement, plist | W30 | 0.5d |
 | [ ] | P4-07 | [RT] `LinkSync`: capture state, beat tại thời điểm output, set/commit tempo | W30 | 2d |
 | [ ] | P4-08 | Đồng bộ start/stop + quantum | W30 | 1d |
 | [ ] | P4-09 | UI Link: `ABLLinkSettingsViewController` (Swift), số peer trên top bar | W30 | 1d |
 | [ ] | P4-10 | **Qua 100% test plan của LinkKit** (Ableton Live + một app Link khác) | W31 | 2.5d |
 | [ ] | P4-11 | Link đổi tempo → warp (P3-08) → không glitch | W31 | 1d |
-| [ ] | P4-12 | UI hiệu chỉnh latency (loopback) + chỉnh offset thủ công | W32 | 1d |
-| [ ] | P4-13 | Settings: audio (buffer, input), monitoring, metronome, haptic, mặc định khi thu | W32 | 1.5d |
-| [ ] | P4-14 | Onboarding: giải thích quyền mic, project demo | W32 | 1d |
+| [~] | P4-12 | UI hiệu chỉnh latency (loopback) + chỉnh offset thủ công | W32 | 1d |
+| [~] | P4-13 | Settings: audio (buffer, input), monitoring, metronome, haptic, mặc định khi thu | W32 | 1.5d |
+| [~] | P4-14 | Onboarding: giải thích quyền mic, project demo | W32 | 1d |
 | [ ] | P4-15 | Chốt thư viện: 4 kit, 6–8 nhạc cụ, khoảng 40 loop + dữ liệu license | W32 | 1.5d |
 | [ ] | P4-16 | Soak 30 phút + kiểm tra leak (Instruments Leaks/Allocations) | W33 | 1d |
-| [ ] | P4-17 | Xử lý bộ nhớ thấp: nhả instrument không dùng, `LE_EVT_MEMORY_WARNING` | W33 | 1d |
+| [~] | P4-17 | Xử lý bộ nhớ thấp: nhả instrument không dùng, `LE_EVT_MEMORY_WARNING` | W33 | 1d |
 | [ ] | P4-18 | Checklist interruption và route đầy đủ (08 §6) | W33 | 1d |
-| [ ] | P4-19 | An toàn khi bị kill: đang thu hoặc đang lưu → khôi phục được | W33 | 1d |
+| [~] | P4-19 | An toàn khi bị kill: đang thu hoặc đang lưu → khôi phục được | W33 | 1d |
 | [ ] | P4-20 | Bug bash: chạy checklist 08 §6 hai lượt, sửa hết lỗi S1/S2 | W34 | 2d |
-| [ ] | P4-21 | `PrivacyInfo.xcprivacy` (required-reason APIs) | W34 | 0.5d |
-| [ ] | P4-22 | Màn Giấy phép (JUCE, Signalsmith MIT, Link, nội dung CC-BY) | W34 | 0.5d |
+| [~] | P4-21 | `PrivacyInfo.xcprivacy` (required-reason APIs) | W34 | 0.5d |
+| [~] | P4-22 | Màn Giấy phép (JUCE, Signalsmith MIT, Link, nội dung CC-BY) | W34 | 0.5d |
 | [ ] | P4-23 | App Store Connect: icon, ảnh chụp màn hình, thông tin beta review | W34 | 1d |
 | [ ] | P4-24 | Archive → upload → internal testing → external beta review | W35 | 1.5d |
 | [ ] | P4-25 | **Review M4** + retro + backlog phase 2 | W35 | 1d |
@@ -70,10 +70,10 @@
 |---|---|
 | AUv3 host (nạp plugin của người khác) | `Processor`, `latencySamples()` (04 §9) |
 | Arrangement view (timeline) | `LaunchLog` (04 §3.5) |
-| Pedal mode (BPM lấy theo loop đầu tiên) | `TempoMode::FromFirstLoop` (04 §2.4) |
 | Slice theo transient (C) | `PeakBuilder`, `Sampler` zone |
 | Melody → MIDI (D) | `Yin` (P3-01) |
 | Synth subtractive | Là một `Processor` mới |
+| Warp chế độ "Beats" (theo lát cắt, cho loop trống) | WarpRenderer, SilenceTrimmer/onset |
 | Tách stems bằng AI (Core ML) | Job system |
 | iPhone layout | Engine và model dùng chung |
 | Android | JUCE (Oboe), Flutter UI dùng chung |

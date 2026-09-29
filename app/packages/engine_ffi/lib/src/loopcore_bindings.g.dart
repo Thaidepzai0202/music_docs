@@ -213,6 +213,9 @@ sealed class LeCommandType {
   /// track
   static const LE_CMD_OVERDUB_TOGGLE = 16;
 
+  /// track, slot (-1 = tự chọn): nút LOOP xoay vòng thu → chốt → overdub (07 §3.1b)
+  static const LE_CMD_LOOP_BUTTON = 17;
+
   /// track, f0 = dB (-120 = -inf .. +6)
   static const LE_CMD_TRACK_GAIN = 20;
 
@@ -332,6 +335,9 @@ sealed class LeError {
   static const LE_ERR_JOB_CANCELLED = -40;
   static const LE_ERR_JOB_NOT_FOUND = -41;
   static const LE_ERR_PITCH_NOT_DETECTED = -50;
+
+  /// LE_EVT_ERROR: không vào được overdub (Re-Pitch khác tempo, chưa có bản copy)
+  static const LE_ERR_OVERDUB_UNSUPPORTED = -60;
   static const LE_ERR_INTERNAL = -99;
 }
 

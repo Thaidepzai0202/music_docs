@@ -1,0 +1,12 @@
+// inst_synth — nhạc cụ TỔNG HỢP bằng code cho test (P1-28). Sinh bởi le-gen-fixtures.
+// 3 root (C3/C4/C5) x 2 lớp velocity. Tần số nguyên Hz, tune bù về nốt chuẩn. Không có license bên thứ ba.
+<control> default_path=samples/
+<global> loop_mode=loop_continuous loop_start=12000 loop_end=59999 ampeg_attack=0.005 ampeg_release=0.3
+<group> lovel=1 hivel=63
+<region> sample=tone_c3_soft.wav lokey=36 hikey=54 pitch_keycenter=48 tune=-2.48
+<region> sample=tone_c4_soft.wav lokey=55 hikey=66 pitch_keycenter=60 tune=-2.48
+<region> sample=tone_c5_soft.wav lokey=67 hikey=84 pitch_keycenter=72 tune=0.83
+<group> lovel=64 hivel=127
+<region> sample=tone_c3_loud.wav lokey=36 hikey=54 pitch_keycenter=48 tune=-2.48
+<region> sample=tone_c4_loud.wav lokey=55 hikey=66 pitch_keycenter=60 tune=-2.48
+<region> sample=tone_c5_loud.wav lokey=67 hikey=84 pitch_keycenter=72 tune=0.83

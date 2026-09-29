@@ -9,6 +9,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 option(LE_BUILD_HARNESS    "Build harness + tools (macOS)" ON)   # tắt khi build iOS
 option(LE_BUILD_TESTS      "Build tests" ON)
 option(LE_RTSAN_SELFCHECK  "Build le-rtsan-selfcheck (cố tình malloc trong hàm nonblocking)" OFF)
+option(LE_ENABLE_SIM       "Op sim.offline / sim.advance cho test (05 §3). iOS: OFF" ON)
 
 find_program(LE_CCACHE ccache)
 if(LE_CCACHE AND NOT CMAKE_GENERATOR STREQUAL "Xcode")
@@ -74,7 +75,8 @@ if(APPLE)
   target_link_libraries(loopcore PUBLIC "-framework AVFoundation" "-framework Foundation")
 endif()
 target_compile_options(loopcore PRIVATE
-  $<$<COMPILE_LANG_AND_ID:CXX,AppleClang,Clang>:-Wfunction-effects>)
+  $<$<COMPILE_LANG_AND_ID:CXX,AppleClang,Clang>:-Wfunction-effects -Werror=function-effects>)   # R: vi phạm RT = lỗi build
+target_compile_definitions(loopcore PRIVATE LE_ENABLE_SIM=$<BOOL:${LE_ENABLE_SIM}>)
 set_target_properties(loopcore PROPERTIES
   POSITION_INDEPENDENT_CODE ON
   CXX_VISIBILITY_PRESET hidden OBJCXX_VISIBILITY_PRESET hidden   # chỉ symbol LE_EXPORT lộ ra

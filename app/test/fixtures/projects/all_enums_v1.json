@@ -10,7 +10,9 @@
     "timeSignature": [7, 8],
     "quantize": "1/16",
     "metronome": { "mode": "on", "volume": 1.0 },
-    "countInBars": 2
+    "countInBars": 2,
+    "tempoMode": "firstLoop",
+    "firstLoopBeats": 8.0
   },
   "scenes": [ { "index": 7, "name": "Outro" } ],
   "tracks": [
@@ -29,7 +31,7 @@
           "slot": 7, "id": "c_x", "kind": "audio", "name": "Riff",
           "file": "audio/c_x.caf",
           "lengthBeats": 4.0, "originalBpm": 100.0,
-          "warp": "repitch", "gainDb": 2.5,
+          "warp": "repitch", "gainDb": 2.5, "tags": ["drums", "funk"],
           "loop": { "startSample": 4800 }
         },
         { "slot": 3, "id": "c_y", "kind": "midi", "name": "Trống rỗng", "lengthBeats": 2.0, "notes": [] }
@@ -45,7 +47,7 @@
       "envelope": { "a": 0.01, "d": 0.1, "s": 1.0, "r": 0.8 }
     }
   ],
-  "master": { "gainDb": 0.0, "eq3": [1.5, -2, 0], "limiterCeilingDb": -1.0 },
+  "master": { "gainDb": 0.0, "eq3": [1.5, -2, 0], "eq3Bypass": false, "limiterCeilingDb": -1.0 },
   "midiMappings": [
     { "src": { "device": "nanoKONTROL", "kind": "cc", "channel": 3, "number": 14 },
       "target": { "kind": "fx", "track": 7, "slot": 0, "param": 1 } }

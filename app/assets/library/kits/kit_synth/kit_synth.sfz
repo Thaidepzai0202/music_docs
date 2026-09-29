@@ -1,0 +1,8 @@
+// kit_synth — bộ trống TỔNG HỢP bằng code cho test (P1-28). Sinh bởi le-gen-fixtures.
+// Không dùng sample có license. Cấu trúc giống ví dụ ở docs/06 §4.
+<control> default_path=samples/
+<global> loop_mode=one_shot ampeg_release=0.05
+<region> key=36 sample=kick.wav
+<region> key=38 sample=snare.wav
+<region> key=42 sample=hat_closed.wav group=1 off_by=2
+<region> key=46 sample=hat_open.wav   group=2 off_by=1

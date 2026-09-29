@@ -1,0 +1,59 @@
+{
+  "name": "pedal_first_loop_3_1s",
+  "description": "P1-39: vòng đầu 3.1 s (4/4) → nb = 8 (4 beat cho 77.4 BPM < 80), bpm = 60·8·48000/148800 ≈ 154.839.",
+  "sampleRate": 48000,
+  "blockSize": 128,
+  "bpm": 120,
+  "inputChannels": 1,
+  "input": "fixtures/clip_click_4beats_120.wav",
+  "inputLoop": true,
+  "setup": [
+    {
+      "call": {
+        "op": "transport.setTempoMode",
+        "mode": "firstLoop"
+      }
+    }
+  ],
+  "timeline": [
+    {
+      "atSample": 0,
+      "send": {
+        "type": "CLIP_RECORD",
+        "track": 0,
+        "slot": 0,
+        "i0": 0
+      }
+    },
+    {
+      "atSample": 148800,
+      "send": {
+        "type": "RECORD_STOP",
+        "track": 0
+      }
+    }
+  ],
+  "renderSeconds": 5,
+  "expect": {
+    "clipInfo": [
+      {
+        "track": 0,
+        "slot": 0,
+        "kind": "audio",
+        "lengthBeats": 8
+      }
+    ],
+    "firstNonSilentSample": 148800,
+    "stateAt": [
+      {
+        "frame": 148928,
+        "playing": true,
+        "bpm": 154.83870967741936
+      }
+    ]
+  },
+  "requires": [
+    "recording",
+    "pedal"
+  ]
+}

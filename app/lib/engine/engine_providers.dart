@@ -29,6 +29,16 @@ final engineAudioProvider = Provider<EngineAudio>((ref) {
   return a;
 });
 
+/// false khi quyền mic ĐÃ BỊ TỪ CHỐI (chế độ chỉ phát) → khoá các nút thu audio (07 §4.0). Chưa hỏi quyền thì
+/// vẫn bấm được: bấm → [EngineAudio.ensureMic] hỏi lần đầu. Thu MIDI trên track instrument không cần mic.
+final canRecordAudioProvider = Provider<bool>((ref) {
+  final audio = ref.watch(engineAudioProvider);
+  void changed() => ref.invalidateSelf();
+  audio.addListener(changed);
+  ref.onDispose(() => audio.removeListener(changed));
+  return !audio.outputOnly || audio.micPermission == MicPermission.undetermined;
+});
+
 /// Lấy instance qua Riverpod, nhưng widget nghe trực tiếp (Listenable / CustomPainter.repaint),
 /// KHÔNG `ref.watch` dữ liệu 60Hz (07 §5–6).
 final engineStateTickerProvider = Provider<EngineStateTicker>((ref) {

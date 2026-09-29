@@ -1,0 +1,62 @@
+{
+  "name": "record_2bars",
+  "description": "P1-19 DoD: thu 2 bar từ beat 0 (input = click mỗi beat) → clip đúng 2 × beatsPerBar = 8 beat, tự chuyển sang Playing ở beat 8 (sample 192000), phát lại đúng click k × 24000.",
+  "sampleRate": 48000,
+  "blockSize": 128,
+  "bpm": 120,
+  "inputChannels": 1,
+  "input": "fixtures/clip_click_4beats_120.wav",
+  "inputLoop": true,
+  "timeline": [
+    {
+      "atSample": 0,
+      "send": {
+        "type": "CLIP_RECORD",
+        "track": 0,
+        "slot": 0,
+        "i0": 2
+      }
+    }
+  ],
+  "renderBeats": 16,
+  "expect": {
+    "clipInfo": [
+      {
+        "track": 0,
+        "slot": 0,
+        "kind": "audio",
+        "lengthBeats": 8
+      }
+    ],
+    "stateAt": [
+      {
+        "frame": 192000,
+        "track": 0,
+        "slot": 0,
+        "clipState": "RECORDING"
+      },
+      {
+        "frame": 192001,
+        "track": 0,
+        "slot": 0,
+        "clipState": "PLAYING"
+      }
+    ],
+    "firstNonSilentSample": 192000,
+    "onsetSamples": [
+      192000,
+      216000,
+      240000,
+      264000,
+      288000,
+      312000,
+      336000,
+      360000
+    ]
+  },
+  "asyncMainSwap": true,
+  "requires": [
+    "recording",
+    "latencyCompensation"
+  ]
+}

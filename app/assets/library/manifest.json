@@ -1,0 +1,83 @@
+{
+  "version": 1,
+  "kits": [
+    {
+      "id": "kit_synth",
+      "name": {
+        "en": "Synth kit",
+        "vi": "Kit tổng hợp"
+      },
+      "path": "kits/kit_synth/kit_synth.sfz",
+      "tags": [
+        "drums",
+        "test"
+      ],
+      "license": "Self-synthesized (le-gen-fixtures), no third-party license"
+    }
+  ],
+  "instruments": [
+    {
+      "id": "inst_synth",
+      "name": {
+        "en": "Synth tone",
+        "vi": "Tone tổng hợp"
+      },
+      "path": "instruments/inst_synth/inst_synth.sfz",
+      "range": [
+        36,
+        84
+      ],
+      "license": "Self-synthesized (le-gen-fixtures), no third-party license"
+    }
+  ],
+  "loops": [
+    {
+      "id": "click_120",
+      "name": {
+        "en": "Click 4 beats · 120",
+        "vi": "Click 4 beat · 120"
+      },
+      "file": "loops/clip_click_4beats_120.wav",
+      "bpm": 120,
+      "beats": 4,
+      "key": null,
+      "tags": [
+        "click"
+      ],
+      "license": "Self-synthesized (le-gen-fixtures), no third-party license",
+      "defaultWarp": "repitch"
+    },
+    {
+      "id": "click_100",
+      "name": {
+        "en": "Click 4 beats · 100",
+        "vi": "Click 4 beat · 100"
+      },
+      "file": "loops/clip_click_4beats_100.wav",
+      "bpm": 100,
+      "beats": 4,
+      "key": null,
+      "tags": [
+        "click"
+      ],
+      "license": "Self-synthesized (le-gen-fixtures), no third-party license",
+      "defaultWarp": "repitch"
+    },
+    {
+      "id": "sine_120",
+      "name": {
+        "en": "Sine 4 beats · 120",
+        "vi": "Sine 4 beat · 120"
+      },
+      "file": "loops/clip_sine_4beats_120.wav",
+      "bpm": 120,
+      "beats": 4,
+      "key": null,
+      "tags": [
+        "tone"
+      ],
+      "license": "Self-synthesized (le-gen-fixtures), no third-party license",
+      "defaultWarp": "stretch"
+    }
+  ]
+}

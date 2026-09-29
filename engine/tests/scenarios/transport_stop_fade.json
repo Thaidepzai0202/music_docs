@@ -1,0 +1,55 @@
+{
+  "name": "transport_stop_fade",
+  "description": "P1-16 DoD: TRANSPORT_STOP ở beat 2.5 khi sine đang phát → fade-out 5 ms (240 sample), không bước nhảy, sau đó im lặng.",
+  "sampleRate": 48000,
+  "blockSize": 128,
+  "bpm": 120,
+  "setup": [
+    {
+      "call": {
+        "op": "clip.setAudio",
+        "track": 0,
+        "slot": 0,
+        "clipId": "c_0_0",
+        "file": "fixtures/clip_sine_4beats_120.wav",
+        "lengthBeats": 4,
+        "originalBpm": 120,
+        "warp": "repitch",
+        "gainDb": 0
+      }
+    }
+  ],
+  "timeline": [
+    {
+      "atSample": 0,
+      "send": {
+        "type": "CLIP_LAUNCH",
+        "track": 0,
+        "slot": 0
+      }
+    },
+    {
+      "atBeat": 2.5,
+      "send": {
+        "type": "TRANSPORT_STOP"
+      }
+    }
+  ],
+  "renderBeats": 4,
+  "expect": {
+    "maxSampleJumpDb": -28,
+    "silentFromSample": 60240,
+    "stateAt": [
+      {
+        "frame": 60001,
+        "track": 0,
+        "slot": 0,
+        "clipState": "STOPPED",
+        "playing": false
+      }
+    ]
+  },
+  "requires": [
+    "scheduler"
+  ]
+}

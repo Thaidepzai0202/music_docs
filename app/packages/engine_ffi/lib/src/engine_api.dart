@@ -125,6 +125,7 @@ String leErrorName(int code) => switch (code) {
   LeError.LE_ERR_JOB_CANCELLED => 'JOB_CANCELLED',
   LeError.LE_ERR_JOB_NOT_FOUND => 'JOB_NOT_FOUND',
   LeError.LE_ERR_PITCH_NOT_DETECTED => 'PITCH_NOT_DETECTED',
+  LeError.LE_ERR_OVERDUB_UNSUPPORTED => 'OVERDUB_UNSUPPORTED',
   LeError.LE_ERR_INTERNAL => 'INTERNAL',
   _ => 'ERROR($code)',
 };

@@ -72,7 +72,10 @@ public:
         } else {
             // Lần start sau: giữ tên device đã chọn, chỉ đổi SR / buffer / kênh.
             auto prev = dm_.getAudioDeviceSetup();
-            setup.inputDeviceName = cfg.numInputs > 0 ? prev.inputDeviceName : juce::String();
+            // Bật lại input sau khi chạy chỉ phát (audio.setInputEnabled): tên input cũ rỗng → lấy input mặc định.
+            setup.inputDeviceName = cfg.numInputs > 0 ? (prev.inputDeviceName.isNotEmpty() ? prev.inputDeviceName
+                                                                                           : defaultInputName())
+                                                      : juce::String();
             setup.outputDeviceName = prev.outputDeviceName;
             err = dm_.setAudioDeviceSetup(setup, true);
         }
@@ -130,6 +133,15 @@ public:
     std::string lastError() const { return lastError_; }
 
 private:
+    juce::String defaultInputName() {
+        if (auto* type = dm_.getCurrentDeviceTypeObject()) {
+            const auto names = type->getDeviceNames(true);
+            const int i = type->getDefaultDeviceIndex(true);
+            if (i >= 0 && i < names.size()) return names[i];
+        }
+        return {};
+    }
+
     // JUCE đặt category kèm HFP trong mỗi lần open() → đặt lại theo ý mình (engine/docs/audio-session.md).
     bool applySession() {
         if (!session::isSupported()) return true;

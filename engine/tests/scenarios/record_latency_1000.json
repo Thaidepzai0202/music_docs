@@ -1,0 +1,50 @@
+{
+  "name": "record_latency_1000",
+  "description": "P1-20 DoD: input tới engine muộn L = 1000 sample (inputDelaySamples) và thiết bị báo đúng L (latencySamples) → take sau khi bù bắt đầu ĐÚNG sample: phát lại click ở 96000 + k × 24000 (±0).",
+  "sampleRate": 48000,
+  "blockSize": 128,
+  "bpm": 120,
+  "inputChannels": 1,
+  "input": "fixtures/clip_click_4beats_120.wav",
+  "inputLoop": true,
+  "latencySamples": 1000,
+  "inputDelaySamples": 1000,
+  "timeline": [
+    {
+      "atSample": 0,
+      "send": {
+        "type": "CLIP_RECORD",
+        "track": 0,
+        "slot": 0,
+        "i0": 1
+      }
+    }
+  ],
+  "renderBeats": 12,
+  "expect": {
+    "clipInfo": [
+      {
+        "track": 0,
+        "slot": 0,
+        "kind": "audio",
+        "lengthBeats": 4
+      }
+    ],
+    "firstNonSilentSample": 96000,
+    "onsetSamples": [
+      96000,
+      120000,
+      144000,
+      168000,
+      192000,
+      216000,
+      240000,
+      264000
+    ]
+  },
+  "asyncMainSwap": true,
+  "requires": [
+    "recording",
+    "latencyCompensation"
+  ]
+}

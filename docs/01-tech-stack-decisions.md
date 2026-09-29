@@ -22,6 +22,7 @@
 | 14 | Kiếm tiền | Chưa. Offline 100%, **không backend** |
 | 15 | Thời gian | Full-time, 6–8 tháng tới TestFlight |
 | 16 | Form factor | **Chỉ iPad** (landscape) |
+| 17 | Ngôn ngữ UI | **Tiếng Anh + tiếng Việt** (theo ngôn ngữ của iOS, mặc định tiếng Anh). Chốt 29/09/2026 |
 
 **Nguyên tắc xuyên suốt:** audio thread chỉ **đọc buffer, resample, mix, chạy FX nhẹ**. Mọi DSP nặng (pitch-shift, time-stretch, dò cao độ, decode file) chạy trên background thread và kết quả được swap vào audio thread.
 

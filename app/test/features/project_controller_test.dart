@@ -9,6 +9,7 @@ import 'dart:io';
 import 'package:engine_ffi/engine_ffi.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:music_looper/engine/app_error.dart';
 import 'package:music_looper/features/session/project_controller.dart';
 import 'package:music_looper/model/project.dart';
 import 'package:music_looper/model/project_codec.dart';
@@ -54,7 +55,7 @@ void main() {
     });
   }
 
-  test('thứ tự chính: project.open → transport → từng track → userInstrument → midi → link', () async {
+  test('thứ tự chính: project.open → transport → userInstrument → từng track → midi → link', () async {
     await controller().open(loadFixture('example_v1.json'), dir: '/p');
     final names = fake.log
         .map(
@@ -65,9 +66,10 @@ void main() {
         )
         .toList();
     expect(names.first, 'project.open');
-    expect(names.sublist(1, 7), [
+    expect(names.sublist(1, 8), [
       'SET_BPM',
       'transport.setTimeSignature',
+      'transport.setTempoMode', // 05 §3: ngay sau SET_BPM / timeSignature
       'SET_QUANTIZE',
       'METRONOME',
       'SET_COUNT_IN',
@@ -78,14 +80,16 @@ void main() {
         (n) =>
             n == 'track.configure' ||
             n == 'instrument.createFromRecording' ||
+            n == 'instrument.setEnvelope' ||
             n.startsWith('midi.') ||
             n == 'link.enable',
       ),
       [
+        'instrument.createFromRecording', // trước vòng track (06 §6)
+        'instrument.setEnvelope', // envelope đã lưu đi ngay sau (P3-07)
         'track.configure',
         'track.configure',
         'track.configure',
-        'instrument.createFromRecording',
         'midi.setMappings',
         'link.enable',
       ],
@@ -94,12 +98,15 @@ void main() {
     const allowed = {
       'project.open',
       'transport.setTimeSignature',
+      'transport.setTempoMode',
+      'engine.info', // đọc lại tempoState sau khi mở xong (05 §3)
       'track.configure',
       'track.setInstrument',
       'fx.set',
       'clip.setAudio',
       'clip.setMidi',
       'instrument.createFromRecording',
+      'instrument.setEnvelope',
       'midi.setMappings',
       'link.enable',
       'job.result',
@@ -131,9 +138,10 @@ void main() {
         : null;
     await controller().open(loadFixture('example_v1.json'), dir: '/p');
     final errors = session()!.errors;
-    expect(errors, contains(startsWith('job ')));
-    expect(errors, contains('link.enable: NOT_IMPLEMENTED P4'));
-    expect(errors, contains('le_send SET_BPM bị từ chối'));
+    expect(errors.map((e) => e.op), contains(startsWith('job ')));
+    expect(errors, contains(const AppError('NOT_IMPLEMENTED', op: 'link.enable')));
+    expect(errors.map((e) => '$e'), isNot(contains(contains('P4'))), reason: 'không giữ message của engine (07 §8)');
+    expect(errors, contains(const AppError('QUEUE_FULL', op: 'le_send SET_BPM')));
     expect(session()!.isLoading, isFalse);
     expect(session()!.project.name, 'My Jam');
   });
@@ -155,5 +163,96 @@ void main() {
     controller().close();
     expect(fake.calls.last.op, 'project.close');
     expect(session(), isNull);
+  });
+
+  group('thao tác track (lệnh trước, model sau)', () {
+    setUp(() async => controller().open(loadFixture('example_v1.json'), dir: '/p'));
+
+    void expectCommandBeforeModel(void Function() action, String command) {
+      var sentAtStateChange = -1;
+      final sub = container.listen(projectControllerProvider, (_, _) => sentAtStateChange = fake.sent.length);
+      final before = fake.sent.length;
+      action();
+      sub.close();
+      expect(fake.sent.skip(before).map((s) => s.name), contains(command));
+      expect(sentAtStateChange, greaterThan(before), reason: '$command phải gửi trước khi model đổi');
+    }
+
+    test('mute / solo / gain / pan / arm', () {
+      expectCommandBeforeModel(() => controller().setMute(1, true), 'TRACK_MUTE');
+      expectCommandBeforeModel(() => controller().setSolo(1, true), 'TRACK_SOLO');
+      expectCommandBeforeModel(() => controller().setGain(1, -9), 'TRACK_GAIN');
+      expectCommandBeforeModel(() => controller().setPan(1, 2), 'TRACK_PAN');
+      expectCommandBeforeModel(() => controller().setArm(1, true), 'TRACK_ARM');
+      final m = session()!.project.trackAt(1)!.mixer;
+      expect([m.mute, m.solo, m.gainDb, m.pan], [true, true, -9.0, 1.0]);
+      expect(fake.sent.last.i0, 1);
+      expect(session()!.armed, {1});
+      controller().setArm(1, false);
+      expect(session()!.armed, isEmpty);
+    });
+
+    test('cột chưa có track → tạo track mặc định + track.configure trước lệnh', () {
+      expect(session()!.project.trackAt(5), isNull);
+      controller().setMute(5, true);
+      final t5 = session()!.project.trackAt(5)!;
+      expect(t5.name, 'Track 6');
+      expect(t5.mixer.mute, isTrue);
+      final ops = fake.log.map((e) => e is FakeCall ? e.op : (e as FakeSend).name).toList();
+      expect(ops.lastIndexOf('track.configure'), lessThan(ops.lastIndexOf('TRACK_MUTE')));
+    });
+
+    test('RECORDING_FINISHED → clip.info → clip audio vào model', () async {
+      fake.send(LeCommandType.LE_CMD_CLIP_RECORD, track: 1, slot: 2, i0: 1);
+      fake.advanceBeats(8.1); // count-in 1 bar + 1 bar thu
+      await Future<void>.delayed(Duration.zero);
+      final clip = session()!.project.trackAt(1)!.clipAt(2);
+      expect(clip, isA<AudioClip>());
+      expect((clip! as AudioClip).file, startsWith('audio/c_'));
+      // Sau clip.info, controller đọc lại engine.info.tempoState (pedal mode, 05 §3).
+      expect(fake.calls.lastWhere((c) => c.op != 'engine.info').request, {'op': 'clip.info', 'track': 1, 'slot': 2});
+    });
+
+    test('RECORDING_FINISHED của spike (track -1) bị bỏ qua', () async {
+      fake.emit(const RecordingFinished(track: -1, slot: -1, frames: 100));
+      await Future<void>.delayed(Duration.zero);
+      expect(fake.calls.where((c) => c.op == 'clip.info'), isEmpty);
+    });
+
+    test('project chỉ đọc → không gửi lệnh', () async {
+      await controller().open(loadFixture('minimal_v1.json'), dir: '/p', readOnly: true);
+      final before = fake.sent.length;
+      controller().setGain(0, -3);
+      controller().setBpm(90);
+      expect(fake.sent.length, before);
+    });
+  });
+
+  test('clipFromInfo: audio / midi', () {
+    final a = ProjectController.clipFromInfo(3, {
+      'clipId': 'c_x',
+      'kind': 'audio',
+      'file': 'audio/c_x.caf',
+      'lengthBeats': 16,
+      'originalBpm': 96,
+      'warp': 'repitch',
+      'gainDb': -2,
+    });
+    expect(
+      a,
+      const Clip.audio(
+        slot: 3,
+        id: 'c_x',
+        name: 'Bản thu 4',
+        file: 'audio/c_x.caf',
+        lengthBeats: 16,
+        originalBpm: 96,
+        warp: WarpMode.repitch,
+        gainDb: -2,
+      ),
+    );
+    final m = ProjectController.clipFromInfo(0, {'clipId': '', 'kind': 'midi', 'lengthBeats': 8});
+    expect(m, isA<MidiClip>());
+    expect(m.id, startsWith('c_'));
   });
 }

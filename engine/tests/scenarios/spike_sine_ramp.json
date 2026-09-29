@@ -6,8 +6,22 @@
   "bpm": 120,
   "setup": [],
   "timeline": [
-    { "atBeat": 1.0, "send": { "type": "SPIKE_SINE", "f0": 1000, "f1": 0.5 } },
-    { "atBeat": 3.0, "send": { "type": "SPIKE_SINE", "f0": 1000, "f1": 0.0 } }
+    {
+      "atBeat": 1.0,
+      "send": {
+        "type": "SPIKE_SINE",
+        "f0": 1000,
+        "f1": 0.5
+      }
+    },
+    {
+      "atBeat": 3.0,
+      "send": {
+        "type": "SPIKE_SINE",
+        "f0": 1000,
+        "f1": 0.0
+      }
+    }
   ],
   "renderBeats": 4,
   "expect": {

@@ -1,0 +1,134 @@
+{
+  "name": "stop_all_quantized",
+  "description": "P1-16: STOP_ALL ở beat 5, quantize 1 bar → mọi track dừng đúng beat 8 (sample 192000).",
+  "sampleRate": 48000,
+  "blockSize": 128,
+  "bpm": 120,
+  "setup": [
+    {
+      "call": {
+        "op": "clip.setMidi",
+        "track": 0,
+        "slot": 0,
+        "clipId": "c_0_0",
+        "lengthBeats": 4,
+        "notes": [
+          {
+            "p": 60,
+            "v": 100,
+            "s": 0,
+            "d": 0.5
+          }
+        ]
+      }
+    },
+    {
+      "call": {
+        "op": "clip.setMidi",
+        "track": 1,
+        "slot": 0,
+        "clipId": "c_1_0",
+        "lengthBeats": 4,
+        "notes": [
+          {
+            "p": 60,
+            "v": 100,
+            "s": 0,
+            "d": 0.5
+          }
+        ]
+      }
+    },
+    {
+      "call": {
+        "op": "clip.setMidi",
+        "track": 2,
+        "slot": 3,
+        "clipId": "c_2_3",
+        "lengthBeats": 4,
+        "notes": [
+          {
+            "p": 60,
+            "v": 100,
+            "s": 0,
+            "d": 0.5
+          }
+        ]
+      }
+    }
+  ],
+  "timeline": [
+    {
+      "atBeat": 0,
+      "send": {
+        "type": "SCENE_LAUNCH",
+        "slot": 0
+      }
+    },
+    {
+      "atBeat": 0,
+      "send": {
+        "type": "CLIP_LAUNCH",
+        "track": 2,
+        "slot": 3
+      }
+    },
+    {
+      "atBeat": 5,
+      "send": {
+        "type": "STOP_ALL"
+      }
+    }
+  ],
+  "renderBeats": 10,
+  "expect": {
+    "stateAt": [
+      {
+        "frame": 120001,
+        "track": 0,
+        "slot": 0,
+        "clipState": "QUEUED_STOP"
+      },
+      {
+        "frame": 120001,
+        "track": 2,
+        "slot": 3,
+        "clipState": "QUEUED_STOP"
+      },
+      {
+        "frame": 192000,
+        "track": 1,
+        "slot": 0,
+        "clipState": "QUEUED_STOP",
+        "playingSlot": 0
+      },
+      {
+        "frame": 192001,
+        "track": 0,
+        "slot": 0,
+        "clipState": "STOPPED",
+        "playingSlot": -1
+      },
+      {
+        "frame": 192001,
+        "track": 1,
+        "slot": 0,
+        "clipState": "STOPPED"
+      },
+      {
+        "frame": 192001,
+        "track": 2,
+        "slot": 3,
+        "clipState": "STOPPED",
+        "playingSlot": -1
+      },
+      {
+        "frame": 192001,
+        "playing": true
+      }
+    ]
+  },
+  "requires": [
+    "scheduler"
+  ]
+}

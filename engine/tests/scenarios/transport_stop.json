@@ -1,0 +1,66 @@
+{
+  "name": "transport_stop",
+  "description": "P1-16: TRANSPORT_STOP dừng NGAY (không đợi quantize), reset beat về 0. (Fade 5 ms nằm ở clip player, P1-12.)",
+  "sampleRate": 48000,
+  "blockSize": 128,
+  "bpm": 120,
+  "setup": [
+    {
+      "call": {
+        "op": "clip.setMidi",
+        "track": 0,
+        "slot": 0,
+        "clipId": "c_0_0",
+        "lengthBeats": 4,
+        "notes": [
+          {
+            "p": 60,
+            "v": 100,
+            "s": 0,
+            "d": 0.5
+          }
+        ]
+      }
+    }
+  ],
+  "timeline": [
+    {
+      "atBeat": 0,
+      "send": {
+        "type": "CLIP_LAUNCH",
+        "track": 0,
+        "slot": 0
+      }
+    },
+    {
+      "atBeat": 2.5,
+      "send": {
+        "type": "TRANSPORT_STOP"
+      }
+    }
+  ],
+  "renderBeats": 4,
+  "expect": {
+    "stateAt": [
+      {
+        "frame": 60000,
+        "track": 0,
+        "slot": 0,
+        "clipState": "PLAYING",
+        "playing": true
+      },
+      {
+        "frame": 60001,
+        "track": 0,
+        "slot": 0,
+        "clipState": "STOPPED",
+        "playingSlot": -1,
+        "playing": false,
+        "beat": 0
+      }
+    ]
+  },
+  "requires": [
+    "scheduler"
+  ]
+}

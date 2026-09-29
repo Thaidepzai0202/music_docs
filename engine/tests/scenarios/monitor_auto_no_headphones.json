@@ -1,0 +1,34 @@
+{
+  "name": "monitor_auto_no_headphones",
+  "description": "P1-23 DoD: monitoring Auto, track đã arm nhưng KHÔNG có tai nghe (loa trong máy) → không nghe thấy input (tránh hú).",
+  "sampleRate": 48000,
+  "blockSize": 128,
+  "bpm": 120,
+  "inputChannels": 1,
+  "input": "fixtures/clip_click_4beats_120.wav",
+  "inputLoop": true,
+  "setup": [
+    {
+      "send": {
+        "type": "TRACK_ARM",
+        "track": 0,
+        "i0": 1
+      }
+    },
+    {
+      "send": {
+        "type": "TRACK_MONITOR",
+        "track": 0,
+        "i0": 1
+      }
+    }
+  ],
+  "timeline": [],
+  "renderBeats": 4,
+  "expect": {
+    "silentFromSample": 0
+  },
+  "requires": [
+    "monitoring"
+  ]
+}

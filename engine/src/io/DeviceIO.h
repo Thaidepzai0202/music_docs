@@ -59,6 +59,8 @@ public:
     virtual session::Mode sessionMode() const { return session::Mode::Default; }
     // Số lần danh sách/route thiết bị đổi (macOS dùng để phát ROUTE_CHANGED).
     virtual std::uint32_t deviceChangeCount() const { return 0; }
+    // Route hiện tại: có tai nghe có dây / interface không (input monitoring Auto, 04 §5.5).
+    virtual session::RouteInfo route() const { return session::currentRoute(); }
 };
 
 } // namespace le::io

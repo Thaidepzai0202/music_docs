@@ -39,5 +39,10 @@ end
 post_install do |installer|
   installer.pods_project.targets.each do |target|
     flutter_additional_ios_build_settings(target)
+    # LoopCore.xcframework: slice simulator chỉ có arm64. Debug chỉ build arch đang chạy (mặc định của Xcode) để
+    # `flutter run` / `flutter test integration_test` trên simulator chọn được slice; Release/Profile không đổi.
+    target.build_configurations.each do |config|
+      config.build_settings['ONLY_ACTIVE_ARCH'] = 'YES' if config.name == 'Debug'
+    end
   end
 end

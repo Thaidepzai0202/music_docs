@@ -1,0 +1,85 @@
+{
+  "name": "overdub_one_loop",
+  "description": "P1-22 DoD: clip im lặng đang phát, overdub đúng 1 vòng (beat 4 → 8) với input = click mỗi beat, latency L = 0. Vòng đang overdub vẫn im (ghi sau đầu đọc); từ vòng kế tiếp nghe click ĐÚNG k × 24000 (đã bù latency).",
+  "sampleRate": 48000,
+  "blockSize": 128,
+  "bpm": 120,
+  "inputChannels": 1,
+  "input": "fixtures/clip_click_4beats_120.wav",
+  "inputLoop": true,
+  "asyncMainSwap": true,
+  "latencySamples": 0,
+  "inputDelaySamples": 0,
+  "setup": [
+    {
+      "call": {
+        "op": "clip.setAudio",
+        "track": 0,
+        "slot": 0,
+        "clipId": "base",
+        "file": "fixtures/clip_silence_4beats_120.wav",
+        "lengthBeats": 4,
+        "originalBpm": 120,
+        "warp": "repitch",
+        "gainDb": 0
+      }
+    }
+  ],
+  "timeline": [
+    {
+      "atSample": 0,
+      "send": {
+        "type": "CLIP_LAUNCH",
+        "track": 0,
+        "slot": 0
+      }
+    },
+    {
+      "atBeat": 4,
+      "send": {
+        "type": "OVERDUB_TOGGLE",
+        "track": 0
+      }
+    },
+    {
+      "atBeat": 8,
+      "send": {
+        "type": "OVERDUB_TOGGLE",
+        "track": 0
+      }
+    }
+  ],
+  "renderBeats": 16,
+  "expect": {
+    "firstNonSilentSample": 192000,
+    "onsetSamples": [
+      192000,
+      216000,
+      240000,
+      264000,
+      288000,
+      312000,
+      336000,
+      360000
+    ],
+    "stateAt": [
+      {
+        "frame": 96001,
+        "track": 0,
+        "slot": 0,
+        "clipState": "OVERDUBBING"
+      },
+      {
+        "frame": 192001,
+        "track": 0,
+        "slot": 0,
+        "clipState": "PLAYING"
+      }
+    ],
+    "golden": "golden/overdub_one_loop.wav",
+    "goldenRequired": false
+  },
+  "requires": [
+    "overdub"
+  ]
+}

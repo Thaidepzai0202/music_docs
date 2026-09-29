@@ -47,6 +47,14 @@ Một số hàm an toàn nhưng không được đánh dấu. Chỗ nào có lý
   (relaxed) nên không có data race về mặt C++, và TSan không báo nhầm.
 - `mac-asan`: ASan + UBSan, `detect_stack_use_after_return=1`.
 
+## CMake option
+| Option | Mặc định | Ý nghĩa |
+|---|---|---|
+| `LE_BUILD_HARNESS` | ON (iOS OFF) | harness + tools/ + libLoopCore.dylib |
+| `LE_BUILD_TESTS` | ON (iOS OFF) | le-tests |
+| `LE_RTSAN_SELFCHECK` | OFF (mac-rtsan ON) | test chứng minh RTSan đang chạy |
+| `LE_ENABLE_SIM` | ON (iOS OFF) | op `sim.offline` / `sim.advance` (05 §3) cho test hợp đồng Dart qua dylib |
+
 ## Render offline & scenario (P1-01..03)
 - `Engine(cfg, std::make_unique<io::OfflineDeviceIO>(maxBlock))`: không có thread audio. Người gọi tự `render()` từng khối
   trên thread của mình, host time giả lập tăng đúng theo frame → deterministic. Lệnh vẫn đi đúng đường `send()` / `call()` như app.
@@ -55,3 +63,14 @@ Một số hàm an toàn nhưng không được đánh dấu. Chỗ nào có lý
 - Kỳ vọng: `golden` + `nullTestMaxDb` (báo **sample đầu tiên bị lệch**), `firstNonSilentSample` (+`silenceThresholdDb`,
   `firstNonSilentTolerance`), `maxSampleJumpDb`, `peakMaxDb`, `peakMinDb`. Chưa có golden → failure kèm hướng dẫn chạy
   `scripts/golden_update.sh` rồi tự nghe.
+- Kỳ vọng mới (P1-10..16): `onsetSamples` (+`onsetMinGap`), `stateAt` [{frame ≥ 1, track, slot, clipState, playingSlot,
+  playing, beat}] = LeState SAU KHI render F frame, `reference` {file, startSample, skip, loop, gain, maxDiffDb} = null test
+  so với CHÍNH file nguồn (không phải golden), `silentFromSample`.
+- Đường dẫn tương đối trong scenario (clip.setAudio, track.setInstrument) tính từ `engine/tests/` (runner đặt libraryDir).
+- Fixture tổng hợp: `scripts/gen_test_fixtures.py` → `engine/tests/fixtures/clip_*.wav` (float32 48 kHz). Không phải golden,
+  tạo lại được. Fixture drum kit / nhạc cụ (P1-28) là của 80.
+
+## Mixer / Limiter (P1-13/14)
+- Limiter master KHÔNG lookahead (0 latency): g(n) = min(ceiling/|x(n)|, g nhả dần τ 50 ms) → luôn ≤ -0.3 dBFS. Lý do: lookahead
+  làm lệch mọi mốc thời gian (metronome, launch) và cộng latency. Quá tải nặng thì méo nhẹ ở đỉnh (limiter an toàn).
+- Meter: peak thô theo cửa sổ 25 ms (UI 60 Hz không sót đỉnh), ballistics làm ở UI (04 §11).

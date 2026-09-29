@@ -17,6 +17,12 @@
     }
   },
   {
+    "call": {
+      "op": "transport.setTempoMode",
+      "mode": "fixed"
+    }
+  },
+  {
     "send": "SET_QUANTIZE"
   },
   {
@@ -41,6 +47,11 @@
       "op": "link.enable",
       "enabled": true,
       "startStopSync": false
+    }
+  },
+  {
+    "call": {
+      "op": "engine.info"
     }
   }
 ]

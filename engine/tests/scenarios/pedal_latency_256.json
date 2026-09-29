@@ -1,0 +1,61 @@
+{
+  "name": "pedal_latency_256",
+  "description": "P1-39 + 04 §5.3: vòng đầu pedal mode với L = 256 (thiết bị báo đúng) → take bù latency: click phát lại ĐÚNG 96000 + k·24000.",
+  "sampleRate": 48000,
+  "blockSize": 128,
+  "bpm": 120,
+  "inputChannels": 1,
+  "input": "fixtures/clip_click_4beats_120.wav",
+  "inputLoop": true,
+  "setup": [
+    {
+      "call": {
+        "op": "transport.setTempoMode",
+        "mode": "firstLoop"
+      }
+    }
+  ],
+  "latencySamples": 256,
+  "inputDelaySamples": 256,
+  "timeline": [
+    {
+      "atSample": 0,
+      "send": {
+        "type": "CLIP_RECORD",
+        "track": 0,
+        "slot": 0,
+        "i0": 0
+      }
+    },
+    {
+      "atSample": 96000,
+      "send": {
+        "type": "RECORD_STOP",
+        "track": 0
+      }
+    }
+  ],
+  "renderSeconds": 5,
+  "expect": {
+    "clipInfo": [
+      {
+        "track": 0,
+        "slot": 0,
+        "kind": "audio",
+        "lengthBeats": 4
+      }
+    ],
+    "onsetSamples": [
+      96000,
+      120000,
+      144000,
+      168000,
+      192000,
+      216000
+    ]
+  },
+  "requires": [
+    "recording",
+    "pedal"
+  ]
+}

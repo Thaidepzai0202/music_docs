@@ -1,0 +1,90 @@
+{
+  "name": "midi_snare_beats",
+  "description": "P1-29: clip MIDI (snare mỗi beat) trên track instrument (kit_synth của 80) → nốt rơi đúng sample k × 24000, ở mọi block size.",
+  "sampleRate": 48000,
+  "blockSize": 128,
+  "bpm": 120,
+  "setup": [
+    {
+      "call": {
+        "op": "track.configure",
+        "track": 0,
+        "kind": "instrument",
+        "name": "Drums"
+      }
+    },
+    {
+      "call": {
+        "op": "track.setInstrument",
+        "track": 0,
+        "instrument": {
+          "kind": "sfz",
+          "path": "fixtures/kit_synth/kit_synth.sfz"
+        }
+      }
+    },
+    {
+      "call": {
+        "op": "clip.setMidi",
+        "track": 0,
+        "slot": 0,
+        "clipId": "m1",
+        "lengthBeats": 4,
+        "notes": [
+          {
+            "p": 38,
+            "v": 110,
+            "s": 0.0,
+            "d": 0.25
+          },
+          {
+            "p": 38,
+            "v": 110,
+            "s": 1.0,
+            "d": 0.25
+          },
+          {
+            "p": 38,
+            "v": 110,
+            "s": 2.0,
+            "d": 0.25
+          },
+          {
+            "p": 38,
+            "v": 110,
+            "s": 3.0,
+            "d": 0.25
+          }
+        ]
+      }
+    }
+  ],
+  "timeline": [
+    {
+      "atSample": 0,
+      "send": {
+        "type": "CLIP_LAUNCH",
+        "track": 0,
+        "slot": 0
+      }
+    }
+  ],
+  "renderBeats": 8,
+  "expect": {
+    "onsetSamples": [
+      0,
+      24000,
+      48000,
+      72000,
+      96000,
+      120000,
+      144000,
+      168000
+    ],
+    "firstNonSilentSample": 0
+  },
+  "requires": [
+    "midiClips",
+    "sampler"
+  ]
+}

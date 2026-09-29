@@ -1,0 +1,70 @@
+{
+  "name": "metronome_123bpm_44k",
+  "description": "P1-10: 123 BPM @44.1 kHz, samplesPerBeat = 21512.195… không nguyên → click k tại ceil(k × spb), không trôi.",
+  "sampleRate": 44100,
+  "blockSize": 256,
+  "bpm": 123,
+  "setup": [
+    {
+      "send": {
+        "type": "SET_BPM",
+        "d0": 123
+      }
+    },
+    {
+      "send": {
+        "type": "METRONOME",
+        "i0": 1,
+        "f0": 0.5
+      }
+    }
+  ],
+  "timeline": [
+    {
+      "atBeat": 0,
+      "send": {
+        "type": "TRANSPORT_PLAY"
+      }
+    }
+  ],
+  "renderBeats": 32,
+  "expect": {
+    "onsetSamples": [
+      0,
+      21513,
+      43025,
+      64537,
+      86049,
+      107561,
+      129074,
+      150586,
+      172098,
+      193610,
+      215122,
+      236635,
+      258147,
+      279659,
+      301171,
+      322683,
+      344196,
+      365708,
+      387220,
+      408732,
+      430244,
+      451757,
+      473269,
+      494781,
+      516293,
+      537805,
+      559318,
+      580830,
+      602342,
+      623854,
+      645366,
+      666879
+    ]
+  },
+  "requires": [
+    "metronome"
+  ]
+}

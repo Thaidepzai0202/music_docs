@@ -8,6 +8,8 @@
 #include <string>
 #include <vector>
 
+#include <juce_core/juce_core.h>
+
 #include "sim/ScenarioRunner.h"
 
 namespace fs = std::filesystem;
@@ -70,7 +72,7 @@ TEST_CASE("ScenarioRunner: báo lỗi rõ ràng", "[scenario]") {
     }
     SECTION("lệnh bị engine từ chối") {
         const auto r = le::sim::runScenarioJson(
-            R"({"name":"x","timeline":[{"atBeat":0,"send":{"type":"TRANSPORT_PLAY"}}],"renderBeats":1})");
+            R"({"name":"x","timeline":[{"atBeat":0,"send":{"type":"CLIP_LAUNCH","track":9,"slot":0}}],"renderBeats":1})");
         REQUIRE_FALSE(r.ok);
         REQUIRE(r.error.find("từ chối") != std::string::npos);
     }
@@ -118,4 +120,47 @@ TEST_CASE("ScenarioRunner: golden null test báo sample đầu tiên bị lệch
     REQUIRE(le::sim::writeWavStereo((dir / "g.wav").string(), base.left, base.right, 48000.0));   // golden đúng
     REQUIRE(le::sim::runScenarioJson(withGolden, opt).ok);
     fs::remove_all(dir);
+}
+
+TEST_CASE("Scenario: callback 4096 frame với maxBlock 1024 (RtEngine tự chia) giống hệt block 1024", "[scenario][chunk]") {
+    // 04 §1: JUCE iOS có thể gửi block lớn hơn buffer đã chuẩn bị → RtEngine chia ≤ maxBlock, không mất sample.
+    for (const auto& file : scenarioFiles()) {
+        INFO("scenario " << file.filename().string());
+        le::sim::RunOptions a;
+        a.blockSize = 1024;
+        const auto ref = le::sim::runScenarioFile(file.string(), a);
+        REQUIRE(ref.error.empty());
+        le::sim::RunOptions b;
+        b.blockSize = 4096;
+        b.maxBlock = 1024;
+        const auto big = le::sim::runScenarioFile(file.string(), b);
+        REQUIRE(big.error.empty());
+        REQUIRE(big.left.size() == ref.left.size());
+        // Scenario có sự kiện do MAIN làm giữa hai lần process (take thu xong → snapshot → crossfade buffer thu sang
+        // bản copy cùng nội dung): thời điểm đổi phụ thuộc ranh giới block → chỉ lệch làm tròn float (≤ 1e-7).
+        // Mọi scenario khác phải giống TỪNG BIT.
+        juce::var sc;
+        juce::JSON::parse(juce::File(juce::String(file.string())).loadFileAsString(), sc);
+        const float tol = (bool) sc.getProperty("asyncMainSwap", false) ? 1e-7f : 0.0f;
+        size_t diff = big.left.size();
+        for (size_t i = 0; i < big.left.size(); ++i)
+            if (std::fabs(big.left[i] - ref.left[i]) > tol || std::fabs(big.right[i] - ref.right[i]) > tol) { diff = i; break; }
+        INFO("sample khác đầu tiên: " << diff);
+        REQUIRE(diff == big.left.size());
+    }
+}
+
+TEST_CASE("ScenarioRunner: requires tính năng chưa có → lỗi rõ ràng; blockTimesNs đo từng khối", "[scenario]") {
+    const auto r = le::sim::runScenarioJson(R"({"requires":["timeTravel"],"timeline":[],"renderFrames":128})");
+    REQUIRE_FALSE(r.ok);
+    REQUIRE(r.error.find("timeTravel") != std::string::npos);
+    std::vector<double> times;
+    le::sim::RunOptions opt;
+    opt.blockSize = 256;
+    opt.blockTimesNs = &times;
+    const auto ok = le::sim::runScenarioJson(R"({"requires":["metronome"],"setup":[{"send":{"type":"METRONOME","i0":1,"f0":0.5}}],
+        "timeline":[{"atSample":0,"send":{"type":"TRANSPORT_PLAY"}}],"renderFrames":25600})", opt);
+    REQUIRE(ok.ok);
+    REQUIRE(times.size() == 100);
+    for (double t : times) REQUIRE(t > 0.0);
 }

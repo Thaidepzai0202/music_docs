@@ -401,7 +401,9 @@ $LinkSettingsCopyWith<$Res> get link {
 /// @nodoc
 mixin _$Transport {
 
- double get bpm; List<int> get timeSignature; QuantizeGrid get quantize; Metronome get metronome; int get countInBars;
+ double get bpm; List<int> get timeSignature; QuantizeGrid get quantize; Metronome get metronome; int get countInBars; TempoMode get tempoMode;/// Độ dài vòng đầu (beat) của pedal mode: các vòng sau làm tròn lên bội số của nó, kể cả sau khi mở lại project
+/// (05 §3 `transport.setTempoMode {firstLoopBeats}`). null = chưa có vòng đầu.
+ double? get firstLoopBeats;
 /// Create a copy of Transport
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -414,16 +416,16 @@ $TransportCopyWith<Transport> get copyWith => _$TransportCopyWithImpl<Transport>
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is Transport&&(identical(other.bpm, bpm) || other.bpm == bpm)&&const DeepCollectionEquality().equals(other.timeSignature, timeSignature)&&(identical(other.quantize, quantize) || other.quantize == quantize)&&(identical(other.metronome, metronome) || other.metronome == metronome)&&(identical(other.countInBars, countInBars) || other.countInBars == countInBars));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Transport&&(identical(other.bpm, bpm) || other.bpm == bpm)&&const DeepCollectionEquality().equals(other.timeSignature, timeSignature)&&(identical(other.quantize, quantize) || other.quantize == quantize)&&(identical(other.metronome, metronome) || other.metronome == metronome)&&(identical(other.countInBars, countInBars) || other.countInBars == countInBars)&&(identical(other.tempoMode, tempoMode) || other.tempoMode == tempoMode)&&(identical(other.firstLoopBeats, firstLoopBeats) || other.firstLoopBeats == firstLoopBeats));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,bpm,const DeepCollectionEquality().hash(timeSignature),quantize,metronome,countInBars);
+int get hashCode => Object.hash(runtimeType,bpm,const DeepCollectionEquality().hash(timeSignature),quantize,metronome,countInBars,tempoMode,firstLoopBeats);
 
 @override
 String toString() {
-  return 'Transport(bpm: $bpm, timeSignature: $timeSignature, quantize: $quantize, metronome: $metronome, countInBars: $countInBars)';
+  return 'Transport(bpm: $bpm, timeSignature: $timeSignature, quantize: $quantize, metronome: $metronome, countInBars: $countInBars, tempoMode: $tempoMode, firstLoopBeats: $firstLoopBeats)';
 }
 
 
@@ -434,7 +436,7 @@ abstract mixin class $TransportCopyWith<$Res>  {
   factory $TransportCopyWith(Transport value, $Res Function(Transport) _then) = _$TransportCopyWithImpl;
 @useResult
 $Res call({
- double bpm, List<int> timeSignature, QuantizeGrid quantize, Metronome metronome, int countInBars
+ double bpm, List<int> timeSignature, QuantizeGrid quantize, Metronome metronome, int countInBars, TempoMode tempoMode, double? firstLoopBeats
 });
 
 
@@ -451,14 +453,16 @@ class _$TransportCopyWithImpl<$Res>
 
 /// Create a copy of Transport
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? bpm = null,Object? timeSignature = null,Object? quantize = null,Object? metronome = null,Object? countInBars = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? bpm = null,Object? timeSignature = null,Object? quantize = null,Object? metronome = null,Object? countInBars = null,Object? tempoMode = null,Object? firstLoopBeats = freezed,}) {
   return _then(_self.copyWith(
 bpm: null == bpm ? _self.bpm : bpm // ignore: cast_nullable_to_non_nullable
 as double,timeSignature: null == timeSignature ? _self.timeSignature : timeSignature // ignore: cast_nullable_to_non_nullable
 as List<int>,quantize: null == quantize ? _self.quantize : quantize // ignore: cast_nullable_to_non_nullable
 as QuantizeGrid,metronome: null == metronome ? _self.metronome : metronome // ignore: cast_nullable_to_non_nullable
 as Metronome,countInBars: null == countInBars ? _self.countInBars : countInBars // ignore: cast_nullable_to_non_nullable
-as int,
+as int,tempoMode: null == tempoMode ? _self.tempoMode : tempoMode // ignore: cast_nullable_to_non_nullable
+as TempoMode,firstLoopBeats: freezed == firstLoopBeats ? _self.firstLoopBeats : firstLoopBeats // ignore: cast_nullable_to_non_nullable
+as double?,
   ));
 }
 /// Create a copy of Transport
@@ -552,10 +556,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( double bpm,  List<int> timeSignature,  QuantizeGrid quantize,  Metronome metronome,  int countInBars)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( double bpm,  List<int> timeSignature,  QuantizeGrid quantize,  Metronome metronome,  int countInBars,  TempoMode tempoMode,  double? firstLoopBeats)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Transport() when $default != null:
-return $default(_that.bpm,_that.timeSignature,_that.quantize,_that.metronome,_that.countInBars);case _:
+return $default(_that.bpm,_that.timeSignature,_that.quantize,_that.metronome,_that.countInBars,_that.tempoMode,_that.firstLoopBeats);case _:
   return orElse();
 
 }
@@ -573,10 +577,10 @@ return $default(_that.bpm,_that.timeSignature,_that.quantize,_that.metronome,_th
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( double bpm,  List<int> timeSignature,  QuantizeGrid quantize,  Metronome metronome,  int countInBars)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( double bpm,  List<int> timeSignature,  QuantizeGrid quantize,  Metronome metronome,  int countInBars,  TempoMode tempoMode,  double? firstLoopBeats)  $default,) {final _that = this;
 switch (_that) {
 case _Transport():
-return $default(_that.bpm,_that.timeSignature,_that.quantize,_that.metronome,_that.countInBars);case _:
+return $default(_that.bpm,_that.timeSignature,_that.quantize,_that.metronome,_that.countInBars,_that.tempoMode,_that.firstLoopBeats);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -593,10 +597,10 @@ return $default(_that.bpm,_that.timeSignature,_that.quantize,_that.metronome,_th
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( double bpm,  List<int> timeSignature,  QuantizeGrid quantize,  Metronome metronome,  int countInBars)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( double bpm,  List<int> timeSignature,  QuantizeGrid quantize,  Metronome metronome,  int countInBars,  TempoMode tempoMode,  double? firstLoopBeats)?  $default,) {final _that = this;
 switch (_that) {
 case _Transport() when $default != null:
-return $default(_that.bpm,_that.timeSignature,_that.quantize,_that.metronome,_that.countInBars);case _:
+return $default(_that.bpm,_that.timeSignature,_that.quantize,_that.metronome,_that.countInBars,_that.tempoMode,_that.firstLoopBeats);case _:
   return null;
 
 }
@@ -608,7 +612,7 @@ return $default(_that.bpm,_that.timeSignature,_that.quantize,_that.metronome,_th
 @JsonSerializable()
 
 class _Transport implements Transport {
-  const _Transport({this.bpm = 120.0, final  List<int> timeSignature = const <int>[4, 4], this.quantize = QuantizeGrid.bar1, this.metronome = const Metronome(), this.countInBars = 1}): _timeSignature = timeSignature;
+  const _Transport({this.bpm = 120.0, final  List<int> timeSignature = const <int>[4, 4], this.quantize = QuantizeGrid.bar1, this.metronome = const Metronome(), this.countInBars = 1, this.tempoMode = TempoMode.fixed, this.firstLoopBeats}): _timeSignature = timeSignature;
   factory _Transport.fromJson(Map<String, dynamic> json) => _$TransportFromJson(json);
 
 @override@JsonKey() final  double bpm;
@@ -622,6 +626,10 @@ class _Transport implements Transport {
 @override@JsonKey() final  QuantizeGrid quantize;
 @override@JsonKey() final  Metronome metronome;
 @override@JsonKey() final  int countInBars;
+@override@JsonKey() final  TempoMode tempoMode;
+/// Độ dài vòng đầu (beat) của pedal mode: các vòng sau làm tròn lên bội số của nó, kể cả sau khi mở lại project
+/// (05 §3 `transport.setTempoMode {firstLoopBeats}`). null = chưa có vòng đầu.
+@override final  double? firstLoopBeats;
 
 /// Create a copy of Transport
 /// with the given fields replaced by the non-null parameter values.
@@ -636,16 +644,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Transport&&(identical(other.bpm, bpm) || other.bpm == bpm)&&const DeepCollectionEquality().equals(other._timeSignature, _timeSignature)&&(identical(other.quantize, quantize) || other.quantize == quantize)&&(identical(other.metronome, metronome) || other.metronome == metronome)&&(identical(other.countInBars, countInBars) || other.countInBars == countInBars));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Transport&&(identical(other.bpm, bpm) || other.bpm == bpm)&&const DeepCollectionEquality().equals(other._timeSignature, _timeSignature)&&(identical(other.quantize, quantize) || other.quantize == quantize)&&(identical(other.metronome, metronome) || other.metronome == metronome)&&(identical(other.countInBars, countInBars) || other.countInBars == countInBars)&&(identical(other.tempoMode, tempoMode) || other.tempoMode == tempoMode)&&(identical(other.firstLoopBeats, firstLoopBeats) || other.firstLoopBeats == firstLoopBeats));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,bpm,const DeepCollectionEquality().hash(_timeSignature),quantize,metronome,countInBars);
+int get hashCode => Object.hash(runtimeType,bpm,const DeepCollectionEquality().hash(_timeSignature),quantize,metronome,countInBars,tempoMode,firstLoopBeats);
 
 @override
 String toString() {
-  return 'Transport(bpm: $bpm, timeSignature: $timeSignature, quantize: $quantize, metronome: $metronome, countInBars: $countInBars)';
+  return 'Transport(bpm: $bpm, timeSignature: $timeSignature, quantize: $quantize, metronome: $metronome, countInBars: $countInBars, tempoMode: $tempoMode, firstLoopBeats: $firstLoopBeats)';
 }
 
 
@@ -656,7 +664,7 @@ abstract mixin class _$TransportCopyWith<$Res> implements $TransportCopyWith<$Re
   factory _$TransportCopyWith(_Transport value, $Res Function(_Transport) _then) = __$TransportCopyWithImpl;
 @override @useResult
 $Res call({
- double bpm, List<int> timeSignature, QuantizeGrid quantize, Metronome metronome, int countInBars
+ double bpm, List<int> timeSignature, QuantizeGrid quantize, Metronome metronome, int countInBars, TempoMode tempoMode, double? firstLoopBeats
 });
 
 
@@ -673,14 +681,16 @@ class __$TransportCopyWithImpl<$Res>
 
 /// Create a copy of Transport
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? bpm = null,Object? timeSignature = null,Object? quantize = null,Object? metronome = null,Object? countInBars = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? bpm = null,Object? timeSignature = null,Object? quantize = null,Object? metronome = null,Object? countInBars = null,Object? tempoMode = null,Object? firstLoopBeats = freezed,}) {
   return _then(_Transport(
 bpm: null == bpm ? _self.bpm : bpm // ignore: cast_nullable_to_non_nullable
 as double,timeSignature: null == timeSignature ? _self._timeSignature : timeSignature // ignore: cast_nullable_to_non_nullable
 as List<int>,quantize: null == quantize ? _self.quantize : quantize // ignore: cast_nullable_to_non_nullable
 as QuantizeGrid,metronome: null == metronome ? _self.metronome : metronome // ignore: cast_nullable_to_non_nullable
 as Metronome,countInBars: null == countInBars ? _self.countInBars : countInBars // ignore: cast_nullable_to_non_nullable
-as int,
+as int,tempoMode: null == tempoMode ? _self.tempoMode : tempoMode // ignore: cast_nullable_to_non_nullable
+as TempoMode,firstLoopBeats: freezed == firstLoopBeats ? _self.firstLoopBeats : firstLoopBeats // ignore: cast_nullable_to_non_nullable
+as double?,
   ));
 }
 
@@ -2629,11 +2639,11 @@ return audio(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function( int slot,  String id,  String name,  double lengthBeats,  List<Note> notes)?  midi,TResult Function( int slot,  String id,  String name,  String file,  double lengthBeats,  double originalBpm,  WarpMode warp,  double gainDb,  AudioLoop loop)?  audio,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function( int slot,  String id,  String name,  double lengthBeats,  List<Note> notes)?  midi,TResult Function( int slot,  String id,  String name,  String file,  double lengthBeats,  double originalBpm,  WarpMode warp,  double gainDb,  AudioLoop loop,  List<String> tags)?  audio,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case MidiClip() when midi != null:
 return midi(_that.slot,_that.id,_that.name,_that.lengthBeats,_that.notes);case AudioClip() when audio != null:
-return audio(_that.slot,_that.id,_that.name,_that.file,_that.lengthBeats,_that.originalBpm,_that.warp,_that.gainDb,_that.loop);case _:
+return audio(_that.slot,_that.id,_that.name,_that.file,_that.lengthBeats,_that.originalBpm,_that.warp,_that.gainDb,_that.loop,_that.tags);case _:
   return orElse();
 
 }
@@ -2651,11 +2661,11 @@ return audio(_that.slot,_that.id,_that.name,_that.file,_that.lengthBeats,_that.o
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function( int slot,  String id,  String name,  double lengthBeats,  List<Note> notes)  midi,required TResult Function( int slot,  String id,  String name,  String file,  double lengthBeats,  double originalBpm,  WarpMode warp,  double gainDb,  AudioLoop loop)  audio,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function( int slot,  String id,  String name,  double lengthBeats,  List<Note> notes)  midi,required TResult Function( int slot,  String id,  String name,  String file,  double lengthBeats,  double originalBpm,  WarpMode warp,  double gainDb,  AudioLoop loop,  List<String> tags)  audio,}) {final _that = this;
 switch (_that) {
 case MidiClip():
 return midi(_that.slot,_that.id,_that.name,_that.lengthBeats,_that.notes);case AudioClip():
-return audio(_that.slot,_that.id,_that.name,_that.file,_that.lengthBeats,_that.originalBpm,_that.warp,_that.gainDb,_that.loop);}
+return audio(_that.slot,_that.id,_that.name,_that.file,_that.lengthBeats,_that.originalBpm,_that.warp,_that.gainDb,_that.loop,_that.tags);}
 }
 /// A variant of `when` that fallback to returning `null`
 ///
@@ -2669,11 +2679,11 @@ return audio(_that.slot,_that.id,_that.name,_that.file,_that.lengthBeats,_that.o
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function( int slot,  String id,  String name,  double lengthBeats,  List<Note> notes)?  midi,TResult? Function( int slot,  String id,  String name,  String file,  double lengthBeats,  double originalBpm,  WarpMode warp,  double gainDb,  AudioLoop loop)?  audio,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function( int slot,  String id,  String name,  double lengthBeats,  List<Note> notes)?  midi,TResult? Function( int slot,  String id,  String name,  String file,  double lengthBeats,  double originalBpm,  WarpMode warp,  double gainDb,  AudioLoop loop,  List<String> tags)?  audio,}) {final _that = this;
 switch (_that) {
 case MidiClip() when midi != null:
 return midi(_that.slot,_that.id,_that.name,_that.lengthBeats,_that.notes);case AudioClip() when audio != null:
-return audio(_that.slot,_that.id,_that.name,_that.file,_that.lengthBeats,_that.originalBpm,_that.warp,_that.gainDb,_that.loop);case _:
+return audio(_that.slot,_that.id,_that.name,_that.file,_that.lengthBeats,_that.originalBpm,_that.warp,_that.gainDb,_that.loop,_that.tags);case _:
   return null;
 
 }
@@ -2772,7 +2782,7 @@ as List<Note>,
 @JsonSerializable()
 
 class AudioClip extends Clip {
-  const AudioClip({required this.slot, required this.id, required this.name, required this.file, required this.lengthBeats, required this.originalBpm, this.warp = WarpMode.stretch, this.gainDb = 0.0, this.loop = const AudioLoop(), final  String? $type}): $type = $type ?? 'audio',super._();
+  const AudioClip({required this.slot, required this.id, required this.name, required this.file, required this.lengthBeats, required this.originalBpm, this.warp = WarpMode.stretch, this.gainDb = 0.0, this.loop = const AudioLoop(), final  List<String> tags = const <String>[], final  String? $type}): _tags = tags,$type = $type ?? 'audio',super._();
   factory AudioClip.fromJson(Map<String, dynamic> json) => _$AudioClipFromJson(json);
 
 @override final  int slot;
@@ -2785,6 +2795,17 @@ class AudioClip extends Clip {
 @JsonKey() final  WarpMode warp;
 @JsonKey() final  double gainDb;
 @JsonKey() final  AudioLoop loop;
+/// Tag thư viện (06 §2/§4: id tiếng Anh cố định, vd `drums`) chép khi gán loop; take tự thu `[]`.
+/// Gợi ý "loop trống → Re-Pitch" đọc từ đây (còn sau khi mở lại project).
+ final  List<String> _tags;
+/// Tag thư viện (06 §2/§4: id tiếng Anh cố định, vd `drums`) chép khi gán loop; take tự thu `[]`.
+/// Gợi ý "loop trống → Re-Pitch" đọc từ đây (còn sau khi mở lại project).
+@JsonKey() List<String> get tags {
+  if (_tags is EqualUnmodifiableListView) return _tags;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_tags);
+}
+
 
 @JsonKey(name: 'kind')
 final String $type;
@@ -2803,16 +2824,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is AudioClip&&(identical(other.slot, slot) || other.slot == slot)&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.file, file) || other.file == file)&&(identical(other.lengthBeats, lengthBeats) || other.lengthBeats == lengthBeats)&&(identical(other.originalBpm, originalBpm) || other.originalBpm == originalBpm)&&(identical(other.warp, warp) || other.warp == warp)&&(identical(other.gainDb, gainDb) || other.gainDb == gainDb)&&(identical(other.loop, loop) || other.loop == loop));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is AudioClip&&(identical(other.slot, slot) || other.slot == slot)&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.file, file) || other.file == file)&&(identical(other.lengthBeats, lengthBeats) || other.lengthBeats == lengthBeats)&&(identical(other.originalBpm, originalBpm) || other.originalBpm == originalBpm)&&(identical(other.warp, warp) || other.warp == warp)&&(identical(other.gainDb, gainDb) || other.gainDb == gainDb)&&(identical(other.loop, loop) || other.loop == loop)&&const DeepCollectionEquality().equals(other._tags, _tags));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,slot,id,name,file,lengthBeats,originalBpm,warp,gainDb,loop);
+int get hashCode => Object.hash(runtimeType,slot,id,name,file,lengthBeats,originalBpm,warp,gainDb,loop,const DeepCollectionEquality().hash(_tags));
 
 @override
 String toString() {
-  return 'Clip.audio(slot: $slot, id: $id, name: $name, file: $file, lengthBeats: $lengthBeats, originalBpm: $originalBpm, warp: $warp, gainDb: $gainDb, loop: $loop)';
+  return 'Clip.audio(slot: $slot, id: $id, name: $name, file: $file, lengthBeats: $lengthBeats, originalBpm: $originalBpm, warp: $warp, gainDb: $gainDb, loop: $loop, tags: $tags)';
 }
 
 
@@ -2823,7 +2844,7 @@ abstract mixin class $AudioClipCopyWith<$Res> implements $ClipCopyWith<$Res> {
   factory $AudioClipCopyWith(AudioClip value, $Res Function(AudioClip) _then) = _$AudioClipCopyWithImpl;
 @override @useResult
 $Res call({
- int slot, String id, String name, String file, double lengthBeats, double originalBpm, WarpMode warp, double gainDb, AudioLoop loop
+ int slot, String id, String name, String file, double lengthBeats, double originalBpm, WarpMode warp, double gainDb, AudioLoop loop, List<String> tags
 });
 
 
@@ -2840,7 +2861,7 @@ class _$AudioClipCopyWithImpl<$Res>
 
 /// Create a copy of Clip
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? slot = null,Object? id = null,Object? name = null,Object? file = null,Object? lengthBeats = null,Object? originalBpm = null,Object? warp = null,Object? gainDb = null,Object? loop = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? slot = null,Object? id = null,Object? name = null,Object? file = null,Object? lengthBeats = null,Object? originalBpm = null,Object? warp = null,Object? gainDb = null,Object? loop = null,Object? tags = null,}) {
   return _then(AudioClip(
 slot: null == slot ? _self.slot : slot // ignore: cast_nullable_to_non_nullable
 as int,id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
@@ -2851,7 +2872,8 @@ as double,originalBpm: null == originalBpm ? _self.originalBpm : originalBpm // 
 as double,warp: null == warp ? _self.warp : warp // ignore: cast_nullable_to_non_nullable
 as WarpMode,gainDb: null == gainDb ? _self.gainDb : gainDb // ignore: cast_nullable_to_non_nullable
 as double,loop: null == loop ? _self.loop : loop // ignore: cast_nullable_to_non_nullable
-as AudioLoop,
+as AudioLoop,tags: null == tags ? _self._tags : tags // ignore: cast_nullable_to_non_nullable
+as List<String>,
   ));
 }
 
@@ -3982,7 +4004,8 @@ as double,
 /// @nodoc
 mixin _$Master {
 
- double get gainDb; List<double> get eq3; double get limiterCeilingDb;
+ double get gainDb; List<double> get eq3;/// Bypass EQ3 master (`FX_BYPASS track −1 slot 0`). Limiter không bypass được.
+ bool get eq3Bypass; double get limiterCeilingDb;
 /// Create a copy of Master
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -3995,16 +4018,16 @@ $MasterCopyWith<Master> get copyWith => _$MasterCopyWithImpl<Master>(this as Mas
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is Master&&(identical(other.gainDb, gainDb) || other.gainDb == gainDb)&&const DeepCollectionEquality().equals(other.eq3, eq3)&&(identical(other.limiterCeilingDb, limiterCeilingDb) || other.limiterCeilingDb == limiterCeilingDb));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Master&&(identical(other.gainDb, gainDb) || other.gainDb == gainDb)&&const DeepCollectionEquality().equals(other.eq3, eq3)&&(identical(other.eq3Bypass, eq3Bypass) || other.eq3Bypass == eq3Bypass)&&(identical(other.limiterCeilingDb, limiterCeilingDb) || other.limiterCeilingDb == limiterCeilingDb));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,gainDb,const DeepCollectionEquality().hash(eq3),limiterCeilingDb);
+int get hashCode => Object.hash(runtimeType,gainDb,const DeepCollectionEquality().hash(eq3),eq3Bypass,limiterCeilingDb);
 
 @override
 String toString() {
-  return 'Master(gainDb: $gainDb, eq3: $eq3, limiterCeilingDb: $limiterCeilingDb)';
+  return 'Master(gainDb: $gainDb, eq3: $eq3, eq3Bypass: $eq3Bypass, limiterCeilingDb: $limiterCeilingDb)';
 }
 
 
@@ -4015,7 +4038,7 @@ abstract mixin class $MasterCopyWith<$Res>  {
   factory $MasterCopyWith(Master value, $Res Function(Master) _then) = _$MasterCopyWithImpl;
 @useResult
 $Res call({
- double gainDb, List<double> eq3, double limiterCeilingDb
+ double gainDb, List<double> eq3, bool eq3Bypass, double limiterCeilingDb
 });
 
 
@@ -4032,11 +4055,12 @@ class _$MasterCopyWithImpl<$Res>
 
 /// Create a copy of Master
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? gainDb = null,Object? eq3 = null,Object? limiterCeilingDb = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? gainDb = null,Object? eq3 = null,Object? eq3Bypass = null,Object? limiterCeilingDb = null,}) {
   return _then(_self.copyWith(
 gainDb: null == gainDb ? _self.gainDb : gainDb // ignore: cast_nullable_to_non_nullable
 as double,eq3: null == eq3 ? _self.eq3 : eq3 // ignore: cast_nullable_to_non_nullable
-as List<double>,limiterCeilingDb: null == limiterCeilingDb ? _self.limiterCeilingDb : limiterCeilingDb // ignore: cast_nullable_to_non_nullable
+as List<double>,eq3Bypass: null == eq3Bypass ? _self.eq3Bypass : eq3Bypass // ignore: cast_nullable_to_non_nullable
+as bool,limiterCeilingDb: null == limiterCeilingDb ? _self.limiterCeilingDb : limiterCeilingDb // ignore: cast_nullable_to_non_nullable
 as double,
   ));
 }
@@ -4122,10 +4146,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( double gainDb,  List<double> eq3,  double limiterCeilingDb)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( double gainDb,  List<double> eq3,  bool eq3Bypass,  double limiterCeilingDb)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Master() when $default != null:
-return $default(_that.gainDb,_that.eq3,_that.limiterCeilingDb);case _:
+return $default(_that.gainDb,_that.eq3,_that.eq3Bypass,_that.limiterCeilingDb);case _:
   return orElse();
 
 }
@@ -4143,10 +4167,10 @@ return $default(_that.gainDb,_that.eq3,_that.limiterCeilingDb);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( double gainDb,  List<double> eq3,  double limiterCeilingDb)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( double gainDb,  List<double> eq3,  bool eq3Bypass,  double limiterCeilingDb)  $default,) {final _that = this;
 switch (_that) {
 case _Master():
-return $default(_that.gainDb,_that.eq3,_that.limiterCeilingDb);case _:
+return $default(_that.gainDb,_that.eq3,_that.eq3Bypass,_that.limiterCeilingDb);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -4163,10 +4187,10 @@ return $default(_that.gainDb,_that.eq3,_that.limiterCeilingDb);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( double gainDb,  List<double> eq3,  double limiterCeilingDb)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( double gainDb,  List<double> eq3,  bool eq3Bypass,  double limiterCeilingDb)?  $default,) {final _that = this;
 switch (_that) {
 case _Master() when $default != null:
-return $default(_that.gainDb,_that.eq3,_that.limiterCeilingDb);case _:
+return $default(_that.gainDb,_that.eq3,_that.eq3Bypass,_that.limiterCeilingDb);case _:
   return null;
 
 }
@@ -4178,7 +4202,7 @@ return $default(_that.gainDb,_that.eq3,_that.limiterCeilingDb);case _:
 @JsonSerializable()
 
 class _Master implements Master {
-  const _Master({this.gainDb = 0.0, final  List<double> eq3 = const <double>[0, 0, 0], this.limiterCeilingDb = -0.3}): _eq3 = eq3;
+  const _Master({this.gainDb = 0.0, final  List<double> eq3 = const <double>[0, 0, 0], this.eq3Bypass = false, this.limiterCeilingDb = -0.3}): _eq3 = eq3;
   factory _Master.fromJson(Map<String, dynamic> json) => _$MasterFromJson(json);
 
 @override@JsonKey() final  double gainDb;
@@ -4189,6 +4213,8 @@ class _Master implements Master {
   return EqualUnmodifiableListView(_eq3);
 }
 
+/// Bypass EQ3 master (`FX_BYPASS track −1 slot 0`). Limiter không bypass được.
+@override@JsonKey() final  bool eq3Bypass;
 @override@JsonKey() final  double limiterCeilingDb;
 
 /// Create a copy of Master
@@ -4204,16 +4230,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Master&&(identical(other.gainDb, gainDb) || other.gainDb == gainDb)&&const DeepCollectionEquality().equals(other._eq3, _eq3)&&(identical(other.limiterCeilingDb, limiterCeilingDb) || other.limiterCeilingDb == limiterCeilingDb));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Master&&(identical(other.gainDb, gainDb) || other.gainDb == gainDb)&&const DeepCollectionEquality().equals(other._eq3, _eq3)&&(identical(other.eq3Bypass, eq3Bypass) || other.eq3Bypass == eq3Bypass)&&(identical(other.limiterCeilingDb, limiterCeilingDb) || other.limiterCeilingDb == limiterCeilingDb));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,gainDb,const DeepCollectionEquality().hash(_eq3),limiterCeilingDb);
+int get hashCode => Object.hash(runtimeType,gainDb,const DeepCollectionEquality().hash(_eq3),eq3Bypass,limiterCeilingDb);
 
 @override
 String toString() {
-  return 'Master(gainDb: $gainDb, eq3: $eq3, limiterCeilingDb: $limiterCeilingDb)';
+  return 'Master(gainDb: $gainDb, eq3: $eq3, eq3Bypass: $eq3Bypass, limiterCeilingDb: $limiterCeilingDb)';
 }
 
 
@@ -4224,7 +4250,7 @@ abstract mixin class _$MasterCopyWith<$Res> implements $MasterCopyWith<$Res> {
   factory _$MasterCopyWith(_Master value, $Res Function(_Master) _then) = __$MasterCopyWithImpl;
 @override @useResult
 $Res call({
- double gainDb, List<double> eq3, double limiterCeilingDb
+ double gainDb, List<double> eq3, bool eq3Bypass, double limiterCeilingDb
 });
 
 
@@ -4241,11 +4267,12 @@ class __$MasterCopyWithImpl<$Res>
 
 /// Create a copy of Master
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? gainDb = null,Object? eq3 = null,Object? limiterCeilingDb = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? gainDb = null,Object? eq3 = null,Object? eq3Bypass = null,Object? limiterCeilingDb = null,}) {
   return _then(_Master(
 gainDb: null == gainDb ? _self.gainDb : gainDb // ignore: cast_nullable_to_non_nullable
 as double,eq3: null == eq3 ? _self._eq3 : eq3 // ignore: cast_nullable_to_non_nullable
-as List<double>,limiterCeilingDb: null == limiterCeilingDb ? _self.limiterCeilingDb : limiterCeilingDb // ignore: cast_nullable_to_non_nullable
+as List<double>,eq3Bypass: null == eq3Bypass ? _self.eq3Bypass : eq3Bypass // ignore: cast_nullable_to_non_nullable
+as bool,limiterCeilingDb: null == limiterCeilingDb ? _self.limiterCeilingDb : limiterCeilingDb // ignore: cast_nullable_to_non_nullable
 as double,
   ));
 }

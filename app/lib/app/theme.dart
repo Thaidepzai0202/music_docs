@@ -32,6 +32,13 @@ abstract final class AppText {
   static const numeric = TextStyle(color: AppColors.textPrimary, fontSize: 14, fontFeatures: tabular);
 }
 
+/// Font của theme cho chữ vẽ bằng TextPainter: CustomPainter không kế thừa DefaultTextStyle, thiếu font thì
+/// flutter_test vẽ ô vuông (golden không kiểm được). Trên iPad đây vẫn là font hệ thống của Typography.
+TextStyle painterFont(BuildContext context) {
+  final s = Theme.of(context).textTheme.bodyMedium!;
+  return TextStyle(fontFamily: s.fontFamily, fontFamilyFallback: s.fontFamilyFallback);
+}
+
 /// Font hệ thống (SF Pro trên iPad) — không khai báo fontFamily.
 ThemeData buildAppTheme() {
   const scheme = ColorScheme.dark(

@@ -1,0 +1,1608 @@
+{
+  "@@locale": "en",
+  "aboutApi": "API",
+  "@aboutApi": {},
+  "aboutBuffer": "Buffer",
+  "@aboutBuffer": {},
+  "aboutDungBangFlutterEngineC": "Built with Flutter + a C++ engine (JUCE). iPad only, landscape.",
+  "@aboutDungBangFlutterEngineC": {},
+  "aboutEngine": "Engine",
+  "@aboutEngine": {},
+  "aboutEngineGiaLoopcoreFake": "Fake engine (LOOPCORE_FAKE)",
+  "@aboutEngineGiaLoopcoreFake": {},
+  "aboutFrames": "{frames} frames",
+  "@aboutFrames": {
+    "placeholders": {
+      "frames": {
+        "type": "Object"
+      }
+    }
+  },
+  "aboutLoai": "Type",
+  "@aboutLoai": {},
+  "aboutLoopCore": "LoopCore (JUCE)",
+  "@aboutLoopCore": {},
+  "aboutPhienBan": "Version {p0} ({p1})",
+  "@aboutPhienBan": {
+    "placeholders": {
+      "p0": {
+        "type": "Object"
+      },
+      "p1": {
+        "type": "Object"
+      }
+    }
+  },
+  "aboutSampleRate": "Sample rate",
+  "@aboutSampleRate": {},
+  "aboutThietBi": "Device",
+  "@aboutThietBi": {},
+  "audioAudioChuaBat": "Audio is off",
+  "@audioAudioChuaBat": {},
+  "audioBars": "{count, plural, =1{1 bar} other{{count} bars}}",
+  "@audioBars": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "audioBuffer": "Audio buffer",
+  "@audioBuffer": {},
+  "audioChoi": "Playing",
+  "@audioChoi": {},
+  "audioDangBatThuDuoc": "On — recording available",
+  "@audioDangBatThuDuoc": {},
+  "audioDangChay": "Running: {frames} frames ({ms}) @ {hz} Hz",
+  "@audioDangChay": {
+    "placeholders": {
+      "frames": {
+        "type": "Object"
+      },
+      "ms": {
+        "type": "Object"
+      },
+      "hz": {
+        "type": "Object"
+      }
+    }
+  },
+  "audioKhongDoiDuocBuffer": "Couldn't change the buffer: {err}",
+  "@audioKhongDoiDuocBuffer": {
+    "placeholders": {
+      "err": {
+        "type": "Object"
+      }
+    }
+  },
+  "audioLuonBat": "On",
+  "@audioLuonBat": {},
+  "audioMic": "Microphone",
+  "@audioMic": {},
+  "audioMonitorMacDinhChoTrack": "Default monitor for new audio tracks",
+  "@audioMonitorMacDinhChoTrack": {},
+  "audioNhoHonTreItHon": "Smaller = lower latency but more CPU. {p0}",
+  "@audioNhoHonTreItHon": {
+    "placeholders": {
+      "p0": {
+        "type": "Object"
+      }
+    }
+  },
+  "audioQuantizeNotKhiThuMidi": "Quantize notes when recording MIDI",
+  "@audioQuantizeNotKhiThuMidi": {},
+  "audioRungNheKhiLaunchThu": "Haptics on launch / record",
+  "@audioRungNheKhiLaunchThu": {},
+  "audioSoBarKhiThuVao": "Recording length",
+  "@audioSoBarKhiThuVao": {},
+  "audioThuAm": "Recording",
+  "@audioThuAm": {},
+  "audioTuDo": "Free",
+  "@audioTuDo": {},
+  "audioTuDoGhiChu": "Free: tap the cell again (or LOOP) to finish the take",
+  "@audioTuDoGhiChu": {},
+  "audioTuDong": "Auto",
+  "@audioTuDong": {},
+  "audioTuDongNgheMicroKhi": "Auto: hear the mic while the track is armed. Use headphones to avoid feedback.",
+  "@audioTuDongNgheMicroKhi": {},
+  "bannerAudioBiNgatCuocGoi": "Audio interrupted (call, Siri…)",
+  "@bannerAudioBiNgatCuocGoi": {},
+  "bannerDaGiaiPhongBoNho": "Memory freed ({mb} MB in use)",
+  "@bannerDaGiaiPhongBoNho": {
+    "placeholders": {
+      "mb": {
+        "type": "Object"
+      }
+    }
+  },
+  "bannerDangDungTaiNgheBluetooth": "Bluetooth headphones: high latency, not suited for recording or playing in time.",
+  "@bannerDangDungTaiNgheBluetooth": {},
+  "bannerKhongOverdubDuoc": "Can't overdub cell {track}·{slot}: the audio clip is in Re-Pitch at a different tempo or not ready yet. The clip keeps playing.",
+  "@bannerKhongOverdubDuoc": {
+    "placeholders": {
+      "track": {
+        "type": "Object"
+      },
+      "slot": {
+        "type": "Object"
+      }
+    }
+  },
+  "bannerLoiEngine": "Engine error: {p0}",
+  "@bannerLoiEngine": {
+    "placeholders": {
+      "p0": {
+        "type": "Object"
+      }
+    }
+  },
+  "browserAssignHint": "+ = {action}",
+  "@browserAssignHint": {
+    "placeholders": {
+      "action": {
+        "type": "Object"
+      }
+    }
+  },
+  "browserDaThemVaoO": "Added \"{p0}\" to cell {p1}",
+  "@browserDaThemVaoO": {
+    "placeholders": {
+      "p0": {
+        "type": "Object"
+      },
+      "p1": {
+        "type": "Object"
+      }
+    }
+  },
+  "browserGan": "assign → {trackName}",
+  "@browserGan": {
+    "placeholders": {
+      "trackName": {
+        "type": "Object"
+      }
+    }
+  },
+  "browserKhongDocDuocThuVien": "Couldn't read the library: {e}",
+  "@browserKhongDocDuocThuVien": {
+    "placeholders": {
+      "e": {
+        "type": "Object"
+      }
+    }
+  },
+  "browserKit": "Kit",
+  "@browserKit": {},
+  "browserLoop": "Loop",
+  "@browserLoop": {},
+  "browserLoopInfo": "{bpm} BPM · {beats, plural, =1{1 beat} other{{beats} beats}}",
+  "@browserLoopInfo": {
+    "placeholders": {
+      "bpm": {
+        "type": "Object"
+      },
+      "beats": {
+        "type": "int"
+      }
+    }
+  },
+  "browserNhacCu": "Instruments",
+  "@browserNhacCu": {},
+  "browserSection": "{title} ({count})",
+  "@browserSection": {
+    "placeholders": {
+      "title": {
+        "type": "Object"
+      },
+      "count": {
+        "type": "Object"
+      }
+    }
+  },
+  "browserThemVao": "add to {trackName}",
+  "@browserThemVao": {
+    "placeholders": {
+      "trackName": {
+        "type": "Object"
+      }
+    }
+  },
+  "browserTrackNayKhongConO": "No empty cells left on this track",
+  "@browserTrackNayKhongConO": {},
+  "clipClear": "Clear",
+  "@clipClear": {},
+  "clipDoDaiClip": "Clip length",
+  "@clipDoDaiClip": {},
+  "clipDrumsHint": "Drum loops sound more natural with Re-Pitch",
+  "@clipDrumsHint": {},
+  "clipGain": "Clip gain: {db} dB",
+  "@clipGain": {
+    "placeholders": {
+      "db": {
+        "type": "Object"
+      }
+    }
+  },
+  "clipHoanTacOverdub": "Undo overdub",
+  "@clipHoanTacOverdub": {},
+  "clipHoanTacSua": "Undo",
+  "@clipHoanTacSua": {},
+  "clipLamLai": "Redo",
+  "@clipLamLai": {},
+  "clipLoopTuSBeatGoc": "Loop from {p0} s · {p1} beats · original {p2} BPM",
+  "@clipLoopTuSBeatGoc": {
+    "placeholders": {
+      "p0": {
+        "type": "Object"
+      },
+      "p1": {
+        "type": "Object"
+      },
+      "p2": {
+        "type": "Object"
+      }
+    }
+  },
+  "clipLuoi": "Grid",
+  "@clipLuoi": {},
+  "clipModeChon": "Select",
+  "@clipModeChon": {},
+  "clipModeVe": "Draw",
+  "@clipModeVe": {},
+  "clipNotBeat": "{p0, plural, =1{1 note} other{{p0} notes}} · {p1} beats",
+  "@clipNotBeat": {
+    "placeholders": {
+      "p0": {
+        "type": "int"
+      },
+      "p1": {
+        "type": "Object"
+      }
+    }
+  },
+  "clipQuangTamLen": "Octave up",
+  "@clipQuangTamLen": {},
+  "clipQuangTamXuong": "Octave down",
+  "@clipQuangTamXuong": {},
+  "clipQuantize": "Quantize",
+  "@clipQuantize": {},
+  "clipQuantizeGrid": "Quantize {grid}",
+  "@clipQuantizeGrid": {
+    "placeholders": {
+      "grid": {
+        "type": "Object"
+      }
+    }
+  },
+  "clipWarp": "Warp",
+  "@clipWarp": {},
+  "clipXoaNotDaChon": "Delete selected ({p0})",
+  "@clipXoaNotDaChon": {
+    "placeholders": {
+      "p0": {
+        "type": "Object"
+      }
+    }
+  },
+  "clipZoom": "Zoom",
+  "@clipZoom": {},
+  "commonOk": "OK",
+  "@commonOk": {},
+  "demoName": "{token, select, demo{Demo} drums{Drums} bass{Bass} keys{Keys} lead{Lead} beatA{Beat A} beatB{Beat B} fill{Fill} halfTime{Half-time} bassA{Bass A} bassB{Bass B} walk{Walk} chords{Chords} stab{Stab} melody{Melody} hook{Hook} other{{token}}}",
+  "@demoName": {
+    "placeholders": {
+      "token": {
+        "type": "String"
+      }
+    }
+  },
+  "errorText": "{code, select, INVALID_ARG{Invalid request} NOT_CREATED{Engine not started} ALREADY_CREATED{Engine already started} NOT_IMPLEMENTED{Not supported by the engine yet} AUDIO_DEVICE{Audio device error} MIC_PERMISSION{No microphone access} FILE_NOT_FOUND{File not found} FILE_FORMAT{Unsupported file format} DISK_FULL{Storage is full} FILE_WRITE{Couldn't write the file} OUT_OF_MEMORY{Out of memory} QUEUE_FULL{Engine is busy, try again} JOB_CANCELLED{Cancelled} JOB_NOT_FOUND{Task not found} PITCH_NOT_DETECTED{Couldn't detect the pitch} OVERDUB_UNSUPPORTED{This clip can't be overdubbed} CELL_EMPTY{The cell is still empty after recording} other{Engine error ({code})}}",
+  "@errorText": {
+    "placeholders": {
+      "code": {
+        "type": "String"
+      }
+    }
+  },
+  "exportChamDeBatDauGhi": "Tap to start recording",
+  "@exportChamDeBatDauGhi": {},
+  "exportChiaSe": "Share",
+  "@exportChiaSe": {},
+  "exportClippedSamples": "{count, plural, =1{1 sample clipped: lower the master gain} other{{count} samples clipped: lower the master gain}}",
+  "@exportClippedSamples": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "exportDangGhi": "Recording  ",
+  "@exportDangGhi": {},
+  "exportDinhDang": "Format",
+  "@exportDinhDang": {},
+  "exportDungGhiJam": "Stop jam recording",
+  "@exportDungGhiJam": {},
+  "exportExportLoi": "Export failed: {p0}",
+  "@exportExportLoi": {
+    "placeholders": {
+      "p0": {
+        "type": "Object"
+      }
+    }
+  },
+  "exportGhiBuoiJam": "Record jam",
+  "@exportGhiBuoiJam": {},
+  "exportGhiToanBoDauRa": "Records the whole master output while you play (WAV, saved in Exports/). Toggle it quickly with the ● button in the top bar.",
+  "@exportGhiToanBoDauRa": {},
+  "exportHuy": "Cancel",
+  "@exportHuy": {},
+  "exportKhongGhiDuoc": "Couldn't record: {err}",
+  "@exportKhongGhiDuoc": {
+    "placeholders": {
+      "err": {
+        "type": "Object"
+      }
+    }
+  },
+  "exportKhongMoDuocShareSheet": "Couldn't open the share sheet: {e}",
+  "@exportKhongMoDuocShareSheet": {
+    "placeholders": {
+      "e": {
+        "type": "Object"
+      }
+    }
+  },
+  "exportMenu": "Export…",
+  "@exportMenu": {},
+  "exportMoiTrackMotFile": "One file per track",
+  "@exportMoiTrackMotFile": {},
+  "exportResult": "{file} · {time}",
+  "@exportResult": {
+    "placeholders": {
+      "file": {
+        "type": "Object"
+      },
+      "time": {
+        "type": "Object"
+      }
+    }
+  },
+  "exportScene": "Scene",
+  "@exportScene": {},
+  "exportSceneItem": "{number}. {name}",
+  "@exportSceneItem": {
+    "placeholders": {
+      "number": {
+        "type": "Object"
+      },
+      "name": {
+        "type": "Object"
+      }
+    }
+  },
+  "exportSceneNayChuaCoClip": "This scene has no clips",
+  "@exportSceneNayChuaCoClip": {},
+  "exportSceneTab": "Export scene",
+  "@exportSceneTab": {},
+  "exportSoBar": "Bars",
+  "@exportSoBar": {},
+  "exportStemCount": " + {count, plural, =1{1 stem} other{{count} stems}}",
+  "@exportStemCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "exportStemsLabel": "Stems",
+  "@exportStemsLabel": {},
+  "exportTitle": "Export",
+  "@exportTitle": {},
+  "fxBat": "On",
+  "@fxBat": {},
+  "fxBatLai": "Turn on",
+  "@fxBatLai": {},
+  "fxBypass": "Bypass",
+  "@fxBypass": {},
+  "fxDoiLoaiFx": "Change FX type",
+  "@fxDoiLoaiFx": {},
+  "fxKeoDocDeChinhCham": "Drag up/down to adjust · double-tap to reset",
+  "@fxKeoDocDeChinhCham": {},
+  "fxMasterCard": "Master · EQ3 · Limiter",
+  "@fxMasterCard": {},
+  "fxParam": "{name, select, mode{Mode} cutoff{Cutoff} reso{Reso} rate{Rate} feedback{Feedback} mix{Mix} pingpong{Ping-pong} size{Size} damping{Damping} width{Width} low{Low} mid{Mid} high{High} thresh{Thresh} ratio{Ratio} attack{Attack} release{Release} makeup{Makeup} ceiling{Ceiling} other{{name}}}",
+  "@fxParam": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "fxSlotTrong": "Slot {p0} empty",
+  "@fxSlotTrong": {
+    "placeholders": {
+      "p0": {
+        "type": "Object"
+      }
+    }
+  },
+  "fxTat": "Off",
+  "@fxTat": {},
+  "fxThemFx": "Add FX",
+  "@fxThemFx": {},
+  "fxToggleOff": "OFF",
+  "@fxToggleOff": {},
+  "fxToggleOn": "ON",
+  "@fxToggleOn": {},
+  "fxType": "{type, select, filter{Filter} delay{Delay} reverb{Reverb} eq3{EQ3} comp{Compressor} other{{type}}}",
+  "@fxType": {
+    "placeholders": {
+      "type": {
+        "type": "String"
+      }
+    }
+  },
+  "fxXoaFx": "Remove FX",
+  "@fxXoaFx": {},
+  "instrumentBanPhim": "Keyboard",
+  "@instrumentBanPhim": {},
+  "instrumentKhongTimThayNhacCu": "Instrument not found",
+  "@instrumentKhongTimThayNhacCu": {},
+  "instrumentMode": "{mode, select, natural{Natural} classic{Classic} other{{mode}}}",
+  "@instrumentMode": {
+    "placeholders": {
+      "mode": {
+        "type": "String"
+      }
+    }
+  },
+  "instrumentPad": "Pads",
+  "@instrumentPad": {},
+  "instrumentThuAmMoi": "Record new",
+  "@instrumentThuAmMoi": {},
+  "jamDroppedMs": "Lost {ms} ms: the disk could not keep up",
+  "@jamDroppedMs": {
+    "placeholders": {
+      "ms": {
+        "type": "Object"
+      }
+    }
+  },
+  "latencyAppPhatTiengClickRa": "The app plays clicks through the speaker and listens through the mic to measure the round trip. Keep the iPad somewhere quiet at a moderate volume — or connect a loopback cable from output to input. Takes about 5 seconds. The offset below is set from the result.",
+  "@latencyAppPhatTiengClickRa": {},
+  "latencyBanThuNgheBiTre": "If recordings sound late against the beat, increase it; if early, decrease it. Saved and applied every time the app opens.",
+  "@latencyBanThuNgheBiTre": {},
+  "latencyBuThem": "Extra offset",
+  "@latencyBuThem": {},
+  "latencyCanQuyenMicroDeDo": "Microphone access is needed to measure",
+  "@latencyCanQuyenMicroDeDo": {},
+  "latencyChinhTay": "Manual",
+  "@latencyChinhTay": {},
+  "latencyChuaCo": "not set",
+  "@latencyChuaCo": {},
+  "latencyDaLuuEngineChuaAp": "Saved, but the engine couldn't apply it yet: {err}",
+  "@latencyDaLuuEngineChuaAp": {
+    "placeholders": {
+      "err": {
+        "type": "Object"
+      }
+    }
+  },
+  "latencyDeviceBaoBuSampleLech": "Device reports {p0} · offset {p1} samples · spread {p2} · confidence {p3}%",
+  "@latencyDeviceBaoBuSampleLech": {
+    "placeholders": {
+      "p0": {
+        "type": "Object"
+      },
+      "p1": {
+        "type": "Object"
+      },
+      "p2": {
+        "type": "Object"
+      },
+      "p3": {
+        "type": "Object"
+      }
+    }
+  },
+  "latencyDoDoTre": "Measure latency",
+  "@latencyDoDoTre": {},
+  "latencyDoLoi": "Measurement failed: {p0}",
+  "@latencyDoLoi": {
+    "placeholders": {
+      "p0": {
+        "type": "Object"
+      }
+    }
+  },
+  "latencyDoTreVongThuPhat": "Round-trip latency (record ↔ play)",
+  "@latencyDoTreVongThuPhat": {},
+  "latencyDoTuDong": "Automatic measurement",
+  "@latencyDoTuDong": {},
+  "latencyEngineDangDung": "Engine is using",
+  "@latencyEngineDangDung": {},
+  "latencyFailReason": "{reason, select, NO_SIGNAL{Didn't hear the test clicks — turn the volume up or connect a loopback cable} TOO_NOISY{Too much background noise — try somewhere quieter} INCONSISTENT{The measurements didn't agree — keep the iPad still and try again} DEVICE_CHANGED{The audio device changed during the test — try again} TIMEOUT{The test took too long — try again} other{{reason}}}",
+  "@latencyFailReason": {
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
+  "latencyKhongBatDuocAudio": "Couldn't start audio",
+  "@latencyKhongBatDuocAudio": {},
+  "latencyLanDoGanNhat": "Last measurement",
+  "@latencyLanDoGanNhat": {},
+  "latencyOffsetValue": "{ms} ms ({samples, plural, =1{1 sample} other{{samples} samples}})",
+  "@latencyOffsetValue": {
+    "placeholders": {
+      "ms": {
+        "type": "Object"
+      },
+      "samples": {
+        "type": "int"
+      }
+    }
+  },
+  "latencySamplesMs": "{samples, plural, =1{1 sample} other{{samples} samples}} · {ms} ms",
+  "@latencySamplesMs": {
+    "placeholders": {
+      "samples": {
+        "type": "int"
+      },
+      "ms": {
+        "type": "Object"
+      }
+    }
+  },
+  "latencyVe0": "Reset to 0",
+  "@latencyVe0": {},
+  "learnKind": "{kind, select, clip{Clip} scene{Scene} transport{Transport} stopAll{Stop all} trackGain{Track gain} trackMute{Track mute} fx{FX parameter} loopButton{LOOP button} trackStop{Stop track} undoOverdub{Undo overdub} other{{kind}}}",
+  "@learnKind": {
+    "placeholders": {
+      "kind": {
+        "type": "String"
+      }
+    }
+  },
+  "libraryTag": "{tag, select, drums{Drums} bass{Bass} keys{Keys} synth{Synth} pad{Pad} click{Click} tone{Tone} test{Test} hiphop{Hip-hop} funk{Funk} melody{Melody} vocal{Vocal} fx{FX} other{{tag}}}",
+  "@libraryTag": {
+    "placeholders": {
+      "tag": {
+        "type": "String"
+      }
+    }
+  },
+  "licensesChuaCoFileGiayPhep": "No content license files yet.",
+  "@licensesChuaCoFileGiayPhep": {},
+  "licensesChuaTichHopP406": "Not integrated yet (P4-06)",
+  "@licensesChuaTichHopP406": {},
+  "licensesGiayPhepCacGoiFlutter": "Licenses of Flutter/Dart packages",
+  "@licensesGiayPhepCacGoiFlutter": {},
+  "licensesGoiFlutterDart": "Flutter / Dart packages",
+  "@licensesGoiFlutterDart": {},
+  "licensesJuce9DungTheoGoi": "JUCE 9 — used under the Starter plan (JUCE EULA)",
+  "@licensesJuce9DungTheoGoi": {},
+  "licensesKhongDocDuoc": "Couldn't read {asset}",
+  "@licensesKhongDocDuoc": {
+    "placeholders": {
+      "asset": {
+        "type": "Object"
+      }
+    }
+  },
+  "licensesNoiDungAmThanh": "Sound content",
+  "@licensesNoiDungAmThanh": {},
+  "licensesThuVienBenThuBa": "Third-party libraries",
+  "@licensesThuVienBenThuBa": {},
+  "linkBamOMotMayThi": "Pressing ▶/■ on one device starts/stops the others too.",
+  "@linkBamOMotMayThi": {},
+  "linkBatLink2": "Enable Link",
+  "@linkBatLink2": {},
+  "linkCanQuyenMangCucBo": "Needs local network access (iOS asks the first time you turn it on).",
+  "@linkCanQuyenMangCucBo": {},
+  "linkDangNoiThietBi": "Connected: {peers, plural, =0{no peers} =1{1 peer} other{{peers} peers}}",
+  "@linkDangNoiThietBi": {
+    "placeholders": {
+      "peers": {
+        "type": "int"
+      }
+    }
+  },
+  "linkDongBoStartStop": "Sync Start/Stop",
+  "@linkDongBoStartStop": {},
+  "linkDongBoTempoVaNhip": "Sync tempo and beat with other apps/devices on the same Wi-Fi. Saved per project.",
+  "@linkDongBoTempoVaNhip": {},
+  "linkEngineChuaCoLinkP4": "The engine doesn't have Link yet (P4-06) — your choice is saved in the project",
+  "@linkEngineChuaCoLinkP4": {},
+  "linkTitle": "Ableton Link",
+  "@linkTitle": {},
+  "loopButtonLabel": "{state, select, idle{LOOP} rec{REC} play{PLAY} dub{DUB} other{LOOP}}",
+  "@loopButtonLabel": {
+    "placeholders": {
+      "state": {
+        "type": "String"
+      }
+    }
+  },
+  "loopButtonTooltip": "LOOP: tap = record → play → overdub · double-tap = stop · hold = undo",
+  "@loopButtonTooltip": {},
+  "loopDungTrack": "Stop track",
+  "@loopDungTrack": {},
+  "loopHoanTac": "Undo overdub / delete clip",
+  "@loopHoanTac": {},
+  "loopXoa": "Delete",
+  "@loopXoa": {},
+  "loopXoaClipBody": "There is no overdub layer to undo.",
+  "@loopXoaClipBody": {},
+  "loopXoaClipTitle": "Delete clip \"{name}\"?",
+  "@loopXoaClipTitle": {
+    "placeholders": {
+      "name": {
+        "type": "Object"
+      }
+    }
+  },
+  "menuClipMidiTrong": "{bars, plural, =1{Empty MIDI clip · 1 bar} other{Empty MIDI clip · {bars} bars}}",
+  "@menuClipMidiTrong": {
+    "placeholders": {
+      "bars": {
+        "type": "int"
+      }
+    }
+  },
+  "menuCopy": "Copy",
+  "@menuCopy": {},
+  "menuCopyToiDay": "Copy here",
+  "@menuCopyToiDay": {},
+  "menuDan": "Paste \"{p0}\"",
+  "@menuDan": {
+    "placeholders": {
+      "p0": {
+        "type": "Object"
+      }
+    }
+  },
+  "menuDanChuaCopyClipNao": "Paste (nothing copied)",
+  "@menuDanChuaCopyClipNao": {},
+  "menuDiChuyenToiDay": "Move here",
+  "@menuDiChuyenToiDay": {},
+  "menuDoiTenClip": "Rename clip",
+  "@menuDoiTenClip": {},
+  "menuKhongConOTrongBen": "No empty cell below",
+  "@menuKhongConOTrongBen": {},
+  "menuMauTrack": "Track color",
+  "@menuMauTrack": {},
+  "menuODichDaCoClip": "The target cell already has a clip",
+  "@menuODichDaCoClip": {},
+  "metronomeMode": "{mode, select, off{Off} always{On} recordOnly{Rec only} other{{mode}}}",
+  "@metronomeMode": {
+    "placeholders": {
+      "mode": {
+        "type": "String"
+      }
+    }
+  },
+  "midiAnyChannel": "any channel",
+  "@midiAnyChannel": {},
+  "midiAnyDevice": "any device",
+  "@midiAnyDevice": {},
+  "midiBatDauLearn": "Start learn",
+  "@midiBatDauLearn": {},
+  "midiBoGan": "Remove mapping",
+  "@midiBoGan": {},
+  "midiChannel": "channel {number}",
+  "@midiChannel": {
+    "placeholders": {
+      "number": {
+        "type": "Object"
+      }
+    }
+  },
+  "midiChuaGanGi": "Nothing mapped yet.",
+  "@midiChuaGanGi": {},
+  "midiChuaThayThietBiMidi": "No MIDI devices found. Connect via USB or pair Bluetooth MIDI.",
+  "@midiChuaThayThietBiMidi": {},
+  "midiClipO": "Clip · {p0} · cell {p1}",
+  "@midiClipO": {
+    "placeholders": {
+      "p0": {
+        "type": "Object"
+      },
+      "p1": {
+        "type": "Object"
+      }
+    }
+  },
+  "midiDenLedPhanHoiTrang": "Clip status LEDs (Launchpad) arrive in P4-05.",
+  "@midiDenLedPhanHoiTrang": {},
+  "midiDungMoiClipTheoQuantize": "Stops every clip on the quantize grid.",
+  "@midiDungMoiClipTheoQuantize": {},
+  "midiDungTatCa": "Stop all",
+  "@midiDungTatCa": {},
+  "midiEnableFailed": "Couldn't change the device: {error}",
+  "@midiEnableFailed": {
+    "placeholders": {
+      "error": {
+        "type": "Object"
+      }
+    }
+  },
+  "midiEngineChuaHoTroMidi": "The engine doesn't support MIDI yet (P4-01)",
+  "@midiEngineChuaHoTroMidi": {},
+  "midiFootswitchGhiChu": "{kind, select, loopButton{The footswitch acts like the on-screen LOOP button on the selected track: record → play → overdub.} trackStop{The footswitch stops the selected track (at the quantize boundary).} undoOverdub{The footswitch undoes the last overdub of the playing clip on the selected track.} other{{kind}}}",
+  "@midiFootswitchGhiChu": {
+    "placeholders": {
+      "kind": {
+        "type": "String"
+      }
+    }
+  },
+  "midiFxSlotItem": "Slot {number} · {type}",
+  "@midiFxSlotItem": {
+    "placeholders": {
+      "number": {
+        "type": "Object"
+      },
+      "type": {
+        "type": "Object"
+      }
+    }
+  },
+  "midiGanDieuKhienMidi2": "Map MIDI control",
+  "@midiGanDieuKhienMidi2": {},
+  "midiGanMoi": "New mapping",
+  "@midiGanMoi": {},
+  "midiGanMotNutNumTren": "Map a button/knob on your controller to a clip or FX parameter. Saved in the project.",
+  "@midiGanMotNutNumTren": {},
+  "midiGhepThietBiBluetoothMidi": "Pair Bluetooth MIDI device",
+  "@midiGhepThietBiBluetoothMidi": {},
+  "midiLamMoi": "Refresh",
+  "@midiLamMoi": {},
+  "midiLearnFailed": "Couldn't start learn: {error}",
+  "@midiLearnFailed": {
+    "placeholders": {
+      "error": {
+        "type": "Object"
+      }
+    }
+  },
+  "midiMidiLearnProjectDangMo": "MIDI learn (current project)",
+  "@midiMidiLearnProjectDangMo": {},
+  "midiO": "Cell {p0}",
+  "@midiO": {
+    "placeholders": {
+      "p0": {
+        "type": "Object"
+      }
+    }
+  },
+  "midiParamFallback": "parameter {id}",
+  "@midiParamFallback": {
+    "placeholders": {
+      "id": {
+        "type": "Object"
+      }
+    }
+  },
+  "midiSlot": "slot {number}",
+  "@midiSlot": {
+    "placeholders": {
+      "number": {
+        "type": "Object"
+      }
+    }
+  },
+  "midiSourceCc": "CC {number}",
+  "@midiSourceCc": {
+    "placeholders": {
+      "number": {
+        "type": "Object"
+      }
+    }
+  },
+  "midiSourceNote": "Note {number}",
+  "@midiSourceNote": {
+    "placeholders": {
+      "number": {
+        "type": "Object"
+      }
+    }
+  },
+  "midiThietBiRa": "Outputs",
+  "@midiThietBiRa": {},
+  "midiThietBiVao": "Inputs",
+  "@midiThietBiVao": {},
+  "midiTrackNayChuaCoFx": "This track has no FX.",
+  "@midiTrackNayChuaCoFx": {},
+  "midiVanHoacBamMotNut": "Turn a knob or press a button on your controller…",
+  "@midiVanHoacBamMotNut": {},
+  "mixerMaster": "Master",
+  "@mixerMaster": {},
+  "mixerMonitor": "Monitor",
+  "@mixerMonitor": {},
+  "mixerMonitorLuonBat": "Monitor: On",
+  "@mixerMonitorLuonBat": {},
+  "mixerMonitorTat": "Monitor: Off",
+  "@mixerMonitorTat": {},
+  "mixerMonitorTuDongKhiArm": "Monitor: Auto (when armed)",
+  "@mixerMonitorTuDongKhiArm": {},
+  "monitorShort": "{mode, select, off{Off} auto{Auto} always{On} other{{mode}}}",
+  "@monitorShort": {
+    "placeholders": {
+      "mode": {
+        "type": "String"
+      }
+    }
+  },
+  "onboardingAmThanhChiLuuTren": "Audio stays on your iPad and is never sent anywhere.",
+  "@onboardingAmThanhChiLuuTren": {},
+  "onboardingBienMotTiengBanThu": "Turn a sound you record into an instrument you can play on the keyboard.",
+  "@onboardingBienMotTiengBanThu": {},
+  "onboardingBoQua": "Skip",
+  "@onboardingBoQua": {},
+  "onboardingChamMotODePhat": "Tap a cell to launch a clip — it starts on the next bar.",
+  "@onboardingChamMotODePhat": {},
+  "onboardingChamSoSceneBenPhai": "Tap a scene on the right to launch a whole row at once.",
+  "@onboardingChamSoSceneBenPhai": {},
+  "onboardingChoPhepMicro": "Allow microphone",
+  "@onboardingChoPhepMicro": {},
+  "onboardingChuaCoQuyenMicroThu": "No microphone access yet: we'll ask again when you record.",
+  "@onboardingChuaCoQuyenMicroThu": {},
+  "onboardingDeSau": "Later",
+  "@onboardingDeSau": {},
+  "onboardingDoDoTreDeBan": "Measure latency so your recordings land on the beat.",
+  "@onboardingDoDoTreDeBan": {},
+  "onboardingKhongTaoDuocProjectDemo": "Couldn't create the demo project: {e}",
+  "@onboardingKhongTaoDuocProjectDemo": {
+    "placeholders": {
+      "e": {
+        "type": "Object"
+      }
+    }
+  },
+  "onboardingMicroDangBiTatBan": "The microphone is off. You can still play loops and built-in instruments; turn it back on in Settings to record.",
+  "@onboardingMicroDangBiTatBan": {},
+  "onboardingMoCaiDat": "Open Settings",
+  "@onboardingMoCaiDat": {},
+  "onboardingMoProjectDemo": "Open demo project",
+  "@onboardingMoProjectDemo": {},
+  "onboardingMusicLooperCanMicro": "Music Looper needs the microphone",
+  "@onboardingMusicLooperCanMicro": {},
+  "onboardingTabInstrumentPhiaDuoiDe": "Use the Instrument tab below to play pads and keys.",
+  "@onboardingTabInstrumentPhiaDuoiDe": {},
+  "onboardingThuGiongHatGuitarThanh": "Record vocals, guitar… into loops that stay in time.",
+  "@onboardingThuGiongHatGuitarThanh": {},
+  "onboardingThuNgayVoiProjectDemo": "Try the demo project",
+  "@onboardingThuNgayVoiProjectDemo": {},
+  "onboardingTiepTuc": "Continue",
+  "@onboardingTiepTuc": {},
+  "onboardingTuTaoProject": "Start my own project",
+  "@onboardingTuTaoProject": {},
+  "panelTab": "{tab, select, clip{Clip} instrument{Instrument} mixer{Mixer} fx{FX} browser{Browser} other{{tab}}}",
+  "@panelTab": {
+    "placeholders": {
+      "tab": {
+        "type": "String"
+      }
+    }
+  },
+  "projectsBanSao": "{name} (copy)",
+  "@projectsBanSao": {
+    "placeholders": {
+      "name": {
+        "type": "Object"
+      }
+    }
+  },
+  "projectsCaiDat": "Settings",
+  "@projectsCaiDat": {},
+  "projectsChuaCoProjectBamProject": "No projects yet. Tap \"New project\" or \"Create demo project\".",
+  "@projectsChuaCoProjectBamProject": {},
+  "projectsDoiTen": "Rename",
+  "@projectsDoiTen": {},
+  "projectsKhongDocDuocProject": "Couldn't read projects",
+  "@projectsKhongDocDuocProject": {},
+  "projectsLoi": "Error: {e}",
+  "@projectsLoi": {
+    "placeholders": {
+      "e": {
+        "type": "Object"
+      }
+    }
+  },
+  "projectsNhanBan": "Duplicate",
+  "@projectsNhanBan": {},
+  "projectsProjectJsonBiHongDa": "project.json was damaged — opened the previous save (.bak)",
+  "@projectsProjectJsonBiHongDa": {},
+  "projectsProjectMoi": "New project",
+  "@projectsProjectMoi": {},
+  "projectsSuaLanCuoi": "Last edited: {p0}",
+  "@projectsSuaLanCuoi": {
+    "placeholders": {
+      "p0": {
+        "type": "Object"
+      }
+    }
+  },
+  "projectsTaoProjectDemo": "Create demo project",
+  "@projectsTaoProjectDemo": {},
+  "projectsTitle": "Projects",
+  "@projectsTitle": {},
+  "projectsXoa": "Delete \"{p0}\"?",
+  "@projectsXoa": {
+    "placeholders": {
+      "p0": {
+        "type": "Object"
+      }
+    }
+  },
+  "projectsXoa2": "Delete",
+  "@projectsXoa2": {},
+  "projectsXoaCaBanThuAm": "This also deletes the recordings in the project. This can't be undone.",
+  "@projectsXoaCaBanThuAm": {},
+  "quantizeGrid": "{grid, select, none{None} sixteenth{1/16} eighth{1/8} quarter{1/4} half{1/2} bar1{1 bar} bar2{2 bars} bar4{4 bars} other{{grid}}}",
+  "@quantizeGrid": {
+    "placeholders": {
+      "grid": {
+        "type": "String"
+      }
+    }
+  },
+  "recordQuantize": "{grid, select, off{Off} sixteenth{1/16} eighth{1/8} other{{grid}}}",
+  "@recordQuantize": {
+    "placeholders": {
+      "grid": {
+        "type": "String"
+      }
+    }
+  },
+  "samplerCanQuyenMicroDeThu": "Microphone access is needed to record (Settings → Music Looper → Microphone)",
+  "@samplerCanQuyenMicroDeThu": {},
+  "samplerChamDeThuMotNot": "Tap to record one note (up to {p0} s)",
+  "@samplerChamDeThuMotNot": {
+    "placeholders": {
+      "p0": {
+        "type": "Object"
+      }
+    }
+  },
+  "samplerDangCatKhoangLangVa": "Trimming silence and detecting the note…",
+  "@samplerDangCatKhoangLangVa": {},
+  "samplerDangTaoNhacCu13": "Creating instrument (13 zones)… {p0}%",
+  "@samplerDangTaoNhacCu13": {
+    "placeholders": {
+      "p0": {
+        "type": "Object"
+      }
+    }
+  },
+  "samplerDoTinCay": "confidence {p0}%",
+  "@samplerDoTinCay": {
+    "placeholders": {
+      "p0": {
+        "type": "Object"
+      }
+    }
+  },
+  "samplerHatHoacThoiMotNot": "Sing or play one steady note… stops after {p0} s",
+  "@samplerHatHoacThoiMotNot": {
+    "placeholders": {
+      "p0": {
+        "type": "Object"
+      }
+    }
+  },
+  "samplerKhongBatDuocAudio": "Couldn't start audio: {p0}",
+  "@samplerKhongBatDuocAudio": {
+    "placeholders": {
+      "p0": {
+        "type": "Object"
+      }
+    }
+  },
+  "samplerKhongChacVeCaoDo": "Pitch is uncertain — set the root note with − / + before creating",
+  "@samplerKhongChacVeCaoDo": {},
+  "samplerKhongDoDuocCaoDo": "Couldn't detect the pitch — pick the root note and create again",
+  "@samplerKhongDoDuocCaoDo": {},
+  "samplerKhongNgheThayTieng": "Didn't hear any sound — check the mic and record again",
+  "@samplerKhongNgheThayTieng": {},
+  "samplerNotGoc": "Root note: ",
+  "@samplerNotGoc": {},
+  "samplerPhanTichLoi": "Analysis failed: {p0}",
+  "@samplerPhanTichLoi": {
+    "placeholders": {
+      "p0": {
+        "type": "Object"
+      }
+    }
+  },
+  "samplerTaoNhacCu": "Create instrument",
+  "@samplerTaoNhacCu": {},
+  "samplerTaoNhacCuLoi": "Couldn't create the instrument: {p0}",
+  "@samplerTaoNhacCuLoi": {
+    "placeholders": {
+      "p0": {
+        "type": "Object"
+      }
+    }
+  },
+  "samplerThuAmNhacCu": "Record → instrument",
+  "@samplerThuAmNhacCu": {},
+  "samplerThuLai": "Retake",
+  "@samplerThuLai": {},
+  "samplerTiengThu": "Recording {p0}",
+  "@samplerTiengThu": {
+    "placeholders": {
+      "p0": {
+        "type": "Object"
+      }
+    }
+  },
+  "samplerTrim": "Trim {start} → {end} s",
+  "@samplerTrim": {
+    "placeholders": {
+      "start": {
+        "type": "Object"
+      },
+      "end": {
+        "type": "Object"
+      }
+    }
+  },
+  "sessionBanThu": "Take {p0}",
+  "@sessionBanThu": {
+    "placeholders": {
+      "p0": {
+        "type": "Object"
+      }
+    }
+  },
+  "sessionBatEditRoiChamMot": "Turn on ✎ Edit, then tap a cell to select a clip",
+  "@sessionBatEditRoiChamMot": {},
+  "sessionChoPhepMicro": "Allow microphone",
+  "@sessionChoPhepMicro": {},
+  "sessionChuaCoQuyenMicroChi": "No microphone access: playback only, recording is off",
+  "@sessionChuaCoQuyenMicroChi": {},
+  "sessionChuaMoProject": "No project open",
+  "@sessionChuaMoProject": {},
+  "sessionDangMoProject": "Opening project… {p0}/{p1}",
+  "@sessionDangMoProject": {
+    "placeholders": {
+      "p0": {
+        "type": "Object"
+      },
+      "p1": {
+        "type": "Object"
+      }
+    }
+  },
+  "sessionKhongLuuDuocProject": "Couldn't save the project: {reason}",
+  "@sessionKhongLuuDuocProject": {
+    "placeholders": {
+      "reason": {
+        "type": "Object"
+      }
+    }
+  },
+  "sessionLoiKhiMoProject": "{p0, plural, =1{1 error} other{{p0} errors}} while opening the project: {p1}",
+  "@sessionLoiKhiMoProject": {
+    "placeholders": {
+      "p0": {
+        "type": "int"
+      },
+      "p1": {
+        "type": "Object"
+      }
+    }
+  },
+  "sessionMidiClipName": "MIDI {number}",
+  "@sessionMidiClipName": {
+    "placeholders": {
+      "number": {
+        "type": "Object"
+      }
+    }
+  },
+  "sessionMoPanel": "Open panel",
+  "@sessionMoPanel": {},
+  "sessionMoRongPanel": "Expand panel",
+  "@sessionMoRongPanel": {},
+  "sessionMode": "{mode, select, perform{Perform} edit{Edit} other{{mode}}}",
+  "@sessionMode": {
+    "placeholders": {
+      "mode": {
+        "type": "String"
+      }
+    }
+  },
+  "sessionOTrong": "Cell {p0}·{p1} is empty",
+  "@sessionOTrong": {
+    "placeholders": {
+      "p0": {
+        "type": "Object"
+      },
+      "p1": {
+        "type": "Object"
+      }
+    }
+  },
+  "sessionSceneName": "Scene {number}",
+  "@sessionSceneName": {
+    "placeholders": {
+      "number": {
+        "type": "Object"
+      }
+    }
+  },
+  "sessionThuGon": "Collapse",
+  "@sessionThuGon": {},
+  "sessionThuNhoPanel": "Restore panel",
+  "@sessionThuNhoPanel": {},
+  "sessionTitle": "Session",
+  "@sessionTitle": {},
+  "sessionTrackName": "Track {number}",
+  "@sessionTrackName": {
+    "placeholders": {
+      "number": {
+        "type": "Object"
+      }
+    }
+  },
+  "settingsNeedsProjectLink": "Open a project to turn on Link.",
+  "@settingsNeedsProjectLink": {},
+  "settingsNeedsProjectMidi": "Open a project to map MIDI controls.",
+  "@settingsNeedsProjectMidi": {},
+  "settingsSection": "{section, select, audio{Audio} latency{Latency} midi{MIDI} link{Link} licenses{Licenses} about{About} other{{section}}}",
+  "@settingsSection": {
+    "placeholders": {
+      "section": {
+        "type": "String"
+      }
+    }
+  },
+  "spike1MsDoLai": "✗ (> 1 ms, measure again)",
+  "@spike1MsDoLai": {},
+  "spikeApiversion": "apiVersion = {p0}",
+  "@spikeApiversion": {
+    "placeholders": {
+      "p0": {
+        "type": "Object"
+      }
+    }
+  },
+  "spikeAppCanMicroDeThu": "The app needs the microphone to record and measure latency.\nOpen Settings → Music Looper → turn on Microphone, then come back and tap Start.",
+  "@spikeAppCanMicroDeThu": {},
+  "spikeAudioBiNgatSiriCuoc": "Audio interrupted (Siri/call…)",
+  "@spikeAudioBiNgatSiriCuoc": {},
+  "spikeBat": "on",
+  "@spikeBat": {},
+  "spikeBlock20050Ms": "Block 200 / 50 ms",
+  "@spikeBlock20050Ms": {},
+  "spikeCamTaiNgheTruoc": "Plug in headphones first",
+  "@spikeCamTaiNgheTruoc": {},
+  "spikeCanQuyenMicro": "Microphone access needed",
+  "@spikeCanQuyenMicro": {},
+  "spikeCanhBaoBoNhoMb": "Memory warning: {p0} MB",
+  "@spikeCanhBaoBoNhoMb": {
+    "placeholders": {
+      "p0": {
+        "type": "Object"
+      }
+    }
+  },
+  "spikeCheaper": "Cheaper",
+  "@spikeCheaper": {},
+  "spikeCo": "yes",
+  "@spikeCo": {},
+  "spikeCoLatencyCao": "yes ⚠ high latency",
+  "@spikeCoLatencyCao": {},
+  "spikeCpuDinh": "CPU  {cpuAvg}% · peak {cpuPeak}%",
+  "@spikeCpuDinh": {
+    "placeholders": {
+      "cpuAvg": {
+        "type": "Object"
+      },
+      "cpuPeak": {
+        "type": "Object"
+      }
+    }
+  },
+  "spikeDaCamBat": "Plugged in, turn on",
+  "@spikeDaCamBat": {},
+  "spikeDangChay": "Running…",
+  "@spikeDangChay": {},
+  "spikeDangDo": "Measuring…",
+  "@spikeDangDo": {},
+  "spikeDangThu4Giay": "Recording 4 seconds…",
+  "@spikeDangThu4Giay": {},
+  "spikeDeSau": "Later",
+  "@spikeDeSau": {},
+  "spikeDeviceInKenh": "device: {p0} · in {p1} ch",
+  "@spikeDeviceInKenh": {
+    "placeholders": {
+      "p0": {
+        "type": "Object"
+      },
+      "p1": {
+        "type": "Object"
+      }
+    }
+  },
+  "spikeDo": "Measure",
+  "@spikeDo": {},
+  "spikeDoLatency": "Measure latency",
+  "@spikeDoLatency": {},
+  "spikeDoLatencyBoTaiNghe": "Measure latency: no headphones, external speaker, quiet room (~3 s, sine/loop paused). Stretch bench uses the 4-second recording.",
+  "@spikeDoLatencyBoTaiNghe": {},
+  "spikeEventRouteNgatXrun": "Events (route, interruptions, xruns)",
+  "@spikeEventRouteNgatXrun": {},
+  "spikeFakeengineChuaCoLoopcoreXcframework": "FakeEngine (no LoopCore.xcframework yet)",
+  "@spikeFakeengineChuaCoLoopcoreXcframework": {},
+  "spikeFormant": "Formant",
+  "@spikeFormant": {},
+  "spikeGain": "Gain",
+  "@spikeGain": {},
+  "spikeHetNgatAudio": "Interruption ended",
+  "@spikeHetNgatAudio": {},
+  "spikeHuy": "Cancel",
+  "@spikeHuy": {},
+  "spikeJobDangChay": "{op}: job {jobId} running…",
+  "@spikeJobDangChay": {
+    "placeholders": {
+      "op": {
+        "type": "Object"
+      },
+      "jobId": {
+        "type": "Object"
+      }
+    }
+  },
+  "spikeJobDangChay2": "{op}: job {jobId} running… {p2}%",
+  "@spikeJobDangChay2": {
+    "placeholders": {
+      "op": {
+        "type": "Object"
+      },
+      "jobId": {
+        "type": "Object"
+      },
+      "p2": {
+        "type": "Object"
+      }
+    }
+  },
+  "spikeJobThatBai": "{op} (job {jobId}) failed: {p2} {p3}",
+  "@spikeJobThatBai": {
+    "placeholders": {
+      "op": {
+        "type": "Object"
+      },
+      "jobId": {
+        "type": "Object"
+      },
+      "p2": {
+        "type": "Object"
+      },
+      "p3": {
+        "type": "Object"
+      }
+    }
+  },
+  "spikeKetQua": "Results",
+  "@spikeKetQua": {},
+  "spikeKhong": "no",
+  "@spikeKhong": {},
+  "spikeKhongDoDuocMicKhong": "Couldn't measure: the mic didn't hear the chirp clearly (inputPeak = {p0}).\nTurn the speaker up, unplug headphones, measure in a quiet room and try again.",
+  "@spikeKhongDoDuocMicKhong": {
+    "placeholders": {
+      "p0": {
+        "type": "Object"
+      }
+    }
+  },
+  "spikeLeAudioStartLoi": "le_audio_start error: {p0}",
+  "@spikeLeAudioStartLoi": {
+    "placeholders": {
+      "p0": {
+        "type": "Object"
+      }
+    }
+  },
+  "spikeLeCreateLoi": "le_create error: {p0}",
+  "@spikeLeCreateLoi": {
+    "placeholders": {
+      "p0": {
+        "type": "Object"
+      }
+    }
+  },
+  "spikeLoi": "error",
+  "@spikeLoi": {},
+  "spikeLoiEngine": "Engine error: {p0}",
+  "@spikeLoiEngine": {
+    "placeholders": {
+      "p0": {
+        "type": "Object"
+      }
+    }
+  },
+  "spikeLoopcoreSpike": "LoopCore spike",
+  "@spikeLoopcoreSpike": {},
+  "spikeMoCaiDat": "Open Settings",
+  "@spikeMoCaiDat": {},
+  "spikeModeDefault": "Mode default",
+  "@spikeModeDefault": {},
+  "spikeModeMeasurement": "Mode measurement",
+  "@spikeModeMeasurement": {},
+  "spikeNaudioChuaChayBamStart": "\nAudio is not running → tap Start audio first.",
+  "@spikeNaudioChuaChayBamStart": {},
+  "spikePassthroughCanTaiNghe": "Passthrough (headphones needed)",
+  "@spikePassthroughCanTaiNghe": {},
+  "spikePassthroughDuaMicRaLoa": "Passthrough sends the mic to the speaker. Without headphones you will get feedback.",
+  "@spikePassthroughDuaMicRaLoa": {},
+  "spikePhatLoop": "Play loop",
+  "@spikePhatLoop": {},
+  "spikeProjectsDev": "Projects (dev)",
+  "@spikeProjectsDev": {},
+  "spikeRoundTripDoDuocMs": "Measured round-trip: {p0} ms ({p1} smp)\niOS reports: {p2} ms ({p3} smp)\nSpread between runs: {p4} ms {p5} · valid {p6}/{runs}",
+  "@spikeRoundTripDoDuocMs": {
+    "placeholders": {
+      "p0": {
+        "type": "Object"
+      },
+      "p1": {
+        "type": "Object"
+      },
+      "p2": {
+        "type": "Object"
+      },
+      "p3": {
+        "type": "Object"
+      },
+      "p4": {
+        "type": "Object"
+      },
+      "p5": {
+        "type": "Object"
+      },
+      "p6": {
+        "type": "Object"
+      },
+      "runs": {
+        "type": "Object"
+      }
+    }
+  },
+  "spikeRouteDoiTaiNgheDay": "Route changed: wired/interface={p0}, Bluetooth={p1}",
+  "@spikeRouteDoiTaiNgheDay": {
+    "placeholders": {
+      "p0": {
+        "type": "Object"
+      },
+      "p1": {
+        "type": "Object"
+      }
+    }
+  },
+  "spikeSessionInfo": "Session info",
+  "@spikeSessionInfo": {},
+  "spikeSineHzGain": "Sine {p0} Hz · gain {p1}",
+  "@spikeSineHzGain": {
+    "placeholders": {
+      "p0": {
+        "type": "Object"
+      },
+      "p1": {
+        "type": "Object"
+      }
+    }
+  },
+  "spikeSpikeSetbuffersizeLoi": "spike.setBufferSize error: {p0}",
+  "@spikeSpikeSetbuffersizeLoi": {
+    "placeholders": {
+      "p0": {
+        "type": "Object"
+      }
+    }
+  },
+  "spikeSpikeSetsessionmodeLoi": "spike.setSessionMode error: {p0}",
+  "@spikeSpikeSetsessionmodeLoi": {
+    "placeholders": {
+      "p0": {
+        "type": "Object"
+      }
+    }
+  },
+  "spikeStartAudio": "Start audio",
+  "@spikeStartAudio": {},
+  "spikeStopAudio": "Stop audio",
+  "@spikeStopAudio": {},
+  "spikeStretchBench": "Stretch bench",
+  "@spikeStretchBench": {},
+  "spikeTaiGiaLapVoice": "Simulated load: {voices} voices",
+  "@spikeTaiGiaLapVoice": {
+    "placeholders": {
+      "voices": {
+        "type": "Object"
+      }
+    }
+  },
+  "spikeTanSo": "Frequency",
+  "@spikeTanSo": {},
+  "spikeTat": "off",
+  "@spikeTat": {},
+  "spikeThu4Giay": "Record 4 seconds",
+  "@spikeThu4Giay": {},
+  "spikeThuXong": "Recorded: {frames} frames ({seconds} s)",
+  "@spikeThuXong": {
+    "placeholders": {
+      "frames": {
+        "type": "Object"
+      },
+      "seconds": {
+        "type": "Object"
+      }
+    }
+  },
+  "spikeTongZoneMsFormantNsetup": "Total {p0} zones: {p1} ms {p2} · formant {p3}\nSetup {p4} ms · file write {p5} ms\nms/zone  {zones}\n{p7} WAV files: Files app → On My iPad → Music Looper → spike",
+  "@spikeTongZoneMsFormantNsetup": {
+    "placeholders": {
+      "p0": {
+        "type": "Object"
+      },
+      "p1": {
+        "type": "Object"
+      },
+      "p2": {
+        "type": "Object"
+      },
+      "p3": {
+        "type": "Object"
+      },
+      "p4": {
+        "type": "Object"
+      },
+      "p5": {
+        "type": "Object"
+      },
+      "zones": {
+        "type": "Object"
+      },
+      "p7": {
+        "type": "Object"
+      }
+    }
+  },
+  "spikeXrunTong": "Xrun (total {totalXruns})",
+  "@spikeXrunTong": {
+    "placeholders": {
+      "totalXruns": {
+        "type": "Object"
+      }
+    }
+  },
+  "tempoMode": "{mode, select, fixed{Fixed BPM} firstLoop{First loop sets BPM} other{{mode}}}",
+  "@tempoMode": {
+    "placeholders": {
+      "mode": {
+        "type": "String"
+      }
+    }
+  },
+  "trackMenuDoiTenScene": "Rename scene",
+  "@trackMenuDoiTenScene": {},
+  "trackMenuDoiTenTrack": "Rename track",
+  "@trackMenuDoiTenTrack": {},
+  "trackMenuMustBeEmpty": " (track must be empty)",
+  "@trackMenuMustBeEmpty": {},
+  "trackMenuToAudio": "Convert to audio track",
+  "@trackMenuToAudio": {},
+  "trackMenuToInstrument": "Convert to instrument track",
+  "@trackMenuToInstrument": {},
+  "transportAction": "{action, select, play{Play} stop{Stop} toggle{Play/Stop} other{{action}}}",
+  "@transportAction": {
+    "placeholders": {
+      "action": {
+        "type": "String"
+      }
+    }
+  },
+  "transportBpm": "{bpm} BPM",
+  "@transportBpm": {
+    "placeholders": {
+      "bpm": {
+        "type": "Object"
+      }
+    }
+  },
+  "transportBpmTrong": "— BPM",
+  "@transportBpmTrong": {},
+  "transportChoVongDau": "waiting for first loop",
+  "@transportChoVongDau": {},
+  "transportCpu": "CPU {cpu}% · xrun {xruns}",
+  "@transportCpu": {
+    "placeholders": {
+      "cpu": {
+        "type": "Object"
+      },
+      "xruns": {
+        "type": "Object"
+      }
+    }
+  },
+  "transportDaGhi": "Saved {p0} ({p1})",
+  "@transportDaGhi": {
+    "placeholders": {
+      "p0": {
+        "type": "Object"
+      },
+      "p1": {
+        "type": "Object"
+      }
+    }
+  },
+  "transportDemVaoBar": "Count-in {v, plural, =1{1 bar} other{{v} bars}}",
+  "@transportDemVaoBar": {
+    "placeholders": {
+      "v": {
+        "type": "int"
+      }
+    }
+  },
+  "transportGhiBuoiJamMaster": "Record jam (master)",
+  "@transportGhiBuoiJamMaster": {},
+  "transportKhongDemVao": "No count-in",
+  "@transportKhongDemVao": {},
+  "transportKhongGhiDuocJam": "Couldn't record the jam: {err}",
+  "@transportKhongGhiDuocJam": {
+    "placeholders": {
+      "err": {
+        "type": "Object"
+      }
+    }
+  },
+  "transportMetronomeCountInNhip": "Metronome · count-in · time signature",
+  "@transportMetronomeCountInNhip": {},
+  "transportMetronomeItem": "Metronome: {mode}",
+  "@transportMetronomeItem": {
+    "placeholders": {
+      "mode": {
+        "type": "Object"
+      }
+    }
+  },
+  "transportNhip": "Time signature {n}/{d}",
+  "@transportNhip": {
+    "placeholders": {
+      "n": {
+        "type": "Object"
+      },
+      "d": {
+        "type": "Object"
+      }
+    }
+  },
+  "transportQuantize": "Quantize",
+  "@transportQuantize": {},
+  "transportQuantizeChip": "Q: {grid}",
+  "@transportQuantizeChip": {
+    "placeholders": {
+      "grid": {
+        "type": "Object"
+      }
+    }
+  },
+  "transportTap": "TAP",
+  "@transportTap": {},
+  "transportThem": "More",
+  "@transportThem": {},
+  "warpMode": "{mode, select, stretch{Stretch} repitch{Re-Pitch} other{{mode}}}",
+  "@warpMode": {
+    "placeholders": {
+      "mode": {
+        "type": "String"
+      }
+    }
+  }
+}

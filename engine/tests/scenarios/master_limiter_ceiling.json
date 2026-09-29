@@ -1,0 +1,57 @@
+{
+  "name": "master_limiter_ceiling",
+  "description": "P3-15: trần limiter master -12 dBFS (FX_PARAM track -1, slot 1, p0); MASTER_GAIN +6 dB đẩy sine (-3 dBFS) vượt trần → đỉnh đúng -12 dBFS.",
+  "sampleRate": 48000,
+  "blockSize": 128,
+  "bpm": 120,
+  "setup": [
+    {
+      "call": {
+        "op": "clip.setAudio",
+        "track": 0,
+        "slot": 0,
+        "clipId": "s",
+        "file": "fixtures/clip_sine_4beats_120.wav",
+        "lengthBeats": 4,
+        "originalBpm": 120,
+        "warp": "repitch",
+        "gainDb": 0
+      }
+    },
+    {
+      "send": {
+        "type": "MASTER_GAIN",
+        "f0": 6
+      }
+    },
+    {
+      "send": {
+        "type": "FX_PARAM",
+        "track": -1,
+        "slot": 1,
+        "i0": 0,
+        "f0": -12
+      }
+    }
+  ],
+  "timeline": [
+    {
+      "atSample": 0,
+      "send": {
+        "type": "CLIP_LAUNCH",
+        "track": 0,
+        "slot": 0
+      }
+    }
+  ],
+  "renderBeats": 2,
+  "expect": {
+    "peakMinDb": -12.2,
+    "peakMaxDb": -11.99
+  },
+  "requires": [
+    "audioClips",
+    "limiter",
+    "masterFx"
+  ]
+}

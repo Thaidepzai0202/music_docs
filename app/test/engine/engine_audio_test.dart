@@ -1,4 +1,5 @@
-// P0-06: quyền mic trước le_audio_start. P2-03: xuống nền khi không phát → le_audio_stop, lên lại → start.
+// 07 §4.0 (chốt 29/09): start() KHÔNG hỏi quyền mic — chưa có quyền → chế độ chỉ phát (audio.setInputEnabled
+// false); ensureMic() hỏi lần đầu khi cần thu, được cấp → bật input. Lên lại app mà đã có quyền → bật lại input. P2-03: xuống nền khi không phát → le_audio_stop, lên lại → start.
 import 'package:engine_ffi/engine_ffi.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:music_looper/engine/engine_audio.dart';
@@ -26,25 +27,53 @@ void main() {
       expect(audio.isRunning, isTrue);
     });
 
-    test('chưa hỏi → hiện hộp thoại hệ thống, được cấp → start', () async {
+    test('chưa hỏi → start KHÔNG hiện hộp thoại: chỉ phát; ensureMic hỏi lần đầu, được cấp → bật input', () async {
       final calls = mockEnginePlatform(permission: 'undetermined', grantOnRequest: true);
-      expect((await audio.start()).ok, isTrue);
-      expect(calls, ['micPermission', 'requestMicPermission']);
+      final r = await audio.start();
+      expect(r.status, AudioStartStatus.outputOnly);
+      expect(calls, ['micPermission'], reason: 'không hỏi khi chỉ mở app / project');
+      expect(audio.micPermission, MicPermission.undetermined);
+      expect(await audio.ensureMic(), isTrue);
+      expect(calls, ['micPermission', 'micPermission', 'requestMicPermission']);
+      expect(fake.inputEnabled, isTrue);
+      expect(audio.canRecordNow, isTrue);
+      expect(await audio.ensureMic(), isTrue, reason: 'lần sau không hỏi lại');
+      expect(calls.where((c) => c == 'requestMicPermission').length, 1);
     });
 
-    test('chưa hỏi → người dùng từ chối → micDenied, KHÔNG gọi le_audio_start', () async {
+    test('ensureMic: người dùng từ chối → false, vẫn chỉ phát, quyền = denied', () async {
+      mockEnginePlatform(permission: 'undetermined', grantOnRequest: false);
+      await audio.start();
+      expect(await audio.ensureMic(), isFalse);
+      expect(audio.micPermission, MicPermission.denied);
+      expect(audio.outputOnly, isTrue);
+    });
+
+    test('chưa hỏi → outputOnly: tắt input TRƯỚC rồi mới le_audio_start', () async {
       mockEnginePlatform(permission: 'undetermined', grantOnRequest: false);
       final r = await audio.start();
-      expect(r.status, AudioStartStatus.micDenied);
-      expect(fake.audioStartCount, 0);
-      expect(audio.isRunning, isFalse);
+      expect(r.status, AudioStartStatus.outputOnly);
+      expect(r.ok, isTrue);
+      expect(r.canRecord, isFalse);
+      expect(fake.calls.single.request, {'op': 'audio.setInputEnabled', 'enabled': false});
+      expect(fake.inputEnabled, isFalse);
+      expect(fake.audioStartCount, 1);
+      expect(audio.isRunning, isTrue);
+      expect(audio.outputOnly, isTrue);
     });
 
-    test('đã từ chối từ trước → micDenied, không hỏi lại', () async {
+    test('đã từ chối từ trước → outputOnly, không hỏi lại', () async {
       final calls = mockEnginePlatform(permission: 'denied');
-      expect((await audio.start()).status, AudioStartStatus.micDenied);
+      expect((await audio.start()).status, AudioStartStatus.outputOnly);
       expect(calls, ['micPermission']);
-      expect(fake.audioStartCount, 0);
+      expect(fake.audioStartCount, 1);
+    });
+
+    test('có quyền → không gọi audio.setInputEnabled', () async {
+      mockEnginePlatform();
+      expect((await audio.start()).canRecord, isTrue);
+      expect(fake.calls, isEmpty);
+      expect(audio.outputOnly, isFalse);
     });
 
     test('le_audio_start lỗi → engineError kèm mã', () async {
@@ -56,9 +85,9 @@ void main() {
       expect(audio.isRunning, isFalse);
     });
 
-    test('không có plugin Swift (không phải iOS) → micDenied, không crash', () async {
-      expect((await audio.start()).status, AudioStartStatus.micDenied);
-      expect(fake.audioStartCount, 0);
+    test('không có plugin Swift (không phải iOS) → outputOnly, không crash', () async {
+      expect((await audio.start()).status, AudioStartStatus.outputOnly);
+      expect(fake.audioStartCount, 1);
     });
   });
 
@@ -70,7 +99,7 @@ void main() {
       audio.onBackground(engineBusy: false);
       expect(fake.audioStopCount, 1);
       expect(audio.isRunning, isFalse);
-      audio.onForeground();
+      await audio.onForeground();
       expect(fake.audioStartCount, 2);
       expect(audio.isRunning, isTrue);
     });
@@ -80,7 +109,7 @@ void main() {
       audio.onBackground(engineBusy: true);
       expect(fake.audioStopCount, 0);
       expect(audio.isRunning, isTrue);
-      audio.onForeground();
+      await audio.onForeground();
       expect(fake.audioStartCount, 1, reason: 'không start lại khi chưa từng stop');
     });
 
@@ -95,9 +124,41 @@ void main() {
       await audio.start();
       audio.stop();
       audio.onBackground(engineBusy: false);
-      audio.onForeground();
+      await audio.onForeground();
       expect(fake.audioStartCount, 1);
       expect(audio.isRunning, isFalse);
+    });
+  });
+
+  group('chế độ chỉ phát (07 §4.0)', () {
+    test('lên lại app sau khi cấp quyền trong Cài đặt → bật lại input, báo listener', () async {
+      var permission = 'denied';
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger.setMockMethodCallHandler(
+        EnginePlatform.channel,
+        (call) async => call.method == 'micPermission' ? permission : null,
+      );
+      addTearDown(
+        () => TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger.setMockMethodCallHandler(
+          EnginePlatform.channel,
+          null,
+        ),
+      );
+      await audio.start();
+      expect(audio.outputOnly, isTrue);
+      var notified = 0;
+      audio.addListener(() => notified++);
+
+      await audio.onForeground(); // vẫn chưa có quyền
+      expect(audio.outputOnly, isTrue);
+      expect(notified, 0);
+
+      permission = 'granted';
+      await audio.onForeground();
+      expect(audio.outputOnly, isFalse);
+      expect(fake.calls.last.request, {'op': 'audio.setInputEnabled', 'enabled': true});
+      expect(fake.inputEnabled, isTrue);
+      expect(notified, 1);
+      expect(fake.audioStartCount, 1, reason: 'không khởi động lại audio, chỉ bật input');
     });
   });
 }

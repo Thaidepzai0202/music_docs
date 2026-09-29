@@ -17,6 +17,13 @@
     }
   },
   {
+    "call": {
+      "op": "transport.setTempoMode",
+      "mode": "firstLoop",
+      "firstLoopBeats": 8.0
+    }
+  },
+  {
     "send": "SET_QUANTIZE",
     "i0": 1
   },
@@ -33,11 +40,52 @@
     "send": "MASTER_GAIN"
   },
   {
+    "send": "FX_PARAM",
+    "slot": 0,
+    "f0": 1.5
+  },
+  {
+    "send": "FX_PARAM",
+    "slot": 0,
+    "i0": 1,
+    "f0": -2.0
+  },
+  {
+    "send": "FX_PARAM",
+    "slot": 0,
+    "i0": 2
+  },
+  {
+    "send": "FX_PARAM",
+    "slot": 1,
+    "f0": -1.0
+  },
+  {
+    "call": {
+      "op": "instrument.createFromRecording",
+      "instrumentId": "i_2",
+      "file": "instruments/i_2/source.caf",
+      "rootNote": 72,
+      "mode": "classic"
+    }
+  },
+  {
+    "call": {
+      "op": "instrument.setEnvelope",
+      "instrumentId": "i_2",
+      "a": 0.01,
+      "d": 0.1,
+      "s": 1.0,
+      "r": 0.8
+    }
+  },
+  {
     "call": {
       "op": "track.configure",
       "track": 7,
       "kind": "audio",
-      "name": "Bass"
+      "name": "Bass",
+      "color": "#7BD88F"
     }
   },
   {
@@ -74,14 +122,9 @@
       "params": {
         "0": 0.375,
         "1": 0.4
-      }
+      },
+      "bypass": true
     }
-  },
-  {
-    "send": "FX_BYPASS",
-    "track": 7,
-    "slot": 0,
-    "i0": 1
   },
   {
     "call": {
@@ -89,7 +132,8 @@
       "track": 7,
       "index": 1,
       "type": "eq3",
-      "params": {}
+      "params": {},
+      "bypass": false
     }
   },
   {
@@ -100,7 +144,8 @@
       "type": "comp",
       "params": {
         "0": -18.0
-      }
+      },
+      "bypass": false
     }
   },
   {
@@ -123,16 +168,7 @@
       "lengthBeats": 4.0,
       "originalBpm": 100.0,
       "warp": "repitch",
-      "gain": 2.5
-    }
-  },
-  {
-    "call": {
-      "op": "instrument.createFromRecording",
-      "instrumentId": "i_2",
-      "file": "instruments/i_2/source.caf",
-      "rootNote": 72,
-      "mode": "classic"
+      "gainDb": 2.5
     }
   },
   {
@@ -173,6 +209,11 @@
     "call": {
       "op": "job.result",
       "jobId": 2
+    }
+  },
+  {
+    "call": {
+      "op": "engine.info"
     }
   }
 ]

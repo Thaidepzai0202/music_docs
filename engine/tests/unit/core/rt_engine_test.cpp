@@ -21,9 +21,10 @@ struct OfflineRig {
 
     CommandQueue commands{kRtCommandCapacity};
     RtToNrtQueue toNrt{kRtToNrtCapacity};
+    MidiQueue midiIn{kMidiToRtCapacity};
     StatePublisher publisher;
     std::vector<float> recordBuf = std::vector<float>(48000 * 10);
-    RtEngine rt{commands, toNrt, publisher};
+    RtEngine rt{commands, toNrt, midiIn, publisher};
 
     std::vector<float> inBuf = std::vector<float>(kBlock, 0.0f);
     std::vector<float> outL = std::vector<float>(kBlock), outR = std::vector<float>(kBlock);

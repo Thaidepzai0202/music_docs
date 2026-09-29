@@ -1,0 +1,40 @@
+{
+  "name": "monitor_auto_headphones",
+  "description": "P1-23: monitoring Auto + tai nghe có dây + track đã arm → nghe input.",
+  "sampleRate": 48000,
+  "blockSize": 128,
+  "bpm": 120,
+  "inputChannels": 1,
+  "input": "fixtures/clip_click_4beats_120.wav",
+  "inputLoop": true,
+  "headphones": true,
+  "setup": [
+    {
+      "send": {
+        "type": "TRACK_ARM",
+        "track": 0,
+        "i0": 1
+      }
+    },
+    {
+      "send": {
+        "type": "TRACK_MONITOR",
+        "track": 0,
+        "i0": 1
+      }
+    }
+  ],
+  "timeline": [],
+  "renderBeats": 4,
+  "expect": {
+    "onsetSamples": [
+      0,
+      24000,
+      48000,
+      72000
+    ]
+  },
+  "requires": [
+    "monitoring"
+  ]
+}

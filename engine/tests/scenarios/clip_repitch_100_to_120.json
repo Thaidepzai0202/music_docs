@@ -1,0 +1,53 @@
+{
+  "name": "clip_repitch_100_to_120",
+  "description": "P1-12 DoD: click 4 beat @100 BPM phát ở 120 BPM (Re-Pitch ×1.2) → vòng đúng 96000 sample, click ở k × 24000. onsetTolerance 1: nội suy Hermite đọc trước 1 sample (x[i+2]) nên có pre-ring rất nhỏ (> −120 dB) ở sample trước click.",
+  "sampleRate": 48000,
+  "blockSize": 128,
+  "bpm": 120,
+  "setup": [
+    {
+      "call": {
+        "op": "clip.setAudio",
+        "track": 0,
+        "slot": 0,
+        "clipId": "c_0_0",
+        "file": "fixtures/clip_click_4beats_100.wav",
+        "lengthBeats": 4,
+        "originalBpm": 100,
+        "warp": "repitch",
+        "gainDb": 0
+      }
+    }
+  ],
+  "timeline": [
+    {
+      "atSample": 0,
+      "send": {
+        "type": "CLIP_LAUNCH",
+        "track": 0,
+        "slot": 0
+      }
+    }
+  ],
+  "renderBeats": 12,
+  "expect": {
+    "onsetSamples": [
+      0,
+      24000,
+      48000,
+      72000,
+      96000,
+      120000,
+      144000,
+      168000,
+      192000,
+      216000,
+      240000,
+      264000
+    ],
+    "onsetTolerance": 1
+  },
+  "requires": [
+    "audioClips"
+  ]
+}

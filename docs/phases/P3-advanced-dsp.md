@@ -13,26 +13,26 @@
 
 | TT | Mã | Việc | Tuần | Ước lượng |
 |---|---|---|---|---|
-| [ ] | P3-01 | `Yin` + unit test độ chính xác (sai số < 5 cent) | W23 | 1.5d |
-| [ ] | P3-02 | `SilenceTrimmer` + op `capture.start/stop` (thu một mẫu, không phải clip) | W23 | 1d |
-| [ ] | P3-03 | Sheet Record-to-Sampler (07 §4.2): thu, trim, nốt gốc, chọn chế độ | W23 | 2d |
-| [ ] | P3-04 | `PitchRenderer`: 13 zone, formant, job có progress và cancel | W24 | 2d |
-| [ ] | P3-05 | `instrument.createFromRecording` + swap snapshot + cache zone trên đĩa | W24 | 1d |
-| [ ] | P3-06 | Chế độ Classic + `instrument.setMode` + nút chuyển trong UI | W24 | 0.5d |
-| [ ] | P3-07 | Golden cho instrument đã render + chỉnh ADSR trong UI | W24 | 1d |
-| [ ] | P3-08 | Hook đổi tempo phía NRT + debounce 300ms | W25 | 1d |
-| [ ] | P3-09 | `WarpRenderer` (job, cancel, cache `stretched/`) | W25 | 1.5d |
-| [ ] | P3-10 | [RT] Chuyển Re-Pitch → Stretched ở ranh giới bar (crossfade 10ms) | W25 | 1.5d |
-| [ ] | P3-11 | Loop thư viện đi qua warp + scenario "đổi BPM không glitch" | W25 | 1d |
-| [ ] | P3-12 | `Processor` + `FxChain` (3 slot) + `fx.set/remove` + smoothing | W26 | 1.5d |
-| [ ] | P3-13 | Filter + Delay (đồng bộ tempo, ping-pong) | W26 | 1d |
-| [ ] | P3-14 | Reverb + EQ3 (tự tính biquad) + Compressor | W26 | 1.5d |
-| [ ] | P3-15 | Master EQ3 + tham số limiter | W26 | 0.5d |
-| [ ] | P3-16 | Panel FX (3 slot, knob, bypass, chọn loại) | W26 | 1.5d |
-| [ ] | P3-17 | Ghi lại buổi jam (master bus → WAV, real-time) | W27 | 1d |
-| [ ] | P3-18 | Export scene offline (+ stems) bằng `RtEngine` offline | W27 | 1.5d |
-| [ ] | P3-19 | Chuyển M4A/AAC (AVFoundation, Obj-C++) | W27 | 1d |
-| [ ] | P3-20 | Sheet Export + share sheet | W27 | 1d |
+| [~] | P3-01 | `Yin` + unit test độ chính xác (sai số < 5 cent) | W23 | 1.5d |
+| [x] | P3-02 | `SilenceTrimmer` + op `capture.start/stop` (thu một mẫu, không phải clip) | W23 | 1d |
+| [~] | P3-03 | Sheet Record-to-Sampler (07 §4.2): thu, trim, nốt gốc, chọn chế độ | W23 | 2d |
+| [~] | P3-04 | `PitchRenderer`: 13 zone, formant, job có progress và cancel | W24 | 2d |
+| [x] | P3-05 | `instrument.createFromRecording` + swap snapshot + cache zone trên đĩa | W24 | 1d |
+| [x] | P3-06 | Chế độ Classic + `instrument.setMode` + nút chuyển trong UI | W24 | 0.5d |
+| [~] | P3-07 | Golden cho instrument đã render + chỉnh ADSR trong UI | W24 | 1d |
+| [x] | P3-08 | Hook đổi tempo phía NRT + debounce 300ms | W25 | 1d |
+| [x] | P3-09 | `WarpRenderer` (job, cancel, cache `stretched/`) | W25 | 1.5d |
+| [x] | P3-10 | [RT] Chuyển Re-Pitch → Stretched ở ranh giới bar (crossfade 10ms) | W25 | 1.5d |
+| [x] | P3-11 | Loop thư viện đi qua warp + scenario "đổi BPM không glitch" | W25 | 1d |
+| [x] | P3-12 | `Processor` + `FxChain` (3 slot) + `fx.set/remove` + smoothing | W26 | 1.5d |
+| [x] | P3-13 | Filter + Delay (đồng bộ tempo, ping-pong) | W26 | 1d |
+| [x] | P3-14 | Reverb + EQ3 (tự tính biquad) + Compressor | W26 | 1.5d |
+| [x] | P3-15 | Master EQ3 + tham số limiter | W26 | 0.5d |
+| [~] | P3-16 | Panel FX (3 slot, knob, bypass, chọn loại) | W26 | 1.5d |
+| [x] | P3-17 | Ghi lại buổi jam (master bus → WAV, real-time) | W27 | 1d |
+| [x] | P3-18 | Export scene offline (+ stems) bằng `RtEngine` offline | W27 | 1.5d |
+| [x] | P3-19 | Chuyển M4A/AAC (AVFoundation, Obj-C++) | W27 | 1d |
+| [~] | P3-20 | Sheet Export + share sheet | W27 | 1d |
 | [ ] | P3-21 | Đo hiệu năng full tính năng trên iPad 8 (tải chuẩn 08 §1) + tối ưu | W28 | 2d |
 | [ ] | P3-22 | **Review M3** | W28 | 1d |
 
@@ -82,7 +82,8 @@
   - [ ] Kéo knob gửi tối đa 1 lệnh mỗi frame
   - [ ] Bypass không gây click
 - **P3-17 → P3-18:**
-  - [ ] File export dài đúng N bar ±0 sample
+  - [ ] File export dài đúng N bar ±0 sample (WAV). M4A lệch ≤ 1024 frame do priming của AAC
+  - [ ] WAV 24-bit có dither TPDF: sai lệch ≤ **1.5 LSB** (giới hạn toán học của TPDF ±1 LSB cộng làm tròn)
   - [ ] Export offline không làm xrun phần đang phát live
 - **P3-19 → P3-20:**
   - [ ] M4A mở được trong app Files và Music

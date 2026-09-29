@@ -1,6 +1,7 @@
 #include "sim/ScenarioRunner.h"
 
 #include <algorithm>
+#include <chrono>
 #include <cmath>
 #include <memory>
 #include <sstream>
@@ -25,7 +26,7 @@ constexpr Named kCommands[] = {
     {"SET_BPM", LE_CMD_SET_BPM}, {"SET_QUANTIZE", LE_CMD_SET_QUANTIZE}, {"METRONOME", LE_CMD_METRONOME},
     {"SET_COUNT_IN", LE_CMD_SET_COUNT_IN}, {"CLIP_LAUNCH", LE_CMD_CLIP_LAUNCH}, {"CLIP_STOP", LE_CMD_CLIP_STOP},
     {"SCENE_LAUNCH", LE_CMD_SCENE_LAUNCH}, {"STOP_ALL", LE_CMD_STOP_ALL}, {"CLIP_RECORD", LE_CMD_CLIP_RECORD},
-    {"RECORD_STOP", LE_CMD_RECORD_STOP}, {"OVERDUB_TOGGLE", LE_CMD_OVERDUB_TOGGLE},
+    {"RECORD_STOP", LE_CMD_RECORD_STOP}, {"OVERDUB_TOGGLE", LE_CMD_OVERDUB_TOGGLE}, {"LOOP_BUTTON", LE_CMD_LOOP_BUTTON},
     {"TRACK_GAIN", LE_CMD_TRACK_GAIN}, {"TRACK_PAN", LE_CMD_TRACK_PAN}, {"TRACK_MUTE", LE_CMD_TRACK_MUTE},
     {"TRACK_SOLO", LE_CMD_TRACK_SOLO}, {"TRACK_ARM", LE_CMD_TRACK_ARM}, {"TRACK_MONITOR", LE_CMD_TRACK_MONITOR},
     {"SELECT_TRACK", LE_CMD_SELECT_TRACK}, {"NOTE_ON", LE_CMD_NOTE_ON}, {"NOTE_OFF", LE_CMD_NOTE_OFF},
@@ -41,6 +42,9 @@ constexpr Named kEnums[] = {
 };
 
 double toDb(double amp) { return amp > 1e-12 ? 20.0 * std::log10(amp) : -240.0; }
+// Ngưỡng im lặng mặc định (08 §3.2): −120 dBFS. Output là float nên vẫn cao hơn nhiễu làm tròn rất nhiều;
+// fade-in 2 ms của clip làm sample đầu nhỏ (VD data[0]/96 ≈ −91 dB) nhưng KHÁC 0 → phải được tính là có tiếng.
+constexpr double kDefaultSilenceDb = -120.0;
 double fromDb(double db) { return std::pow(10.0, db / 20.0); }
 
 bool isNumber(const juce::var& v) { return v.isInt() || v.isInt64() || v.isDouble(); }
@@ -77,6 +81,14 @@ public:
 
     ScenarioResult run() {
         R_.name = sc_["name"].toString().toStdString();
+        if (const auto* req = sc_["requires"].getArray()) {
+            const auto& have = supportedFeatures();
+            for (const auto& f : *req) {
+                const std::string name = f.toString().toStdString();
+                if (std::find(have.begin(), have.end(), name) == have.end())
+                    return fail("scenario cần tính năng \"" + name + "\" mà engine (binary) này chưa có — build lại?");
+            }
+        }
         R_.sampleRate = isNumber(sc_["sampleRate"]) ? (double) sc_["sampleRate"] : 48000.0;
         R_.blockSize = opt_.blockSize > 0 ? opt_.blockSize : (isNumber(sc_["blockSize"]) ? (int) sc_["blockSize"] : 128);
         if (R_.blockSize < 1 || R_.blockSize > 4096) return fail("blockSize phải trong [1, 4096]");
@@ -92,11 +104,15 @@ public:
         cfg.numInputChannels = isNumber(sc_["inputChannels"]) ? (int) sc_["inputChannels"] : (input_.empty() ? 0 : 1);
         const std::string tmp = tmpDir_.getFullPathName().toStdString();
         cfg.dataDir = tmp.c_str();
+        cfg.libraryDir = baseDir_.c_str();   // "fixtures/x.wav" trong clip.setAudio / track.setInstrument → engine/tests/
         if (const auto err = core::Engine::validate(&cfg); err != LE_OK) return fail("LeConfig không hợp lệ");
 
         const int maxChunk = std::max(R_.blockSize, 1024);
-        auto dev = std::make_unique<io::OfflineDeviceIO>(maxChunk);
+        auto dev = std::make_unique<io::OfflineDeviceIO>(opt_.maxBlock > 0 ? opt_.maxBlock : maxChunk);
         device_ = dev.get();
+        // P1-20: latency thiết bị báo (engine dùng để bù) và độ trễ thật của input (giả lập round-trip).
+        if (isNumber(sc_["latencySamples"])) dev->setLatencies((int) sc_["latencySamples"], 0);
+        if ((bool) sc_.getProperty("headphones", false)) dev->setRoute({true, false});   // P1-23
         engine_ = std::make_unique<core::Engine>(cfg, std::move(dev));
         if (engine_->audioStart() != LE_OK) return fail("audioStart (offline) lỗi");
 
@@ -109,6 +125,7 @@ public:
 
         if (!buildTimeline()) return R_;
         if (!render(maxChunk)) return R_;
+        collectClipInfo();
         engine_->audioStop();
         engine_.reset();
 
@@ -146,6 +163,8 @@ private:
             return false;
         }
         input_ = std::move(ch[0]);
+        inputDelay_ = isNumber(sc_["inputDelaySamples"]) ? std::max(0, (int) sc_["inputDelaySamples"]) : 0;
+        inputLoop_ = (bool) sc_.getProperty("inputLoop", false);
         return true;
     }
 
@@ -277,10 +296,55 @@ private:
         return true;
     }
 
+    // clipInfo: [{track, slot, kind, lengthBeats, file?}] — gọi clip.info khi render xong (trước khi huỷ engine).
+    void collectClipInfo() {
+        const juce::var ci = sc_["expect"]["clipInfo"];
+        if (!ci.isArray()) return;
+        for (int i = 0; i < 200 && engine_ != nullptr; ++i) {   // đợi job ghi file / snapshot của take (≤ 1 s)
+            engine_->pump();
+            juce::Thread::sleep(5);
+        }
+        for (const auto& e : *ci.getArray()) {
+            const std::string q = "{\"op\":\"clip.info\",\"track\":" + e["track"].toString().toStdString() +
+                                  ",\"slot\":" + e["slot"].toString().toStdString() + "}";
+            juce::var r;
+            juce::JSON::parse(juce::String::fromUTF8(engine_->call(q.c_str()).c_str()), r);
+            clipInfos_.push_back({e, r["result"]});
+        }
+    }
+
+    void checkClipInfo() {
+        for (const auto& [want, got] : clipInfos_) {
+            const std::string at = "clipInfo (" + want["track"].toString().toStdString() + "," + want["slot"].toString().toStdString() + "): ";
+            if (want.hasProperty("kind") && got["kind"].toString() != want["kind"].toString())
+                R_.failures.push_back(at + "kind = " + got["kind"].toString().toStdString() + ", kỳ vọng " + want["kind"].toString().toStdString());
+            if (isNumber(want["lengthBeats"]) && std::fabs((double) got["lengthBeats"] - (double) want["lengthBeats"]) > 1e-9)
+                R_.failures.push_back(at + "lengthBeats = " + got["lengthBeats"].toString().toStdString() + ", kỳ vọng " +
+                                      want["lengthBeats"].toString().toStdString());
+            if (isNumber(want["stretchedBpm"]) && std::fabs((double) got["stretchedBpm"] - (double) want["stretchedBpm"]) > 1e-6)
+                R_.failures.push_back(at + "stretchedBpm = " + got["stretchedBpm"].toString().toStdString() + ", kỳ vọng " +
+                                      want["stretchedBpm"].toString().toStdString());
+        }
+    }
+
+    // stateAt (08 §3.2): trạng thái LeState SAU KHI render đúng F frame đầu tiên.
+    void collectStateFrames() {
+        const juce::var sa = sc_["expect"]["stateAt"];
+        if (!sa.isArray()) return;
+        for (const auto& e : *sa.getArray())
+            if (isNumber(e["frame"])) stateFrames_.push_back((std::int64_t) (juce::int64) e["frame"]);
+        std::sort(stateFrames_.begin(), stateFrames_.end());
+        stateFrames_.erase(std::unique(stateFrames_.begin(), stateFrames_.end()), stateFrames_.end());
+    }
+
     bool render(int maxChunk) {
+        collectStateFrames();
+        size_t nextState = 0;
+        while (nextState < stateFrames_.size() && stateFrames_[nextState] <= 0) ++nextState;   // frame ≤ 0: báo lỗi ở checkStates
         R_.left.assign((size_t) total_, 0.0f);
         R_.right.assign((size_t) total_, 0.0f);
         std::vector<float> inBuf((size_t) maxChunk, 0.0f);
+        if (opt_.blockTimesNs != nullptr) opt_.blockTimesNs->reserve(opt_.blockTimesNs->size() + (size_t) (total_ / std::max(1, R_.blockSize)) + events_.size() + 16);
         const int numIn = device_->numInputs();
         size_t next = 0;
         std::int64_t t = 0;
@@ -291,17 +355,36 @@ private:
             }
             std::int64_t end = std::min(total_, t + R_.blockSize);
             if (next < events_.size() && events_[next].sample > t) end = std::min(end, events_[next].sample);
+            if (nextState < stateFrames_.size() && stateFrames_[nextState] > t) end = std::min(end, stateFrames_[nextState]);
             const int n = (int) (end - t);
 
-            for (int i = 0; i < n; ++i) {
-                const auto src = (size_t) (t + i);
-                inBuf[(size_t) i] = src < input_.size() ? input_[src] : 0.0f;
+            for (int i = 0; i < n; ++i) {   // in(t) = file[(t − delay) (mod len nếu loop)]: trễ áp lúc đọc
+                const std::int64_t src = t + i - inputDelay_;
+                float x = 0.0f;
+                if (src >= 0 && !input_.empty()) {
+                    if ((size_t) src < input_.size()) x = input_[(size_t) src];
+                    else if (inputLoop_) x = input_[(size_t) src % input_.size()];
+                }
+                inBuf[(size_t) i] = x;
             }
             const float* ins[1] = {inBuf.data()};
             float* outs[2] = {R_.left.data() + t, R_.right.data() + t};
-            device_->render(numIn > 0 ? ins : nullptr, numIn > 0 ? 1 : 0, outs, 2, n);
+            if (opt_.blockTimesNs != nullptr) {
+                const auto t0 = std::chrono::steady_clock::now();
+                device_->render(numIn > 0 ? ins : nullptr, numIn > 0 ? 1 : 0, outs, 2, n);
+                const auto t1 = std::chrono::steady_clock::now();
+                opt_.blockTimesNs->push_back((double) std::chrono::duration_cast<std::chrono::nanoseconds>(t1 - t0).count());
+            } else {
+                device_->render(numIn > 0 ? ins : nullptr, numIn > 0 ? 1 : 0, outs, 2, n);
+            }
+            if (opt_.blockFrames != nullptr) opt_.blockFrames->push_back(n);
             engine_->pump();
             t = end;
+            while (nextState < stateFrames_.size() && stateFrames_[nextState] <= t) {
+                LeState st{};
+                core::globalStatePublisher().read(st);
+                states_.emplace_back(stateFrames_[nextState++], st);
+            }
         }
         return true;
     }
@@ -322,7 +405,7 @@ private:
             R_.failures.push_back("peak " + std::to_string(toDb(peak)) + " dBFS < peakMinDb " + ex["peakMinDb"].toString().toStdString());
 
         if (ex.hasProperty("firstNonSilentSample")) {
-            const double thr = fromDb(isNumber(ex["silenceThresholdDb"]) ? (double) ex["silenceThresholdDb"] : -90.0);
+            const double thr = fromDb(isNumber(ex["silenceThresholdDb"]) ? (double) ex["silenceThresholdDb"] : kDefaultSilenceDb);
             std::int64_t first = -1;
             for (size_t i = 0; i < n; ++i)
                 if (std::fabs(L[i]) > thr || std::fabs(Rr[i]) > thr) { first = (std::int64_t) i; break; }
@@ -346,14 +429,148 @@ private:
                                       " > maxSampleJumpDb " + ex["maxSampleJumpDb"].toString().toStdString());
         }
 
+        if (ex["onsetSamples"].isArray()) checkOnsets(ex);
+        if (ex["stateAt"].isArray()) checkStates(ex);
+        if (ex["reference"].isObject()) checkReference(ex["reference"]);
+        checkClipInfo();
+        if (isNumber(ex["silentFromSample"])) {
+            const double thr = fromDb(isNumber(ex["silenceThresholdDb"]) ? (double) ex["silenceThresholdDb"] : kDefaultSilenceDb);
+            const auto from = (size_t) (juce::int64) ex["silentFromSample"];
+            for (size_t i = from; i < n; ++i)
+                if (std::fabs(L[i]) > thr || std::fabs(Rr[i]) > thr) {
+                    R_.failures.push_back("không im lặng tại sample " + std::to_string(i) + " (silentFromSample " +
+                                          std::to_string(from) + ")");
+                    break;
+                }
+        }
         if (ex["golden"].isString() && !opt_.ignoreGolden) checkGolden(ex);
+    }
+
+    // Onset = sample vượt ngưỡng im lặng mà `onsetMinGap` sample trước đó đều im lặng (click, nốt, clip bắt đầu).
+    void checkOnsets(const juce::var& ex) {
+        const double thr = fromDb(isNumber(ex["silenceThresholdDb"]) ? (double) ex["silenceThresholdDb"] : kDefaultSilenceDb);
+        const int gap = isNumber(ex["onsetMinGap"]) ? (int) ex["onsetMinGap"] : 64;
+        std::vector<std::int64_t> found;
+        std::int64_t lastLoud = -(std::int64_t) gap - 1;
+        for (size_t i = 0; i < R_.left.size(); ++i) {
+            const bool loud = std::fabs(R_.left[i]) > thr || std::fabs(R_.right[i]) > thr;
+            if (!loud) continue;
+            if ((std::int64_t) i - lastLoud > gap) found.push_back((std::int64_t) i);
+            lastLoud = (std::int64_t) i;
+        }
+        std::vector<std::int64_t> expected;
+        for (const auto& v : *ex["onsetSamples"].getArray()) expected.push_back((std::int64_t) (juce::int64) v);
+        R_.notes.push_back("onsets: " + std::to_string(found.size()) + " (kỳ vọng " + std::to_string(expected.size()) + ")");
+        const size_t n = std::min(found.size(), expected.size());
+        const auto tol = isNumber(ex["onsetTolerance"]) ? (std::int64_t) (juce::int64) ex["onsetTolerance"] : 0;
+        for (size_t i = 0; i < n; ++i)
+            if (std::llabs(found[i] - expected[i]) > tol) {
+                R_.failures.push_back("onset #" + std::to_string(i) + " tại sample " + std::to_string(found[i]) + ", kỳ vọng " +
+                                      std::to_string(expected[i]));
+                return;
+            }
+        if (found.size() != expected.size())
+            R_.failures.push_back("số onset = " + std::to_string(found.size()) + ", kỳ vọng " + std::to_string(expected.size()) +
+                                  (found.size() > n ? " (thừa onset tại sample " + std::to_string(found[n]) + ")" : ""));
+    }
+
+    // Null test với CHÍNH file nguồn (không phải golden): output[start + skip + i] == file[(skip + i) % len] (loop)
+    // nhân `gain` (VD 0.7071 cho pan giữa). Dùng khi clip phát 1:1, đúng sample.
+    void checkReference(const juce::var& ref) {
+        std::vector<std::vector<float>> f;
+        double sr = 0;
+        std::string err;
+        if (!readWav(resolve(ref["file"].toString()).getFullPathName().toStdString(), f, sr, &err)) {
+            R_.failures.push_back("reference: " + err);
+            return;
+        }
+        if (f.size() < 2) f.push_back(f[0]);
+        const auto start = isNumber(ref["startSample"]) ? (std::int64_t) (juce::int64) ref["startSample"] : 0;
+        const auto skip = isNumber(ref["skip"]) ? (std::int64_t) (juce::int64) ref["skip"] : 0;
+        const bool loop = (bool) ref.getProperty("loop", false);
+        const double gain = isNumber(ref["gain"]) ? (double) ref["gain"] : 1.0;
+        const double maxDiff = fromDb(isNumber(ref["maxDiffDb"]) ? (double) ref["maxDiffDb"] : -120.0);
+        const std::int64_t len = (std::int64_t) f[0].size();
+        const std::int64_t end = isNumber(ref["endSample"]) ? (std::int64_t) (juce::int64) ref["endSample"] : (std::int64_t) R_.left.size();
+        double worst = 0.0;
+        std::int64_t worstAt = -1;
+        const std::vector<float>* outs[2] = {&R_.left, &R_.right};
+        for (std::int64_t i = start + skip; i < end; ++i) {
+            std::int64_t k = i - start;
+            if (k >= len) {
+                if (!loop) break;
+                k %= len;
+            }
+            for (int c = 0; c < 2; ++c) {
+                const double d = std::fabs((double) (*outs[c])[(size_t) i] - gain * f[(size_t) c][(size_t) k]);
+                if (d > worst) { worst = d; worstAt = i; }
+            }
+        }
+        R_.notes.push_back("reference: lệch lớn nhất " + std::to_string(toDb(worst)) + " dB tại sample " + std::to_string(worstAt));
+        if (worst > maxDiff)
+            R_.failures.push_back("reference lệch " + std::to_string(toDb(worst)) + " dB tại sample " + std::to_string(worstAt) +
+                                  " (ngưỡng " + ref["maxDiffDb"].toString().toStdString() + " dB)");
+    }
+
+    static int clipStateFromVar(const juce::var& v) {
+        if (isNumber(v)) return (int) v;
+        static const char* names[] = {"EMPTY", "STOPPED", "QUEUED_PLAY", "PLAYING", "QUEUED_STOP", "QUEUED_RECORD", "RECORDING", "OVERDUBBING"};
+        std::string n = v.toString().toStdString();
+        if (n.rfind("LE_CLIP_", 0) == 0) n = n.substr(8);
+        for (int i = 0; i < 8; ++i)
+            if (n == names[i]) return i;
+        return -1;
+    }
+
+    void checkStates(const juce::var& ex) {
+        static const char* names[] = {"EMPTY", "STOPPED", "QUEUED_PLAY", "PLAYING", "QUEUED_STOP", "QUEUED_RECORD", "RECORDING", "OVERDUBBING"};
+        for (const auto& e : *ex["stateAt"].getArray()) {
+            const auto frame = (std::int64_t) (juce::int64) e["frame"];
+            const LeState* st = nullptr;
+            for (const auto& [f, s] : states_)
+                if (f == frame) st = &s;
+            if (frame < 1) {
+                R_.failures.push_back("stateAt frame phải ≥ 1 (trạng thái SAU KHI render F frame)");
+                continue;
+            }
+            if (st == nullptr) {
+                R_.failures.push_back("stateAt frame " + std::to_string(frame) + " nằm ngoài độ dài render");
+                continue;
+            }
+            const std::string at = "stateAt frame " + std::to_string(frame) + ": ";
+            const int t = isNumber(e["track"]) ? (int) e["track"] : -1;
+            if (e.hasProperty("clipState")) {
+                const int s = isNumber(e["slot"]) ? (int) e["slot"] : -1;
+                const int want = clipStateFromVar(e["clipState"]);
+                if (t < 0 || t >= LE_MAX_TRACKS || s < 0 || s >= LE_MAX_SCENES || want < 0) {
+                    R_.failures.push_back(at + "cần track, slot, clipState hợp lệ");
+                    continue;
+                }
+                const int got = st->clipState[t][s];
+                if (got != want)
+                    R_.failures.push_back(at + "ô (" + std::to_string(t) + "," + std::to_string(s) + ") = " +
+                                          (got >= 0 && got < 8 ? names[got] : "?") + ", kỳ vọng " + names[want]);
+            }
+            if (e.hasProperty("playingSlot") && t >= 0 && t < LE_MAX_TRACKS && st->trackPlayingSlot[t] != (int) e["playingSlot"])
+                R_.failures.push_back(at + "trackPlayingSlot[" + std::to_string(t) + "] = " + std::to_string(st->trackPlayingSlot[t]) +
+                                      ", kỳ vọng " + e["playingSlot"].toString().toStdString());
+            if (e.hasProperty("playing") && (st->playing != 0) != (bool) e["playing"])
+                R_.failures.push_back(at + "playing = " + std::to_string(st->playing));
+            if (isNumber(e["bpm"]) && std::fabs(st->bpm - (double) e["bpm"]) > 1e-3)
+                R_.failures.push_back(at + "bpm = " + std::to_string(st->bpm) + ", kỳ vọng " + e["bpm"].toString().toStdString());
+            if (isNumber(e["beat"]) && std::fabs(st->beat - (double) e["beat"]) > 1e-9)
+                R_.failures.push_back(at + "beat = " + std::to_string(st->beat) + ", kỳ vọng " + e["beat"].toString().toStdString());
+        }
     }
 
     void checkGolden(const juce::var& ex) {
         const juce::File gf = resolve(ex["golden"].toString());
         if (!gf.existsAsFile()) {
-            R_.failures.push_back("chưa có golden " + gf.getFullPathName().toStdString() + " → chạy scripts/golden_update.sh " +
-                                  R_.name + " rồi TỰ NGHE file trước khi commit");
+            const std::string msg = "chưa có golden " + gf.getFullPathName().toStdString() + " → chạy scripts/golden_update.sh " +
+                                    R_.name + " rồi TỰ NGHE file trước khi commit";
+            // goldenRequired:false — scenario mới đang chờ người dùng nghe duyệt: nhắc, không fail.
+            if ((bool) ex.getProperty("goldenRequired", true)) R_.failures.push_back(msg);
+            else R_.notes.push_back("CHỜ DUYỆT: " + msg);
             return;
         }
         std::vector<std::vector<float>> g;
@@ -405,6 +622,11 @@ private:
     std::int64_t anchorSample_ = 0;
     double anchorBeat_ = 0.0;
     std::int64_t total_ = 0;
+    std::vector<std::int64_t> stateFrames_;
+    std::vector<std::pair<juce::var, juce::var>> clipInfos_;
+    bool inputLoop_ = false;
+    int inputDelay_ = 0;
+    std::vector<std::pair<std::int64_t, LeState>> states_;
 };
 
 ScenarioResult runParsed(const juce::String& text, const RunOptions& opt, const std::string& defaultBase) {
@@ -426,6 +648,13 @@ ScenarioResult runParsed(const juce::String& text, const RunOptions& opt, const 
 }
 
 } // namespace
+
+const std::vector<std::string>& supportedFeatures() {
+    static const std::vector<std::string> f = {
+        "transport", "metronome", "clips", "scheduler", "launchLog", "audioClips", "midiClips", "sampler", "mixer",
+        "limiter", "recording", "latencyCompensation", "midiRecording", "overdub", "monitoring", "sim", "fx", "masterFx", "warp", "pedal"};
+    return f;
+}
 
 int commandTypeFromName(const std::string& name) {
     const std::string n = name.rfind("LE_CMD_", 0) == 0 ? name.substr(7) : name;

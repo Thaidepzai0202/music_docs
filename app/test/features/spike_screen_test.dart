@@ -50,13 +50,14 @@ void main() {
       await unmount(tester);
     });
 
-    testWidgets('bị từ chối → không start, dialog mở Settings', (tester) async {
+    testWidgets('bị từ chối → chạy chỉ phát (07 §4.0), dialog mở Settings', (tester) async {
       final calls = mockEnginePlatform(permission: 'denied');
       await pumpSpike(tester);
       await tester.tap(find.byKey(const Key('spike.audio')));
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 300));
-      expect(fake.audioStartCount, 0);
+      expect(fake.audioStartCount, 1);
+      expect(fake.inputEnabled, isFalse);
       expect(find.text('Cần quyền micro'), findsOneWidget);
       await tester.tap(find.byKey(const Key('spike.openSettings')));
       await tester.pump();

@@ -1,0 +1,53 @@
+{
+  "name": "launch_while_stopped",
+  "description": "P1-15: transport dừng mà CLIP_LAUNCH → Play bắt đầu ở beat 0, clip phát ngay tại sample 0.",
+  "sampleRate": 48000,
+  "blockSize": 128,
+  "bpm": 120,
+  "setup": [
+    {
+      "call": {
+        "op": "clip.setMidi",
+        "track": 2,
+        "slot": 5,
+        "clipId": "c_2_5",
+        "lengthBeats": 4,
+        "notes": [
+          {
+            "p": 60,
+            "v": 100,
+            "s": 0,
+            "d": 0.5
+          }
+        ]
+      }
+    }
+  ],
+  "timeline": [
+    {
+      "atSample": 0,
+      "send": {
+        "type": "CLIP_LAUNCH",
+        "track": 2,
+        "slot": 5
+      }
+    }
+  ],
+  "renderBeats": 2,
+  "expect": {
+    "stateAt": [
+      {
+        "frame": 1,
+        "playing": true,
+        "beat": 0,
+        "track": 2,
+        "slot": 5,
+        "clipState": "PLAYING",
+        "playingSlot": 5
+      }
+    ]
+  },
+  "requires": [
+    "scheduler"
+  ]
+}

@@ -1,0 +1,51 @@
+{
+  "name": "master_eq_mid_boost",
+  "description": "P3-15: EQ3 master mid +12 dB (peak 1 kHz, Q 0.7) → sine 500 Hz được nâng +5.7 dB: đỉnh L từ -9.0 lên -3.3 dBFS.",
+  "sampleRate": 48000,
+  "blockSize": 128,
+  "bpm": 120,
+  "setup": [
+    {
+      "call": {
+        "op": "clip.setAudio",
+        "track": 0,
+        "slot": 0,
+        "clipId": "s",
+        "file": "fixtures/clip_sine_4beats_120.wav",
+        "lengthBeats": 4,
+        "originalBpm": 120,
+        "warp": "repitch",
+        "gainDb": 0
+      }
+    },
+    {
+      "send": {
+        "type": "FX_PARAM",
+        "track": -1,
+        "slot": 0,
+        "i0": 1,
+        "f0": 12
+      }
+    }
+  ],
+  "timeline": [
+    {
+      "atSample": 0,
+      "send": {
+        "type": "CLIP_LAUNCH",
+        "track": 0,
+        "slot": 0
+      }
+    }
+  ],
+  "renderBeats": 2,
+  "expect": {
+    "peakMinDb": -3.6,
+    "peakMaxDb": -3.0,
+    "maxSampleJumpDb": -20
+  },
+  "requires": [
+    "audioClips",
+    "masterFx"
+  ]
+}

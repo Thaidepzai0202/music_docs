@@ -64,6 +64,7 @@ typedef enum LeCommandType {
     LE_CMD_CLIP_RECORD    = 14,       /* track, slot, i0 = số bar (0 = tự do) */
     LE_CMD_RECORD_STOP    = 15,       /* track: kết thúc take tự do tại ranh giới quantize */
     LE_CMD_OVERDUB_TOGGLE = 16,       /* track */
+    LE_CMD_LOOP_BUTTON    = 17,       /* track, slot (-1 = tự chọn): nút LOOP xoay vòng thu → chốt → overdub (07 §3.1b) */
     /* Track */
     LE_CMD_TRACK_GAIN     = 20,       /* track, f0 = dB (-120 = -inf .. +6) */
     LE_CMD_TRACK_PAN      = 21,       /* track, f0 = -1..1 */
@@ -153,6 +154,7 @@ typedef enum LeError {
     LE_ERR_OUT_OF_MEMORY = -30, LE_ERR_QUEUE_FULL = -31,
     LE_ERR_JOB_CANCELLED = -40, LE_ERR_JOB_NOT_FOUND = -41,
     LE_ERR_PITCH_NOT_DETECTED = -50,
+    LE_ERR_OVERDUB_UNSUPPORTED = -60,   /* LE_EVT_ERROR: không vào được overdub (Re-Pitch khác tempo, chưa có bản copy) */
     LE_ERR_INTERNAL = -99
 } LeError;
 

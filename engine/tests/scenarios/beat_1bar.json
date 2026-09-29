@@ -1,0 +1,132 @@
+{
+  "name": "beat_1bar",
+  "description": "P1-28/29: nhịp 1 bar (kick 1 & 3, snare 2 & 4, hat móc đơn) bằng kit_synth → GOLDEN. Người dùng chạy scripts/golden_update.sh beat_1bar rồi NGHE duyệt.",
+  "sampleRate": 48000,
+  "blockSize": 128,
+  "bpm": 120,
+  "setup": [
+    {
+      "call": {
+        "op": "track.configure",
+        "track": 0,
+        "kind": "instrument",
+        "name": "Drums"
+      }
+    },
+    {
+      "call": {
+        "op": "track.setInstrument",
+        "track": 0,
+        "instrument": {
+          "kind": "sfz",
+          "path": "fixtures/kit_synth/kit_synth.sfz"
+        }
+      }
+    },
+    {
+      "call": {
+        "op": "clip.setMidi",
+        "track": 0,
+        "slot": 0,
+        "clipId": "beat",
+        "lengthBeats": 4,
+        "notes": [
+          {
+            "p": 36,
+            "v": 120,
+            "s": 0.0,
+            "d": 0.25
+          },
+          {
+            "p": 36,
+            "v": 120,
+            "s": 2.0,
+            "d": 0.25
+          },
+          {
+            "p": 38,
+            "v": 110,
+            "s": 1.0,
+            "d": 0.25
+          },
+          {
+            "p": 38,
+            "v": 110,
+            "s": 3.0,
+            "d": 0.25
+          },
+          {
+            "p": 42,
+            "v": 90,
+            "s": 0.0,
+            "d": 0.1
+          },
+          {
+            "p": 42,
+            "v": 70,
+            "s": 0.5,
+            "d": 0.1
+          },
+          {
+            "p": 42,
+            "v": 90,
+            "s": 1.0,
+            "d": 0.1
+          },
+          {
+            "p": 42,
+            "v": 70,
+            "s": 1.5,
+            "d": 0.1
+          },
+          {
+            "p": 42,
+            "v": 90,
+            "s": 2.0,
+            "d": 0.1
+          },
+          {
+            "p": 42,
+            "v": 70,
+            "s": 2.5,
+            "d": 0.1
+          },
+          {
+            "p": 42,
+            "v": 90,
+            "s": 3.0,
+            "d": 0.1
+          },
+          {
+            "p": 42,
+            "v": 70,
+            "s": 3.5,
+            "d": 0.1
+          }
+        ]
+      }
+    }
+  ],
+  "timeline": [
+    {
+      "atSample": 0,
+      "send": {
+        "type": "CLIP_LAUNCH",
+        "track": 0,
+        "slot": 0
+      }
+    }
+  ],
+  "renderBeats": 8,
+  "expect": {
+    "golden": "golden/beat_1bar.wav",
+    "goldenRequired": false,
+    "nullTestMaxDb": -90,
+    "firstNonSilentSample": 0,
+    "peakMaxDb": -0.3
+  },
+  "requires": [
+    "midiClips",
+    "sampler"
+  ]
+}

@@ -34,3 +34,6 @@ Pods/
 # Engine spike output
 engine/spike-out/
 *.profraw
+
+# Ảnh sinh ra khi golden test fail (flutter test)
+**/test/**/failures/

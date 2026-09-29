@@ -22,6 +22,7 @@ struct Counters {
     std::atomic<std::uint32_t> interruptionEnded{0};
     std::atomic<std::uint32_t> routeChanged{0};
     std::atomic<std::uint32_t> mediaServicesReset{0};
+    std::atomic<std::uint32_t> memoryWarnings{0};   // UIApplicationDidReceiveMemoryWarningNotification (P4-17)
 };
 Counters& counters();
 

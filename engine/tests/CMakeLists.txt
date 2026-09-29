@@ -9,7 +9,9 @@ target_include_directories(le-tests PRIVATE ${PROJECT_SOURCE_DIR}/src ${PROJECT_
 target_link_libraries(le-tests PRIVATE loopcore Catch2::Catch2WithMain)
 # clang upstream (mac-rtsan): TEST_CASE dùng __COUNTER__ → -Wc2y-extensions dưới -Wpedantic của JUCE.
 # Đặt ở mức source vì cờ source đứng SAU cờ interface của loopcore (-Wpedantic) trên dòng lệnh.
-set_source_files_properties(${LE_TEST_SOURCES} PROPERTIES COMPILE_OPTIONS "$<$<CXX_COMPILER_ID:Clang>:-Wno-c2y-extensions>")
+# -Wfloat-equal (JUCE) cũng tắt cho test: so sánh bằng chính xác trong test là cố ý (số phải khớp từng bit).
+set_source_files_properties(${LE_TEST_SOURCES} PROPERTIES COMPILE_OPTIONS
+  "$<$<CXX_COMPILER_ID:Clang>:-Wno-c2y-extensions>;-Wno-float-equal")
 target_compile_definitions(le-tests PRIVATE
   LE_TEST_FIXTURES_DIR="${CMAKE_CURRENT_SOURCE_DIR}/fixtures"
   LE_TEST_SCENARIOS_DIR="${CMAKE_CURRENT_SOURCE_DIR}/scenarios"

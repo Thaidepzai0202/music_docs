@@ -58,6 +58,9 @@ class JobTracker {
     );
   }
 
+  /// Huỷ job (`job.cancel`): job kết thúc bằng `JOB_CANCELLED` → [awaitJob] ném [EngineJobException].
+  void cancel(int jobId) => _engine.call({'op': 'job.cancel', 'jobId': jobId});
+
   void _onEvent(EngineEvent e) {
     switch (e) {
       case JobProgress():
@@ -78,7 +81,15 @@ class JobTracker {
   void _complete(Completer<Map<String, dynamic>> c, EngineEvent e) {
     switch (e) {
       case JobFailed(:final jobId, :final errorCode):
-        c.completeError(EngineJobException(jobId, leErrorName(errorCode)));
+        // Event chỉ mang mã; message (vd. lý do đo trễ thất bại NO_SIGNAL…) nằm trong job.result.
+        var message = '';
+        try {
+          final err = _engine.callOk('job.result', {'jobId': jobId})['error'];
+          if (err is Map) message = '${err['message'] ?? ''}';
+        } on EngineCallException {
+          // job đã bị dọn — giữ mã lỗi là đủ
+        }
+        c.completeError(EngineJobException(jobId, leErrorName(errorCode), message));
       case JobDone(:final jobId):
         try {
           final r = _engine.callOk('job.result', {'jobId': jobId});

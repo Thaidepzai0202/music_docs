@@ -1,0 +1,67 @@
+{
+  "name": "solo_one_track",
+  "description": "P1-13 DoD: track 0 = click, track 1 = sine. Solo track 0 → chỉ còn click (giữa các click im lặng).",
+  "sampleRate": 48000,
+  "blockSize": 128,
+  "bpm": 120,
+  "setup": [
+    {
+      "call": {
+        "op": "clip.setAudio",
+        "track": 0,
+        "slot": 0,
+        "clipId": "c_0_0",
+        "file": "fixtures/clip_click_4beats_120.wav",
+        "lengthBeats": 4,
+        "originalBpm": 120,
+        "warp": "repitch",
+        "gainDb": 0
+      }
+    },
+    {
+      "call": {
+        "op": "clip.setAudio",
+        "track": 1,
+        "slot": 0,
+        "clipId": "c_1_0",
+        "file": "fixtures/clip_sine_4beats_120.wav",
+        "lengthBeats": 4,
+        "originalBpm": 120,
+        "warp": "repitch",
+        "gainDb": 0
+      }
+    },
+    {
+      "send": {
+        "type": "TRACK_SOLO",
+        "track": 0,
+        "i0": 1
+      }
+    }
+  ],
+  "timeline": [
+    {
+      "atSample": 0,
+      "send": {
+        "type": "SCENE_LAUNCH",
+        "slot": 0
+      }
+    }
+  ],
+  "renderBeats": 8,
+  "expect": {
+    "onsetSamples": [
+      0,
+      24000,
+      48000,
+      72000,
+      96000,
+      120000,
+      144000,
+      168000
+    ]
+  },
+  "requires": [
+    "mixer"
+  ]
+}

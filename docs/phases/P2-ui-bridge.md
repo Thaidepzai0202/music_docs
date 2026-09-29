@@ -5,38 +5,42 @@
 **Spec chính:** 05, 06, 07. **Mọi task UI** phải kiểm tra Highlight Repaints và 60fps trên iPad 8 trước khi đóng (07 §6).
 **W19 (08–12/02) là tuần Tết**, không xếp task.
 
+> **29/09/2026:** các task `[~]` đã code xong, chạy với FakeEngine (135 + 58 test xanh). Còn chờ **kiểm trên iPad 8** (60fps, repaint, cảm giác chạm) và **engine thật** có lệnh clip (P1-15+).
+
 ---
 
 ## Tổng quan task
 
 | TT | Mã | Việc | Tuần | Ước lượng |
 |---|---|---|---|---|
-| [ ] | P2-01 | Package `engine_ffi` v2: bindings đầy đủ, `EngineClient`, `JobTracker`, `EngineEvent` sealed | W15 | 1.5d |
-| [ ] | P2-02 | `EngineStateTicker` + 64 `ValueNotifier<ClipState>` | W15 | 1d |
-| [ ] | P2-03 | Khung app: router, theme tokens, khoá landscape, vòng đời engine theo `AppLifecycle` | W15 | 1d |
-| [ ] | P2-04 | Model (freezed + json) + hạ tầng migration + test round-trip | W15 | 1d |
-| [ ] | P2-05 | `ProjectController` + `FakeEngineClient` + test chuỗi lệnh | W15 | 1d |
-| [ ] | P2-06 | Layout màn Session (kích thước 07 §2, panel dưới thu gọn được) | W16 | 1d |
-| [ ] | P2-07 | `ClipCell` (painter theo trạng thái) + launch bằng pointer-down | W16 | 1.5d |
-| [ ] | P2-08 | Track header: tên, meter painter, arm, M/S | W16 | 1d |
-| [ ] | P2-09 | Cột scene + Stop all | W16 | 0.5d |
-| [ ] | P2-10 | Transport bar: play/stop, BPM (kéo + tap), quantize, metronome, count-in, CPU/xrun | W17 | 1.5d |
-| [ ] | P2-11 | Luồng thu trên ô trống + `RECORDING_FINISHED` → model | W17 | 1d |
-| [ ] | P2-12 | Chế độ Edit/Perform + menu ngữ cảnh (xoá, đổi tên, màu, nhân bản) | W17 | 1.5d |
-| [ ] | P2-13 | Haptic, wakelock, `EngineErrorBus` + banner | W17 | 0.5d |
-| [ ] | P2-14 | Panel Mixer | W18 | 1d |
-| [ ] | P2-15 | `ui_kit`: Fader, Knob, Meter (painter tối ưu, gom lệnh theo frame) | W18 | 1d |
-| [ ] | P2-16 | Pad 4×4 multi-touch (`Listener`) | W20 | 1d |
-| [ ] | P2-17 | Bàn phím 2 quãng tám + dịch quãng + trượt giữa các phím | W20 | 1.5d |
-| [ ] | P2-18 | Luồng thu MIDI + tuỳ chọn quantize khi thu | W20 | 0.5d |
-| [ ] | P2-19 | Xem MIDI clip: hiển thị nốt, quantize, xoá nốt, clear | W20 | 1.5d |
-| [ ] | P2-20 | Waveform view (peaks → cache `Picture`, lớp playhead riêng) | W21 | 1.5d |
-| [ ] | P2-21 | Sửa audio clip (vùng loop, gain, chế độ warp) + kéo, copy clip ở chế độ Edit | W21 | 1.5d |
-| [ ] | P2-22 | Browser: đọc manifest, kit/instrument/loop, gán vào track hoặc ô | W21 | 1.5d |
-| [ ] | P2-23 | Màn Projects: danh sách, tạo, đổi tên, nhân bản, xoá | W22 | 1d |
-| [ ] | P2-24 | `ProjectRepository` (lưu an toàn 06 §5) + khôi phục (06 §6) + progress | W22 | 1.5d |
-| [ ] | P2-25 | Autosave + vòng đời: nền, interruption, route, cảnh báo Bluetooth | W22 | 1d |
-| [ ] | P2-26 | Thư viện khởi đầu: 2 kit, 2 nhạc cụ, 10 loop (dùng để test) | W22 | 0.5d |
+| [x] | P2-01 | Package `engine_ffi` v2: bindings đầy đủ, `EngineClient`, `JobTracker`, `EngineEvent` sealed | W15 | 1.5d |
+| [x] | P2-02 | `EngineStateTicker` + 64 `ValueNotifier<ClipState>` | W15 | 1d |
+| [x] | P2-03 | Khung app: router, theme tokens, khoá landscape, vòng đời engine theo `AppLifecycle` | W15 | 1d |
+| [x] | P2-04 | Model (freezed + json) + hạ tầng migration + test round-trip | W15 | 1d |
+| [x] | P2-05 | `ProjectController` + `FakeEngineClient` + test chuỗi lệnh | W15 | 1d |
+| [~] | P2-06 | Layout màn Session (kích thước 07 §2, panel dưới thu gọn được) | W16 | 1d |
+| [~] | P2-07 | `ClipCell` (painter theo trạng thái) + launch bằng pointer-down | W16 | 1.5d |
+| [~] | P2-08 | Track header: tên, meter painter, arm, M/S | W16 | 1d |
+| [~] | P2-09 | Cột scene + Stop all | W16 | 0.5d |
+| [~] | P2-10 | Transport bar: play/stop, BPM (kéo + tap), quantize, metronome, count-in, CPU/xrun | W17 | 1.5d |
+| [~] | P2-11 | Luồng thu trên ô trống + `RECORDING_FINISHED` → model | W17 | 1d |
+| [~] | P2-12 | Chế độ Edit/Perform + menu ngữ cảnh (xoá, đổi tên, màu, nhân bản) | W17 | 1.5d |
+| [~] | P2-13 | Haptic, wakelock, `EngineErrorBus` + banner | W17 | 0.5d |
+| [~] | P2-14 | Panel Mixer | W18 | 1d |
+| [~] | P2-15 | `ui_kit`: Fader, Knob, Meter (painter tối ưu, gom lệnh theo frame) | W18 | 1d |
+| [~] | P2-16 | Pad 4×4 multi-touch (`Listener`) | W20 | 1d |
+| [~] | P2-17 | Bàn phím 2 quãng tám + dịch quãng + trượt giữa các phím | W20 | 1.5d |
+| [~] | P2-18 | Luồng thu MIDI + tuỳ chọn quantize khi thu | W20 | 0.5d |
+| [~] | P2-19 | Xem MIDI clip: hiển thị nốt, quantize, xoá nốt, clear | W20 | 1.5d |
+| [~] | P2-20 | Waveform view (peaks → cache `Picture`, lớp playhead riêng) | W21 | 1.5d |
+| [~] | P2-21 | Sửa audio clip (vùng loop, gain, chế độ warp) + kéo, copy clip ở chế độ Edit | W21 | 1.5d |
+| [~] | P2-22 | Browser: đọc manifest, kit/instrument/loop, gán vào track hoặc ô | W21 | 1.5d |
+| [~] | P2-23 | Màn Projects: danh sách, tạo, đổi tên, nhân bản, xoá | W22 | 1d |
+| [~] | P2-24 | `ProjectRepository` (lưu an toàn 06 §5) + khôi phục (06 §6) + progress | W22 | 1.5d |
+| [~] | P2-25 | Autosave + vòng đời: nền, interruption, route, cảnh báo Bluetooth | W22 | 1d |
+| [~] | P2-26 | Thư viện khởi đầu: 2 kit, 2 nhạc cụ, 10 loop (dùng để test) | W22 | 0.5d |
+| [~] | P2-28 | **Nút LOOP + pedal mode (UI)** + độ dài thu tự do (07 §3.1b), người dùng yêu cầu 29/09 | W22 | 2d |
+| [~] | P2-29 | **Vẽ nốt trong piano roll** + clip MIDI trống + nghe thử + undo (07 §4.1b), người dùng yêu cầu 29/09 | W22 | 2.5d |
 | [ ] | P2-27 | Đo hiệu năng trên iPad 8 + **review M2** | W22 | 1d |
 
 ---

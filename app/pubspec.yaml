@@ -16,7 +16,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
 # In Windows, build-name is used as the major, minor, and patch parts
 # of the product and file versions while build-number is used as the build suffix.
-version: 1.0.0+1
+version: 0.1.0+1
 
 environment:
   sdk: ^3.12.0
@@ -40,9 +40,17 @@ dependencies:
   collection: ^1.19.1
   engine_ffi:
     path: packages/engine_ffi
+  uuid: ^4.6.0
+  share_plus: ^13.3.0
+  clock: ^1.1.2
+  flutter_localizations:
+    sdk: flutter
+  intl: any
 
 dev_dependencies:
   flutter_test:
+    sdk: flutter
+  integration_test:
     sdk: flutter
 
   # The "flutter_lints" package below contains a set of recommended lints to
@@ -60,11 +68,25 @@ dev_dependencies:
 
 # The following section is specific to Flutter packages.
 flutter:
+  # gen-l10n (07 §8): lib/l10n/app_en.arb (mẫu) + app_vi.arb → AppLocalizations.
+  generate: true
 
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
   # the material Icons class.
   uses-material-design: true
+  assets:
+    - assets/demo/
+    # Thư viện khởi đầu (app/tool/sync_library.sh). Flutter không quét thư mục con → liệt kê từng thư mục.
+    - assets/library/
+    - assets/library/kits/kit_synth/
+    - assets/library/kits/kit_synth/samples/
+    - assets/library/instruments/inst_synth/
+    - assets/library/instruments/inst_synth/samples/
+    - assets/library/loops/
+    # Giấy phép (app/tool/sync_licenses.sh) cho Settings → Giấy phép.
+    - assets/licenses/content/
+    - assets/licenses/third_party/
 
   # To add assets to your application, add an assets section, like this:
   # assets:

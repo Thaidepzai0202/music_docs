@@ -6,26 +6,36 @@
 //   [worker] analyze(): với mỗi lần phát, tìm độ trễ bằng cross-correlation giữa
 //            chirp đã phát và đoạn input thu được → 5 giá trị, lấy median.
 //
-// Luồng dùng (68 nối vào RtEngine + le_call "spike.latencyLoopback"):
+// Luồng dùng (68 nối vào RtEngine + le_call "spike.latencyLoopback"; render/LatencyCalibrator bọc nhiều lượt):
 //   probe.prepare(sr, maxBlock);   // [main] cấp phát
-//   probe.start();                 // [main] chỉ bật cờ atomic, RT sẽ bắt đầu ở block kế tiếp
+//   probe.start();                 // [main / worker đang giữ lượt đo] chỉ bật cờ atomic, RT bắt đầu ở block kế tiếp
 //   ... audio thread gọi processRt(...) mỗi block ...
 //   while (!probe.isDone()) sleep; // [worker] hoặc poll bằng Timer
 //   auto r = probe.analyze();      // [worker]
 //
 // An toàn thread: mỗi lượt đo có một "số thứ tự" (generation).
-//   - main: start() tăng requestGen_ (atomic).
+//   - start() tăng requestGen_ (atomic).
 //   - RT:   thấy requestGen_ khác lượt đang chạy → bắt đầu lượt mới (pos_ = 0). Thu xong thì
 //           store doneGen_ = số của lượt đó (release).
 //   - worker: isDone() = (doneGen_ == requestGen_), load bằng acquire → khi thấy true thì chắc chắn
 //           thấy đủ dữ liệu RT đã ghi vào buffer trước lúc store (cặp release/acquire).
 // Nhờ so số thứ tự, start() gọi lúc lượt cũ vừa xong cũng không làm isDone() báo nhầm.
 // Không gọi start() trong lúc worker đang analyze() (RT sẽ ghi đè buffer đang đọc).
+//
+// prepare() lại trong lúc worker đang chờ / analyze (device restart vì đổi sample rate, 29/09/2026):
+//   Bảng chirp + buffer thu nằm trong một `Tables` do shared_ptr giữ. prepare() tạo Tables MỚI và thay con trỏ
+//   (mutex giữa main và worker, RT không đụng mutex: RT dùng con trỏ thô, chỉ đổi trong prepare khi audio dừng).
+//   analyze() giữ shared_ptr của Tables nó đọc → bản cũ sống tới khi analyze xong (không use-after-free).
+//   Lượt đo đang chờ (start() chưa xong) KHÔNG bị báo xong: RT đo lại lượt đó từ đầu với bảng mới.
+//   Mỗi prepare() tăng epoch(); LatencyResult.epoch cho biết kết quả thuộc lần prepare nào, nên người gọi
+//   (LatencyCalibrator) nhận ra "device đã đổi giữa chừng" và báo lỗi thay vì trộn số của hai route.
 #pragma once
 
 #include <array>
 #include <atomic>
 #include <cstdint>
+#include <memory>
+#include <mutex>
 #include <vector>
 
 namespace le::spike {
@@ -41,6 +51,9 @@ struct LatencyResult {
     int32_t validRuns = 0;
     int32_t spreadSamples = 0;       // max - min của các lần hợp lệ (DoD: ≤ 1 ms)
     float   inputPeak = 0.0f;        // biên độ lớn nhất thu được, để biết mic có nghe thấy không
+    float   noiseRms = 0.0f;         // RMS của input trong pre-roll (trước chirp đầu) = nhiễu nền phòng
+    double  sampleRate = 0.0;        // SR của lượt đo này
+    uint32_t epoch = 0;              // prepare() thứ mấy (xem trên); 0 = chưa prepare
 };
 
 class LatencyProbe {
@@ -56,12 +69,15 @@ public:
     };
 
     LatencyProbe() = default;
+    LatencyProbe(const LatencyProbe&) = delete;
+    LatencyProbe& operator=(const LatencyProbe&) = delete;
 
-    // [main] Cấp phát buffer thu + bảng chirp. Không gọi khi audio thread đang dùng probe.
+    // [main] Cấp phát buffer thu + bảng chirp. Không gọi khi audio thread đang chạy processRt (device prepare).
+    // Worker đang analyze thì vẫn an toàn (xem đầu file).
     void prepare(double sampleRate, int maxBlock, const Config& cfg);
     void prepare(double sampleRate, int maxBlock) { prepare(sampleRate, maxBlock, Config{}); }
 
-    // [main] Yêu cầu bắt đầu một lượt đo mới. RT nhận ở block kế tiếp.
+    // [main / worker] Yêu cầu bắt đầu một lượt đo mới. RT nhận ở block kế tiếp.
     void start() noexcept;
 
     // [RT] Khi đang đo: GHI ĐÈ out[0..numCh) (chirp hoặc 0) và ghi `in` vào buffer.
@@ -78,15 +94,18 @@ public:
     bool isRunning() const noexcept {
         return requestGen_.load(std::memory_order_acquire) != doneGen_.load(std::memory_order_acquire);
     }
+    // [any] Số lần prepare() (0 = chưa). Đổi giữa start() và analyze() → kết quả thuộc device cũ / buffer mới.
+    uint32_t epoch() const noexcept { return epoch_.load(std::memory_order_acquire); }
 
     // [worker] Chỉ gọi sau khi isDone() == true. Trả ok=false nếu chưa xong hoặc không thấy tín hiệu.
     LatencyResult analyze() const;
 
-    // Thông tin cho test/harness
-    double  sampleRate() const noexcept { return sampleRate_; }
-    int64_t totalSamples() const noexcept { return static_cast<int64_t>(recording_.size()); }
-    int64_t emitStart(int run) const noexcept { return preRoll_ + static_cast<int64_t>(run) * interval_; }
-    const std::vector<float>& chirp() const noexcept { return chirp_; }
+    // Thông tin cho test/harness/job ([main / worker]).
+    double  sampleRate() const noexcept;
+    int64_t totalSamples() const noexcept;
+    int64_t emitStart(int run) const noexcept;
+    // [main / test] Tham chiếu vào bảng hiện tại: hết hạn ở lần prepare() kế tiếp.
+    const std::vector<float>& chirp() const noexcept;
 
     // [worker] Hàm lõi, tách ra để unit test trực tiếp: tìm lag ∈ [0, maxLag] sao cho
     // |Σ ref[k]·rec[start+lag+k]| lớn nhất. Trả lag, ghi score (normalized correlation).
@@ -94,21 +113,30 @@ public:
                            int64_t start, int32_t maxLag, float* outScore);
 
 private:
-    Config  cfg_{};
-    double  sampleRate_ = 0.0;
-    int64_t preRoll_ = 0, interval_ = 0;
-    int32_t maxLag_ = 0;
+    struct Tables {                   // tạo trong prepare(); sau đó chỉ RT ghi `recording` trong lượt đo
+        Config  cfg{};
+        double  sampleRate = 0.0;
+        int64_t preRoll = 0, interval = 0;
+        int32_t maxLag = 0;
+        uint32_t epoch = 0;
+        std::vector<float> chirp;
+        std::vector<float> recording;   // [RT] ghi trong lúc đo, [worker] đọc sau khi done
+    };
+    std::shared_ptr<const Tables> current() const;
 
-    std::vector<float> chirp_;      // [main] tạo trong prepare, RT chỉ đọc
-    std::vector<float> recording_;  // [RT] ghi trong lúc đo, [worker] đọc sau khi done
+    mutable std::mutex mutex_;          // [main / worker] bảo vệ tables_ (RT không bao giờ lock)
+    std::shared_ptr<Tables> tables_;
+    Tables* rt_ = nullptr;              // [RT] mượn tables_.get(); chỉ đổi trong prepare (audio dừng)
+    static const std::vector<float> kEmpty;
 
     // [RT] chỉ audio thread đọc/ghi
     int64_t  pos_ = 0;
     uint32_t activeGen_ = 0;
     bool     active_ = false;
 
-    std::atomic<uint32_t> requestGen_{0};  // [main] ghi
+    std::atomic<uint32_t> requestGen_{0};  // start() ghi
     std::atomic<uint32_t> doneGen_{0};     // [RT] ghi
+    std::atomic<uint32_t> epoch_{0};       // [main] prepare() ghi
 };
 
 } // namespace le::spike

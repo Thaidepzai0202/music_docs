@@ -63,4 +63,42 @@ void main() {
     expect(sim.readState().masterPeak[0], greaterThan(0.5));
     expect(sim.readState().cpuLoad, greaterThan(0));
   });
+
+  test('FX (P3-16): fx.set lưu slot; FX_PARAM/FX_BYPASS cập nhật slot có FX; param id lạ → INVALID_ARG', () {
+    fake.create(const EngineConfig(dataDir: '/tmp', libraryDir: '/tmp'));
+    expect(
+      fake.callOk('fx.set', {
+        'track': 2,
+        'index': 1,
+        'type': 'filter',
+        'params': {'1': 800},
+        'bypass': false,
+      }),
+      {},
+    );
+    expect(fake.send(LeCommandType.LE_CMD_FX_PARAM, track: 2, slot: 1, i0: 1, f0: 1200), isTrue);
+    expect(fake.send(LeCommandType.LE_CMD_FX_BYPASS, track: 2, slot: 1, i0: 1), isTrue);
+    expect(fake.fx[(2, 1)]!.params['1'], 1200);
+    expect(fake.fx[(2, 1)]!.bypass, isTrue);
+    expect(fake.send(LeCommandType.LE_CMD_FX_PARAM, track: 2, slot: 3, i0: 1, f0: 1), isFalse);
+    final bad = fake.call({
+      'op': 'fx.set',
+      'track': 0,
+      'index': 0,
+      'type': 'filter',
+      'params': {'7': 1},
+    });
+    expect((bad['error'] as Map)['code'], 'INVALID_ARG');
+  });
+
+  test('manualJobOps: job không tự xong; lastJobId trỏ job vừa cấp', () async {
+    fake.create(const EngineConfig(dataDir: '/tmp', libraryDir: '/tmp'));
+    fake.manualJobOps.add('export.scene');
+    final id = fake.callJob('export.scene', {'scene': 0, 'bars': 1, 'path': '/tmp/x.wav', 'format': 'wav'});
+    expect(fake.lastJobId, id);
+    await Future<void>.delayed(const Duration(milliseconds: 5));
+    expect(fake.callOk('job.result', {'jobId': id})['status'], 'running');
+    fake.completeJob(id);
+    expect(fake.callOk('job.result', {'jobId': id})['status'], 'done');
+  });
 }

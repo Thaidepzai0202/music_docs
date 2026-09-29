@@ -1,0 +1,49 @@
+{
+  "name": "warp_library_loop",
+  "description": "P3-11 (DoD): loop click 100 BPM gán vào project 120 BPM → bản stretched được render NGAY khi gán (không debounce, xong trước khi phát) và dài đúng 4 beat @120 (unit test warp_test kiểm từng sample). Không kiểm onset: click đã co giãn có pre-echo ~38 ms (cửa sổ STFT của Signalsmith).",
+  "sampleRate": 48000,
+  "blockSize": 128,
+  "bpm": 120,
+  "setup": [
+    {
+      "call": {
+        "op": "clip.setAudio",
+        "track": 0,
+        "slot": 0,
+        "clipId": "lib",
+        "file": "fixtures/clip_click_4beats_100.wav",
+        "lengthBeats": 4,
+        "originalBpm": 100,
+        "warp": "stretch",
+        "gainDb": 0
+      }
+    }
+  ],
+  "timeline": [
+    {
+      "atSample": 0,
+      "send": {
+        "type": "CLIP_LAUNCH",
+        "track": 0,
+        "slot": 0
+      }
+    }
+  ],
+  "renderBeats": 8,
+  "expect": {
+    "peakMinDb": -20,
+    "clipInfo": [
+      {
+        "track": 0,
+        "slot": 0,
+        "kind": "audio",
+        "lengthBeats": 4,
+        "stretchedBpm": 120
+      }
+    ]
+  },
+  "requires": [
+    "audioClips",
+    "warp"
+  ]
+}

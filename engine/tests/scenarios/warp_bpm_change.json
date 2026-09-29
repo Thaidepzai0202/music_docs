@@ -1,0 +1,56 @@
+{
+  "name": "warp_bpm_change",
+  "description": "P3-08/P3-10 (DoD): sine 500 Hz (clip 120 BPM, warp stretch) đang phát, BPM 120 → 100 ở beat 4.5 → Re-Pitch ngay (416.7 Hz), debounce 300 ms → WarpRenderer → chuyển sang bản stretched (500 Hz, giữ cao độ) ở ranh giới bar kế tiếp (beat 8), crossfade 10 ms, không glitch.",
+  "sampleRate": 48000,
+  "blockSize": 128,
+  "bpm": 120,
+  "setup": [
+    {
+      "call": {
+        "op": "clip.setAudio",
+        "track": 0,
+        "slot": 0,
+        "clipId": "s",
+        "file": "fixtures/clip_sine_4beats_120.wav",
+        "lengthBeats": 4,
+        "originalBpm": 120,
+        "warp": "stretch",
+        "gainDb": 0
+      }
+    }
+  ],
+  "timeline": [
+    {
+      "atSample": 0,
+      "send": {
+        "type": "CLIP_LAUNCH",
+        "track": 0,
+        "slot": 0
+      }
+    },
+    {
+      "atBeat": 4.5,
+      "send": {
+        "type": "SET_BPM",
+        "d0": 100
+      }
+    }
+  ],
+  "renderBeats": 16,
+  "expect": {
+    "maxSampleJumpDb": -26,
+    "clipInfo": [
+      {
+        "track": 0,
+        "slot": 0,
+        "kind": "audio",
+        "lengthBeats": 4,
+        "stretchedBpm": 100
+      }
+    ]
+  },
+  "requires": [
+    "audioClips",
+    "warp"
+  ]
+}

@@ -171,10 +171,22 @@ endif()
 
 ---
 
+## 5b. Cài lên iPad thật (đã chốt 29/09/2026)
+- **Ký bằng Apple ID cá nhân miễn phí:** team `3NAKR5T93Y` (thethai2019@icloud.com), bundle id `com.thethai.musiclooper`.
+  - App ký kiểu này **chỉ chạy được 7 ngày**, sau đó phải cài lại.
+  - Chưa làm được TestFlight và Link. Muốn làm thì phải vào Apple Developer Program và đổi team.
+- **Máy test:** iPad Air 3 (A12, iPad11,3), iOS 26.6.
+- **Cài hoặc cài lại:** `scripts/install_ipad.sh`. Script build engine và app ở chế độ profile, cài bằng `xcrun devicectl`, rồi mở app. Không đi qua phiên debug của Xcode, vì cách đó hay bị lỗi "Timed out waiting for CONFIGURATION_BUILD_DIR".
+  - Tuỳ chọn: `release`; `--dart-define=LOOPCORE_START=projects` để mở thẳng app đầy đủ; `SKIP_ENGINE=1` để bỏ qua bước build engine.
+- **Lần đầu trên iPad:** Settings → General → VPN & Device Management → Apple Development: thethai2019@icloud.com → **Trust**.
+- **Simulator:** slice simulator của XCFramework **chỉ có arm64** (Mac Apple Silicon). Dùng `flutter run -d <simulator>` / `flutter test -d <simulator>`, **không** dùng `flutter build ios --simulator` (đích chung cần cả x86_64). Số xrun và CPU trên simulator không có giá trị, vì audio đi qua Mac.
+- **Không chạy hai lần build Xcode cùng lúc** trên project app, và không `flutter clean` khi người khác đang build: DerivedData dùng chung sẽ hỏng (lỗi `build.db: disk I/O error`).
+
 ## 6. Script
 
 | Script | Việc |
 |---|---|
+| `scripts/install_ipad.sh [profile\|release] [--dart-define…]` | Build engine + app rồi cài và mở trên iPad đang cắm (§5b) |
 | `scripts/bootstrap.sh` | `git submodule update --init --recursive`, `git lfs pull`, kiểm tra công cụ, `flutter pub get` |
 | `scripts/build_engine_mac.sh [preset]` | Configure và build engine (mặc định `mac-debug`) |
 | `scripts/test_engine.sh [preset…]` | Build rồi chạy unit test và mọi scenario, mặc định chạy `mac-debug mac-rtsan` |

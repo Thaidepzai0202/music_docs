@@ -60,11 +60,7 @@ LE_EXPORT void le_read_state(LeState* out) {
 LE_EXPORT void le_set_event_callback(LeEventCallback cb) { le::core::setEventCallback(cb); }
 
 LE_EXPORT int32_t le_get_peaks(const char* clipId, int32_t level, float* outMinMax, int32_t maxPairs) {
-    (void) clipId;
-    (void) level;
-    (void) outMinMax;
-    (void) maxPairs;
-    return LE_ERR_NOT_IMPLEMENTED;   // P1-24
+    return g_engine != nullptr ? g_engine->getPeaks(clipId, level, outMinMax, maxPairs) : LE_ERR_NOT_CREATED;   // P1-24
 }
 
 } // extern "C"

@@ -99,9 +99,10 @@ StretchBench::Result StretchBench::run(const float* mono, int64_t numSamples, do
 
     const auto tSetup = Clock::now();
     Stretch st(kSeed);
-    if (cfg.blockMs > 0.0 && cfg.intervalMs > 0.0) {
-        const int block = std::max(64, static_cast<int>(std::lround(cfg.blockMs * sampleRate / 1000.0)));
-        const int interval = std::clamp(static_cast<int>(std::lround(cfg.intervalMs * sampleRate / 1000.0)), 16, block);
+    if (cfg.blockMs > 0.0 && cfg.intervalMs > 0.0) {   // NaN → không vào đây (preset); số lớn / Inf → kẹp trước khi đổi sang int
+        const double blockMs = std::min(cfg.blockMs, 500.0), intervalMs = std::min(cfg.intervalMs, blockMs);
+        const int block = std::max(64, static_cast<int>(std::lround(blockMs * sampleRate / 1000.0)));
+        const int interval = std::clamp(static_cast<int>(std::lround(intervalMs * sampleRate / 1000.0)), 16, block);
         st.configure(1, block, interval);
     } else if (cfg.cheaper) {
         st.presetCheaper(1, static_cast<float>(sampleRate));
@@ -120,8 +121,9 @@ StretchBench::Result StretchBench::run(const float* mono, int64_t numSamples, do
     r.msSetup = msSince(tSetup);
     r.inputRmsDb = rmsDb(mono, numSamples);
 
-    const float tonality = cfg.tonalityLimitHz > 0.0 ? static_cast<float>(cfg.tonalityLimitHz / sampleRate) : 0.0f;
-    const float formantBase = cfg.formantBaseHz > 0.0 ? static_cast<float>(cfg.formantBaseHz / sampleRate) : 0.0f;
+    // Tần số chuẩn hoá (Hz / sr) kẹp về [0, 0.5]: Inf / số lớn từ JSON không được lọt vào Signalsmith
+    const float tonality = cfg.tonalityLimitHz > 0.0 ? static_cast<float>(std::min(cfg.tonalityLimitHz / sampleRate, 0.5)) : 0.0f;
+    const float formantBase = cfg.formantBaseHz > 0.0 ? static_cast<float>(std::min(cfg.formantBaseHz / sampleRate, 0.5)) : 0.0f;
     const int numZones = static_cast<int>(zones.size());
 
     for (int z = 0; z < numZones; ++z) {

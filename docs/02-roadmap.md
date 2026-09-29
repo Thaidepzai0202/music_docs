@@ -175,3 +175,5 @@ Cắt từ trên xuống. Mỗi mục đã cắt được chuyển sang backlog 
 | Ngày | Thay đổi | Lý do |
 |---|---|---|
 | 2026-09-29 | Tạo kế hoạch v1 | Kết quả phiên grill-me |
+| 2026-09-29 | Kéo **pedal mode** (vòng đầu quyết định BPM) và **vẽ nốt trong piano roll** vào MVP (P1-39, P2-28, P2-29) | Người dùng yêu cầu 2 cách tạo loop: bật loop rồi đánh, và click ô để vẽ nốt |
+| 2026-09-29 | UI hỗ trợ tiếng Anh + tiếng Việt (quyết định #17) | Người dùng chọn. Thêm việc l10n cho 77 và metadata 2 ngôn ngữ ở P4-23 |

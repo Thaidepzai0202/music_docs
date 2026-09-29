@@ -1,0 +1,59 @@
+{
+  "name": "record_free_5_3",
+  "description": "P1-19 DoD: thu tự do từ beat 0, RECORD_STOP ở beat 5.3, quantize 1 bar → làm tròn lên 8 beat.",
+  "sampleRate": 48000,
+  "blockSize": 128,
+  "bpm": 120,
+  "inputChannels": 1,
+  "input": "fixtures/clip_click_4beats_120.wav",
+  "inputLoop": true,
+  "timeline": [
+    {
+      "atSample": 0,
+      "send": {
+        "type": "CLIP_RECORD",
+        "track": 0,
+        "slot": 0,
+        "i0": 0
+      }
+    },
+    {
+      "atBeat": 5.3,
+      "send": {
+        "type": "RECORD_STOP",
+        "track": 0
+      }
+    }
+  ],
+  "renderBeats": 12,
+  "expect": {
+    "clipInfo": [
+      {
+        "track": 0,
+        "slot": 0,
+        "kind": "audio",
+        "lengthBeats": 8
+      }
+    ],
+    "stateAt": [
+      {
+        "frame": 192000,
+        "track": 0,
+        "slot": 0,
+        "clipState": "RECORDING"
+      },
+      {
+        "frame": 192001,
+        "track": 0,
+        "slot": 0,
+        "clipState": "PLAYING"
+      }
+    ],
+    "firstNonSilentSample": 192000
+  },
+  "asyncMainSwap": true,
+  "requires": [
+    "recording",
+    "latencyCompensation"
+  ]
+}

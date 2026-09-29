@@ -26,7 +26,8 @@
 └── Exports/
     └── My Jam – Scene 1 – 2027-03-20.wav
 
-<App Bundle>/Library/                     ← chỉ đọc, đóng gói sẵn trong app
+<App Bundle>/…/flutter_assets/assets/library/   ← chỉ đọc, đóng gói sẵn trong app dưới dạng Flutter asset
+                                          (đường dẫn thật lấy bằng FlutterDartProject.lookupKey, rồi truyền vào LeConfig.libraryDir)
 ├── manifest.json
 ├── kits/<kitId>/<kitId>.sfz + samples/*.flac
 ├── instruments/<instId>/<instId>.sfz + samples/*.flac
@@ -52,7 +53,9 @@
     "timeSignature": [4, 4],
     "quantize": "1bar",
     "metronome": { "mode": "recordOnly", "volume": 0.7 },
-    "countInBars": 1
+    "countInBars": 1,
+    "tempoMode": "fixed",
+    "firstLoopBeats": null
   },
   "scenes": [
     { "index": 0, "name": "Verse" }, { "index": 1, "name": "Chorus" }
@@ -86,7 +89,7 @@
           "slot": 0, "id": "c_3f…", "kind": "audio", "name": "Hát 1",
           "file": "audio/c_3f….caf",
           "lengthBeats": 16.0, "originalBpm": 120.0,
-          "warp": "stretch", "gainDb": 0.0,
+          "warp": "stretch", "gainDb": 0.0, "tags": [],
           "loop": { "startSample": 0 }
         }
       ]
@@ -108,7 +111,7 @@
       "envelope": { "a": 0.005, "d": 0.2, "s": 0.8, "r": 0.3 }
     }
   ],
-  "master": { "gainDb": 0.0, "eq3": [0, 0, 0], "limiterCeilingDb": -0.3 },
+  "master": { "gainDb": 0.0, "eq3": [0, 0, 0], "eq3Bypass": false, "limiterCeilingDb": -0.3 },
   "midiMappings": [
     { "src": { "device": "Launchpad X", "kind": "note", "channel": 0, "number": 81 },
       "target": { "kind": "clip", "track": 0, "slot": 0 } }
@@ -119,10 +122,12 @@
 ```
 
 ### Quy ước
+- `transport.tempoMode`: `"fixed"` | `"firstLoop"` (pedal mode, 04 §2.5). **Độ dài thu** (1/2/4/8 bar | Tự do) là **thiết lập chung của app** (`settings.json`), không lưu trong project. Pedal mode lúc chờ vòng đầu thì luôn thu kiểu tự do.
 - `tracks[].index` từ 0 đến 7, `clips[].slot` từ 0 đến 7. Ô không có clip thì **không xuất hiện** trong mảng.
 - Tham số FX có key là `paramId` dạng chuỗi (04 §9).
 - `notes`: `p` = pitch, `v` = velocity 1–127, `s` = start (beat), `d` = duration (beat).
-- Đường dẫn file luôn **tương đối so với thư mục project**, riêng nhạc cụ trong Library thì tương đối so với `Library/`.
+- Đường dẫn file luôn **tương đối so với thư mục project**, riêng nhạc cụ trong Library thì tương đối so với `libraryDir`.
+- **Loop lấy từ Library** được **chép vào** `<project>/audio/<clipId>.wav` khi gán vào clip, để project tự đủ file (chia sẻ được, không vỡ khi Library đổi). **Kit và nhạc cụ SFZ thì không chép**, chỉ tham chiếu theo đường dẫn trong Library. Vì vậy `id` và đường dẫn của mục trong Library phải **giữ ổn định** giữa các phiên bản app.
 
 ---
 
@@ -157,12 +162,14 @@ Ví dụ drum kit:
 ```json
 {
   "version": 1,
-  "kits":        [ { "id": "808", "name": "808 Classic", "path": "kits/808/808.sfz", "tags": ["hiphop"], "license": "CC0" } ],
+  "kits":        [ { "id": "808", "name": { "en": "808 Classic", "vi": "808 Cổ điển" }, "path": "kits/808/808.sfz", "tags": ["hiphop"], "license": "CC0" } ],
   "instruments": [ { "id": "epiano", "name": "E-Piano", "path": "instruments/epiano/epiano.sfz", "range": [36, 96], "license": "CC0" } ],
   "loops":       [ { "id": "funk_01", "name": "Funk Drums 1", "file": "loops/funk_01.flac",
-                     "bpm": 100, "beats": 8, "key": null, "tags": ["drums"], "license": "CC0" } ]
+                     "bpm": 100, "beats": 8, "key": null, "tags": ["drums"], "defaultWarp": "repitch", "license": "CC0" } ]
 }
 ```
+- `name` là object theo ngôn ngữ `{en, vi}`. Thiếu ngôn ngữ nào thì dùng `en`. `tags` là **id tiếng Anh cố định** (`drums`, `bass`…), UI map sang nhãn đã dịch qua ARB, dùng một khoá select `libraryTag` (id lạ thì hiện nguyên id).
+- Clip gán từ Library **chép `tags` vào `clips[].tags`** (06 §2), để gợi ý "loop trống → Re-Pitch" vẫn còn sau khi mở lại project. Take tự thu thì `tags: []`.
 - Sample trong bundle: **FLAC 24-bit / 48 kHz**. Dùng mono nếu nguồn là mono. Decode sang float32 lúc nạp (trên worker).
 - Mỗi mục có trường `license`. Toàn bộ file license được lưu ở `content/LICENSES/` trong repo và hiện ở màn "Giấy phép" trong app.
 
@@ -193,13 +200,17 @@ Ví dụ drum kit:
 ```
 Dart: ProjectRepository.load(dir) → Project (sau migrate)
 Dart: engine.call(project.open {dir})
-      engine.send(SET_BPM), call(transport.setTimeSignature), send(SET_QUANTIZE), send(METRONOME)...
+      engine.send(SET_BPM), call(transport.setTimeSignature), send(SET_QUANTIZE), send(METRONOME),
+      send(SET_COUNT_IN), send(MASTER_GAIN)
+      send(FX_PARAM track -1 slot 0 p0..2) nếu master.eq3 có band ≠ 0 · send(FX_PARAM track -1 slot 1 p0) nếu limiterCeilingDb ≠ -0.3
+      với mỗi userInstrument: call(instrument.createFromRecording {… mode, rootNote}) → jobId (dùng cache nếu có)
+                              + call(instrument.setEnvelope {…}) ngay sau đó, không chờ job (engine đã đăng ký id)
+                              ← chạy TRƯỚC vòng track, vì track.setInstrument {kind:"user"} cần nhạc cụ đã tồn tại
       với mỗi track:
         call(track.configure) → [instrument] call(track.setInstrument)  → jobId
         send(TRACK_GAIN/PAN/MUTE/SOLO/MONITOR)
-        với mỗi fx: call(fx.set)
+        với mỗi fx: call(fx.set {…, bypass})
         với mỗi clip: audio → call(clip.setAudio) → jobId | midi → call(clip.setMidi)
-      với mỗi userInstrument: call(instrument.createFromRecording {… mode, rootNote}) → jobId (dùng cache nếu có)
       call(midi.setMappings), call(link.enable)
 Dart: đợi mọi jobId (hiện progress "Đang mở project… 7/12") → sẵn sàng
 ```

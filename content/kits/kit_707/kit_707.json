@@ -1,0 +1,8 @@
+{
+  "id": "kit_707",
+  "name": { "en": "707 Kit", "vi": "Kit 707" },
+  "category": "Drums",
+  "path": "kits/kit_707/kit_707.sfz",
+  "tags": ["drums"],
+  "license": "Self-synthesized (le-gen-kits), no third-party license"
+}

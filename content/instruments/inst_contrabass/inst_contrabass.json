@@ -1,0 +1,9 @@
+{
+  "id": "inst_contrabass",
+  "name": { "en": "Contrabass", "vi": "Contrabass" },
+  "category": "Instruments/Strings",
+  "path": "instruments/inst_contrabass/inst_contrabass.sfz",
+  "range": [28, 61],
+  "tags": ["strings"],
+  "license": "CC0 1.0 — VSCO-2 Community Edition by Versilian Studios"
+}

@@ -39,6 +39,9 @@ class PerformanceActions {
   bool loopButton(int track, int slot) =>
       _send('loop', LeCommandType.LE_CMD_LOOP_BUTTON, track: track, slot: slot, haptic: true);
 
+  /// Bật / tắt overdub clip đang phát của track (05 §2 `LE_CMD_OVERDUB_TOGGLE`; clip MIDI: ghi chồng nốt, 07 §4.1d).
+  bool overdubToggle(int track) => _send('overdub', LeCommandType.LE_CMD_OVERDUB_TOGGLE, track: track, haptic: true);
+
   bool launchScene(int scene) => _send('scene', LeCommandType.LE_CMD_SCENE_LAUNCH, slot: scene, haptic: true);
 
   bool stopAll() => _send('stopAll', LeCommandType.LE_CMD_STOP_ALL);

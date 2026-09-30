@@ -1,0 +1,15 @@
+// inst_flute — Flute (VSCO-2 CE Flute, sustain vibrato)
+// VSCO-2 Community Edition by Versilian Studios (Sam Gossner) / Ivy Audio (Simon Dalzell), CC0 1.0; github.com/sgossner/VSCO-2-CE — versilian-studios.com/vsco-community/
+// Rút gọn bằng engine/tools/le-import-library (agent 80, render/SampleImport.cpp): chọn phím gốc ≥ 3 nửa cung (zone đầu / cuối phủ tới phím 0 / 127), 1 lớp velocity, cắt đầu, loop crossfade, mono, FLAC 24-bit, tune đo bằng Yin, volume = cân loudness.
+<control> default_path=samples/
+<global> loop_mode=loop_continuous ampeg_attack=0.010 ampeg_release=0.25
+<region> lokey=0 hikey=62 pitch_keycenter=60 lovel=1 hivel=127 sample=flute_060_all.flac tune=1.97 volume=0.0 loop_start=84752 loop_end=149759
+<region> lokey=63 hikey=66 pitch_keycenter=64 lovel=1 hivel=127 sample=flute_064_all.flac tune=0.90 volume=-1.6 loop_start=82608 loop_end=153599
+<region> lokey=67 hikey=70 pitch_keycenter=69 lovel=1 hivel=127 sample=flute_069_all.flac tune=1.52 volume=-0.6 loop_start=94176 loop_end=150719
+<region> lokey=71 hikey=74 pitch_keycenter=72 lovel=1 hivel=127 sample=flute_072_all.flac tune=-1.10 volume=-3.3 loop_start=98776 loop_end=151679
+<region> lokey=75 hikey=78 pitch_keycenter=76 lovel=1 hivel=127 sample=flute_076_all.flac tune=1.79 volume=-2.8 loop_start=59968 loop_end=150719
+<region> lokey=79 hikey=82 pitch_keycenter=81 lovel=1 hivel=127 sample=flute_081_all.flac tune=0.02 volume=-3.3 loop_start=100448 loop_end=152639
+<region> lokey=83 hikey=86 pitch_keycenter=84 lovel=1 hivel=127 sample=flute_084_all.flac tune=2.12 volume=-3.1 loop_start=85288 loop_end=151679
+<region> lokey=87 hikey=90 pitch_keycenter=88 lovel=1 hivel=127 sample=flute_088_all.flac tune=-0.94 volume=-4.8 loop_start=114136 loop_end=153599
+<region> lokey=91 hikey=94 pitch_keycenter=93 lovel=1 hivel=127 sample=flute_093_all.flac tune=1.31 volume=-4.6 loop_start=111888 loop_end=152639
+<region> lokey=95 hikey=127 pitch_keycenter=96 lovel=1 hivel=127 sample=flute_096_all.flac tune=0.20 volume=-7.1 loop_start=98728 loop_end=152639

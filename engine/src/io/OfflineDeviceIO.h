@@ -3,6 +3,7 @@
 // le-harness render) tự gọi render() trên thread của mình, nên kết quả hoàn toàn deterministic.
 // Host time được giả lập tăng đúng theo số frame (không bao giờ có xrun).
 #include <algorithm>
+#include <atomic>
 
 #include "io/DeviceIO.h"
 #include "le/engine_api.h"
@@ -40,7 +41,7 @@ public:
         ctx.hostTimeNs = hostNs_;
         cb_->process(in, numIn, out, numOut, n, ctx);
         hostNs_ += (std::uint64_t) ((double) n * 1.0e9 / cfg_.sampleRate + 0.5);
-        renderedFrames_ += n;
+        renderedFrames_.fetch_add(n, std::memory_order_relaxed);
     }
 
     bool isRunning() const override { return running_; }
@@ -59,8 +60,9 @@ public:
     int maxBlock() const { return maxBlock_; }
     int startCount() const { return startCount_; }
     std::uint64_t nextHostTimeNs() const { return hostNs_; }   // [test] host time của lần render kế tiếp
-    // [main] Tổng số frame đã render (mọi lần start) — đồng hồ audio cho debounce tất định (P3-08).
-    std::int64_t renderedFrames() const { return renderedFrames_; }
+    // [main] Tổng số frame đã render (mọi lần start) — đồng hồ audio cho debounce tất định (P3-08, CLIP_CHANGED).
+    // Atomic: test có thể render trên thread riêng trong lúc main pump() đọc đồng hồ (TSan 30/09).
+    std::int64_t renderedFrames() const { return renderedFrames_.load(std::memory_order_relaxed); }
 
 private:
     DeviceConfig cfg_{};
@@ -69,7 +71,7 @@ private:
     std::uint64_t hostNs_ = 0;
     bool running_ = false;
     int startCount_ = 0;
-    std::int64_t renderedFrames_ = 0;
+    std::atomic<std::int64_t> renderedFrames_{0};
     DeviceLatencies latencies_{};
     session::RouteInfo route_{};
 };

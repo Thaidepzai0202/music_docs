@@ -42,7 +42,9 @@ fi
 
 if [ -f app/pubspec.yaml ] && command -v flutter >/dev/null 2>&1; then
   echo "== Flutter"
-  (cd app && flutter pub get)
+  # gen-l10n: lưới an toàn. Repo vừa chuyển chỗ mà còn symlink tên cũ thì pub get có thể sinh rồi xoá luôn
+  # lib/l10n/app_localizations*.dart (stamp cũ ghi đường dẫn cũ). gen-l10n không đi qua build system nên không xoá gì.
+  (cd app && flutter pub get && flutter gen-l10n)
 fi
 
 if [ "$MISSING" -ne 0 ]; then

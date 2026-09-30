@@ -386,6 +386,10 @@ sealed class LeEventType {
 
   /// value = MB đang dùng
   static const LE_EVT_MEMORY_WARNING = 13;
+
+  /// a = track, b = slot: nội dung clip MIDI đổi phía engine (overdub MIDI) → đọc lại
+  /// clip.getMidi. ≤ 10 lần/s mỗi ô; luôn có 1 lần cuối trước RECORDING_FINISHED
+  static const LE_EVT_CLIP_CHANGED = 14;
 }
 
 sealed class LeQuantize {

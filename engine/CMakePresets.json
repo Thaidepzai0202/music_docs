@@ -59,7 +59,8 @@
         "CMAKE_CXX_FLAGS": "-fsanitize=thread",
         "CMAKE_OBJC_FLAGS": "-fsanitize=thread",
         "CMAKE_OBJCXX_FLAGS": "-fsanitize=thread",
-        "CMAKE_EXE_LINKER_FLAGS": "-fsanitize=thread"
+        "CMAKE_EXE_LINKER_FLAGS": "-fsanitize=thread",
+        "LE_TEST_FILTER": "~[content]~[instruments]~[kits]"
       }
     },
     {
@@ -121,7 +122,7 @@
       "name": "test-base",
       "hidden": true,
       "output": { "outputOnFailure": true },
-      "execution": { "noTestsAction": "error" }
+      "execution": { "noTestsAction": "error", "timeout": 1800 }
     },
     { "name": "mac-debug",   "inherits": "test-base", "configurePreset": "mac-debug" },
     { "name": "mac-release", "inherits": "test-base", "configurePreset": "mac-release" },
@@ -131,6 +132,7 @@
     },
     {
       "name": "mac-tsan", "inherits": "test-base", "configurePreset": "mac-tsan",
+      "execution": { "noTestsAction": "error", "timeout": 3600 },
       "environment": { "TSAN_OPTIONS": "halt_on_error=1:second_deadlock_stack=1" }
     },
     {

@@ -112,6 +112,25 @@ Người dùng chọn "Để sau" ở onboarding, hoặc từ chối quyền: ap
 
 ### 4.1b Vẽ nốt trong piano roll (người dùng chọn 29/09)
 - Tab Clip của clip MIDI có hai chế độ: **✏️ Vẽ** và **⬚ Chọn** (chế độ Chọn là hành vi hiện tại).
+- **Cập nhật 29/09 (phản hồi từ iPad):**
+  - **Vẽ nốt dài:** chạm vào ô trống rồi **giữ và kéo sang phải** → nốt dài theo ngón tay (snap lưới), nhấc tay là xong. Chạm nhanh không kéo → nốt dài bằng **nốt vừa vẽ gần nhất** (mặc định 1 ô).
+  - **Tay nắm → ở cuối nốt**, vùng bắt **rộng 32pt**. Nốt ngắn thì tay nắm lòi ra ngoài nốt.
+  - **Chọn nhiều:**
+    - Chạm từng nốt (đã có).
+    - **Kéo khung**: chế độ Chọn, 1 ngón trên nền trống; **cuộn bằng 2 ngón**.
+    - **Chọn theo đoạn thời gian**: kéo trên thước bar ở trên cùng → chọn mọi nốt trong đoạn, ở mọi cao độ.
+    - Nút **Chọn tất cả**.
+  - **Dời nhóm:** kéo bất kỳ nốt nào trong nhóm → **cả nhóm đi tự do** cả thời gian lẫn cao độ, **không khoá trục**, snap lưới, có bản mờ xem trước, không vượt biên của clip hay dải phím.
+  - **Đổi độ dài cả nhóm:** kéo tay nắm của một nốt đã chọn → mọi nốt trong nhóm đổi cùng một lượng.
+  - **Nhân bản nhóm:** chép nhóm đặt ngay sau chính nó (độ lệch = độ dài đoạn đã chọn, làm tròn lên theo lưới). Clip hết chỗ thì hỏi có muốn tăng độ dài clip không.
+  - **Thanh velocity** dưới piano roll: mỗi nốt một cột, kéo lên xuống để chỉnh (1–127). Có nốt đang chọn thì kéo một cột sẽ đổi **cả nhóm** theo cùng một tỉ lệ.
+  - Mọi thao tác trên đều có undo/redo, và chỉ gửi `clip.setMidi` khi nhấc tay.
+  - **Chốt cách làm (77, 29/09):**
+    - Lưới **cuộn bằng 2 ngón** ở cả hai chế độ, còn cột phím vẫn cuộn bằng 1 ngón.
+    - Chạm vào phần tay nắm lòi ra ngoài nốt ngắn thì vẽ nốt mới; kéo từ đó thì đổi độ dài nốt ngắn.
+    - Kéo một nốt chưa chọn thì chỉ dời nốt đó. Kéo khung thì thay lựa chọn cũ.
+    - Thước cao 20pt. Thanh velocity cao 32pt (72pt khi bấm ⤢).
+    - **Velocity của hợp âm:** nhiều nốt bắt đầu cùng lúc nằm chung một cột. Có lựa chọn thì kéo cột sẽ đổi các nốt đã chọn. Không có lựa chọn thì đổi **mọi nốt bắt đầu tại thời điểm đó**. Cột hiện số lượng nốt (ví dụ "×3") khi có nhiều nốt. Nếu đang có lựa chọn mà kéo một cột **không chứa** nốt nào đã chọn thì **chỉ đổi cột đó**. Mọi trường hợp đều đổi cùng tỉ lệ, lấy nốt to nhất làm mốc.
 - **Chế độ Vẽ:**
   - Chạm vào ô lưới trống → **thêm nốt**, snap theo lưới. Lưới chọn được 1/4 · 1/8 · **1/16** (mặc định) · 1/32. Độ dài mặc định bằng 1 ô lưới, velocity 100. Cao độ lấy theo hàng.
   - Chạm vào nốt có sẵn → **xoá** nốt đó.
@@ -125,6 +144,21 @@ Người dùng chọn "Để sau" ở onboarding, hoặc từ chối quyền: ap
 - **Nút ⤢ phóng to:** panel dưới cao lên khoảng 70% màn hình để vẽ nốt thoải mái. Bấm lại hoặc đổi tab thì trở về như cũ.
 - **Tạo clip MIDI trống:** ở chế độ Edit, nhấn giữ ô trống của track instrument → "Clip MIDI trống (1/2/4 bar)" → mở piano roll ở chế độ Vẽ.
 - Clip đang phát mà bị sửa: engine áp nội dung mới **ở lần đi qua kế tiếp**, không có nốt treo (04 §7).
+
+### 4.1c Track không chia loại cố định (chốt 30/09)
+- Project mới và project demo đều là **8 track trống** tên "Track 1–8". **Không** còn nhãn đặt sẵn Drums/Bass/Keys/Lead.
+- Gán kit hoặc nhạc cụ cho track thì track thành **track nhạc cụ (MIDI)**, và tự đổi tên theo nhạc cụ (ví dụ "Grand Piano") nếu người dùng chưa đặt tên riêng. Thu mic hoặc gán loop thì track thành **track audio**. Đổi qua lại được khi track còn trống.
+
+### 4.1d Bàn phím và ghi nốt ngay trong tab Clip (chốt 30/09)
+- Dưới piano roll có **bàn phím** (track nhạc cụ) hoặc **pad 4×4** (track kit), thu gọn được, chơi thẳng bằng `NOTE_ON/OFF`.
+- **● Ghi (Live):** clip chạy lặp (tự launch nếu đang dừng). Mọi nốt đánh trên bàn phím được ghi chồng vào clip ở mỗi vòng (overdub MIDI của engine, quantize theo `midi.setRecordQuantize`). Bấm lại để dừng ghi, clip vẫn phát tiếp. **Nốt hiện gần như ngay lúc đánh:** engine phát `LE_EVT_CLIP_CHANGED` (≤ 10 lần/s) mỗi khi trộn nốt, app gọi `clip.getMidi` rồi vẽ lại. Cách này áp dụng cho cả bàn phím MIDI ngoài. Bàn phím trong tab Clip chỉ hiện khi panel đang ⤢, vì panel thường không đủ chỗ. Clip trống thì tự tạo clip MIDI rỗng (độ dài theo Settings).
+- **⇥ Step:** không cần theo nhịp. Có con trỏ trên piano roll. Mỗi phím bấm ghi một nốt dài 1 ô lưới tại con trỏ rồi con trỏ tiến 1 ô; nhiều phím bấm cùng lúc thành hợp âm. Có nút **Nghỉ** để tiến mà không ghi, và nút **⌫** để lùi và xoá. Chạm vào lưới để đặt con trỏ.
+
+### 4.1e Browser kiểu thư mục như Ableton (chốt 30/09)
+- **Cột trái, danh mục:** Drums · Instruments (Keys, Strings, Winds & Brass, Synth) · Loops · **Bản thu của tôi** (nhạc cụ tự thu) · **★ Yêu thích**.
+- **Cột phải:** danh sách thư mục và mục theo `category`, có breadcrumb, ô **tìm kiếm** trên toàn thư viện, và biểu tượng loại (kit / nhạc cụ / loop).
+- **Chạm một mục → nghe thử** (`preview.play`): nhạc cụ phát một câu ngắn, kit phát một groove ngắn. Nút 🎧 bật/tắt tự nghe thử.
+- **Gán:** kéo thả mục vào header track hoặc ô clip, hoặc bấm "Gán vào track đang chọn". Nhấn giữ một mục → ★ thêm vào Yêu thích (lưu trong settings.json).
 
 ### 4.2 Thu tiếng rồi biến thành sampler (P3)
 1. Mở panel Instrument trên track instrument, bấm "Thu âm mới".

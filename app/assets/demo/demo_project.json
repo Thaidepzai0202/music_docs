@@ -56,12 +56,12 @@
   {
    "id": "t_demo0",
    "index": 0,
-   "name": "Drums",
+   "name": "808 Kit",
    "color": "#FF7A59",
    "kind": "instrument",
    "instrument": {
     "kind": "sfz",
-    "path": "kits/kit_synth/kit_synth.sfz"
+    "path": "kits/kit_808/kit_808.sfz"
    },
    "mixer": {
     "gainDb": 0.0,
@@ -515,7 +515,7 @@
   {
    "id": "t_demo1",
    "index": 1,
-   "name": "Bass",
+   "name": "Synth Tone",
    "color": "#FFB547",
    "kind": "instrument",
    "instrument": {
@@ -743,12 +743,12 @@
   {
    "id": "t_demo2",
    "index": 2,
-   "name": "Keys",
+   "name": "E-Piano",
    "color": "#F5E663",
    "kind": "instrument",
    "instrument": {
     "kind": "sfz",
-    "path": "instruments/inst_synth/inst_synth.sfz"
+    "path": "instruments/inst_epiano/inst_epiano.sfz"
    },
    "mixer": {
     "gainDb": -6.0,
@@ -908,12 +908,12 @@
   {
    "id": "t_demo3",
    "index": 3,
-   "name": "Lead",
+   "name": "Organ",
    "color": "#7BD88F",
    "kind": "instrument",
    "instrument": {
     "kind": "sfz",
-    "path": "instruments/inst_synth/inst_synth.sfz"
+    "path": "instruments/inst_organ/inst_organ.sfz"
    },
    "mixer": {
     "gainDb": -4.0,

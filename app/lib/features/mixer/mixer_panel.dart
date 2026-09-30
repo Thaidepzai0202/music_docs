@@ -63,15 +63,13 @@ class MixerStrip extends ConsumerWidget {
                   style: const TextStyle(fontSize: 11),
                 ),
               ),
-              // Monitor input chỉ có nghĩa với track audio (track instrument thu MIDI).
-              // Co được khi strip hẹp (vi: "Tự động") — không làm tràn hàng tiêu đề.
+              // Monitor input chỉ có nghĩa với track audio (track instrument thu MIDI). Badge giữ đủ bề rộng (chuỗi
+              // ngắn), tên track co lại trước.
               if (tr?.kind != TrackKind.instrument)
-                Flexible(
-                  child: _MonitorChip(
-                    key: Key('mixer.monitor.$track'),
-                    mode: tr?.monitor ?? MonitorMode.off,
-                    onSelected: (m) => ctl.setMonitor(track, m),
-                  ),
+                _MonitorChip(
+                  key: Key('mixer.monitor.$track'),
+                  mode: tr?.monitor ?? MonitorMode.off,
+                  onSelected: (m) => ctl.setMonitor(track, m),
                 ),
             ],
           ),
@@ -284,7 +282,7 @@ class _MonitorChip extends StatelessWidget {
       MonitorMode.always => AppColors.play,
     };
     return PopupMenuButton<MonitorMode>(
-      tooltip: S.mixerMonitor,
+      tooltip: '${S.mixerMonitor}: ${_names[mode]}',
       onSelected: onSelected,
       itemBuilder: (_) => [
         for (final m in MonitorMode.values)
@@ -301,14 +299,8 @@ class _MonitorChip extends StatelessWidget {
           children: [
             Icon(Icons.headphones, size: 11, color: color),
             const SizedBox(width: 2),
-            Flexible(
-              child: Text(
-                S.monitorShort(mode.name),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(fontSize: 10, color: color),
-              ),
-            ),
+            // Chuỗi riêng cho badge (≤ 4 ký tự: Tắt / Auto / Bật) — không bị cắt ở strip hẹp; tên đủ ở tooltip / menu.
+            Text(S.monitorBadge(mode.name), maxLines: 1, style: TextStyle(fontSize: 10, color: color)),
           ],
         ),
       ),

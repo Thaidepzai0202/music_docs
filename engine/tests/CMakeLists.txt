@@ -16,7 +16,13 @@ target_compile_definitions(le-tests PRIVATE
   LE_TEST_FIXTURES_DIR="${CMAKE_CURRENT_SOURCE_DIR}/fixtures"
   LE_TEST_SCENARIOS_DIR="${CMAKE_CURRENT_SOURCE_DIR}/scenarios"
   LE_TEST_GOLDEN_DIR="${CMAKE_CURRENT_SOURCE_DIR}/golden")
-add_test(NAME le-unit COMMAND le-tests --colour-mode none)
+# --durations yes: mỗi test case in "x.xxx s: tên" khi XONG → quá giờ (preset timeout 1800 s) thì output-on-failure cho
+# thấy test cuối đã xong; test bị treo là test kế tiếp.
+# LE_TEST_FILTER (bộ lọc Catch2, đặt trong configure preset): mac-tsan bỏ test chỉ kiểm dữ liệu thư viện trên 1 thread
+# ([content] [instruments] [kits] — TSan không có gì để bắt ở đó, mà chậm ~10×); chúng vẫn chạy ở debug / rtsan / asan.
+set(LE_TEST_FILTER "" CACHE STRING "Bộ lọc Catch2 cho test le-unit (rỗng = chạy hết)")
+separate_arguments(LE_TEST_FILTER_ARGS UNIX_COMMAND "${LE_TEST_FILTER}")
+add_test(NAME le-unit COMMAND le-tests --colour-mode none --durations yes ${LE_TEST_FILTER_ARGS})
 
 # P0-11: RTSan phải bắt được malloc trong hàm [[clang::nonblocking]].
 # Test PASS khi output có báo cáo của RealtimeSanitizer (tức là sanitizer thật sự đang chạy).

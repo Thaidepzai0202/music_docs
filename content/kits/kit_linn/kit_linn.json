@@ -1,0 +1,8 @@
+{
+  "id": "kit_linn",
+  "name": { "en": "Linn Kit", "vi": "Kit Linn" },
+  "category": "Drums",
+  "path": "kits/kit_linn/kit_linn.sfz",
+  "tags": ["drums"],
+  "license": "Self-synthesized (le-gen-kits), no third-party license"
+}

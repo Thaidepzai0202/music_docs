@@ -1,0 +1,37 @@
+// inst_strings — String Ensemble (VSCO-2 CE: contrabass < C2 · cello section C2–B2 · viola section C3–F#3 · violin section ≥ G3)
+// VSCO-2 Community Edition by Versilian Studios (Sam Gossner) / Ivy Audio (Simon Dalzell), CC0 1.0; github.com/sgossner/VSCO-2-CE — versilian-studios.com/vsco-community/
+// Rút gọn bằng engine/tools/le-import-library (agent 80, render/SampleImport.cpp): chọn phím gốc ≥ 3 nửa cung (zone đầu / cuối phủ tới phím 0 / 127), 2 lớp velocity, cắt đầu, loop crossfade, mono, FLAC 24-bit, tune đo bằng Yin, volume = cân loudness.
+<control> default_path=samples/
+<global> loop_mode=loop_continuous ampeg_attack=0.010 ampeg_release=0.40
+<region> lokey=0 hikey=32 pitch_keycenter=30 lovel=1 hivel=95 sample=strings_030_soft.flac tune=0.19 volume=-0.1 loop_start=98591 loop_end=153599
+<region> lokey=33 hikey=37 pitch_keycenter=34 lovel=1 hivel=95 sample=strings_034_soft.flac tune=-0.19 volume=-3.7 loop_start=107068 loop_end=150719
+<region> lokey=38 hikey=41 pitch_keycenter=40 lovel=1 hivel=95 sample=strings_040_soft.flac tune=3.70 volume=-1.1 loop_start=42388 loop_end=149759
+<region> lokey=42 hikey=45 pitch_keycenter=43 lovel=1 hivel=95 sample=strings_043_soft.flac tune=1.96 volume=-3.1 loop_start=106080 loop_end=153599
+<region> lokey=46 hikey=48 pitch_keycenter=47 lovel=1 hivel=95 sample=strings_047_soft.flac tune=-1.72 volume=-3.2 loop_start=49904 loop_end=151679
+<region> lokey=49 hikey=52 pitch_keycenter=50 lovel=1 hivel=95 sample=strings_050_soft.flac tune=0.83 volume=-2.1 loop_start=115102 loop_end=153599
+<region> lokey=53 hikey=57 pitch_keycenter=55 lovel=1 hivel=95 sample=strings_055_soft.flac tune=-0.52 volume=-1.5 loop_start=111680 loop_end=150719
+<region> lokey=58 hikey=60 pitch_keycenter=59 lovel=1 hivel=95 sample=strings_059_soft.flac tune=-0.66 volume=-0.7 loop_start=111312 loop_end=151679
+<region> lokey=61 hikey=64 pitch_keycenter=62 lovel=1 hivel=95 sample=strings_062_soft.flac tune=-0.46 volume=-1.9 loop_start=70936 loop_end=151679
+<region> lokey=65 hikey=67 pitch_keycenter=66 lovel=1 hivel=95 sample=strings_066_soft.flac tune=-1.37 volume=-2.2 loop_start=86088 loop_end=150719
+<region> lokey=68 hikey=70 pitch_keycenter=69 lovel=1 hivel=95 sample=strings_069_soft.flac tune=0.09 volume=-1.9 loop_start=102602 loop_end=153599
+<region> lokey=71 hikey=74 pitch_keycenter=72 lovel=1 hivel=95 sample=strings_072_soft.flac tune=0.04 volume=-4.1 loop_start=85647 loop_end=149759
+<region> lokey=75 hikey=77 pitch_keycenter=76 lovel=1 hivel=95 sample=strings_076_soft.flac tune=0.15 volume=-2.0 loop_start=110704 loop_end=149759
+<region> lokey=78 hikey=81 pitch_keycenter=79 lovel=1 hivel=95 sample=strings_079_soft.flac tune=0.88 volume=-2.7 loop_start=91312 loop_end=152639
+<region> lokey=82 hikey=84 pitch_keycenter=83 lovel=1 hivel=95 sample=strings_083_soft.flac tune=-0.45 volume=-3.7 loop_start=111264 loop_end=149759
+<region> lokey=85 hikey=127 pitch_keycenter=86 lovel=1 hivel=95 sample=strings_086_soft.flac tune=-1.03 volume=-5.2 loop_start=95816 loop_end=153599
+<region> lokey=0 hikey=32 pitch_keycenter=30 lovel=96 hivel=127 sample=strings_030_hard.flac tune=0.06 volume=-0.3 loop_start=113228 loop_end=152639
+<region> lokey=33 hikey=37 pitch_keycenter=34 lovel=96 hivel=127 sample=strings_034_hard.flac tune=0.32 volume=-3.4 loop_start=61645 loop_end=149759
+<region> lokey=38 hikey=41 pitch_keycenter=40 lovel=96 hivel=127 sample=strings_040_hard.flac tune=3.15 volume=-0.1 loop_start=82813 loop_end=153599
+<region> lokey=42 hikey=45 pitch_keycenter=43 lovel=96 hivel=127 sample=strings_043_hard.flac tune=0.32 volume=-2.0 loop_start=66065 loop_end=152639
+<region> lokey=46 hikey=48 pitch_keycenter=47 lovel=96 hivel=127 sample=strings_047_hard.flac tune=-0.08 volume=-2.0 loop_start=94586 loop_end=153599
+<region> lokey=49 hikey=52 pitch_keycenter=50 lovel=96 hivel=127 sample=strings_050_hard.flac tune=0.34 volume=-2.2 loop_start=64610 loop_end=153599
+<region> lokey=53 hikey=57 pitch_keycenter=55 lovel=96 hivel=127 sample=strings_055_hard.flac tune=0.03 volume=-1.5 loop_start=49951 loop_end=150719
+<region> lokey=58 hikey=60 pitch_keycenter=59 lovel=96 hivel=127 sample=strings_059_hard.flac tune=-0.63 volume=-0.7 loop_start=71192 loop_end=151679
+<region> lokey=61 hikey=64 pitch_keycenter=62 lovel=96 hivel=127 sample=strings_062_hard.flac tune=0.21 volume=-0.9 loop_start=49354 loop_end=150719
+<region> lokey=65 hikey=67 pitch_keycenter=66 lovel=96 hivel=127 sample=strings_066_hard.flac tune=0.19 volume=0.0 loop_start=76632 loop_end=153599
+<region> lokey=68 hikey=70 pitch_keycenter=69 lovel=96 hivel=127 sample=strings_069_hard.flac tune=-0.11 volume=-2.4 loop_start=100184 loop_end=153599
+<region> lokey=71 hikey=74 pitch_keycenter=72 lovel=96 hivel=127 sample=strings_072_hard.flac tune=0.39 volume=-3.5 loop_start=92089 loop_end=150719
+<region> lokey=75 hikey=77 pitch_keycenter=76 lovel=96 hivel=127 sample=strings_076_hard.flac tune=-0.29 volume=-0.8 loop_start=58375 loop_end=151679
+<region> lokey=78 hikey=81 pitch_keycenter=79 lovel=96 hivel=127 sample=strings_079_hard.flac tune=-0.77 volume=-1.3 loop_start=50832 loop_end=149759
+<region> lokey=82 hikey=84 pitch_keycenter=83 lovel=96 hivel=127 sample=strings_083_hard.flac tune=-0.50 volume=-2.2 loop_start=54479 loop_end=149759
+<region> lokey=85 hikey=127 pitch_keycenter=86 lovel=96 hivel=127 sample=strings_086_hard.flac tune=1.57 volume=-2.7 loop_start=66848 loop_end=153599

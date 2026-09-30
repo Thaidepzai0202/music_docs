@@ -1,0 +1,8 @@
+{
+  "id": "kit_909",
+  "name": { "en": "909 Kit", "vi": "Kit 909" },
+  "category": "Drums",
+  "path": "kits/kit_909/kit_909.sfz",
+  "tags": ["drums"],
+  "license": "Self-synthesized (le-gen-kits), no third-party license"
+}

@@ -29,6 +29,18 @@ juce::var parse(const std::string& s) {
     return v;
 }
 
+// TSan chậm ~10× và runtime của nó từng treo (livelock ở TraceSwitchPart, 30/09) khi thread render quay liên tục
+// suốt 10^4 lần swap → dưới TSan chạy 10^3 lần (vẫn đủ để bắt race swap / retire).
+#if defined(__has_feature)
+#if __has_feature(thread_sanitizer)
+constexpr int kStressSwaps = 1000;
+#else
+constexpr int kStressSwaps = 10000;
+#endif
+#else
+constexpr int kStressSwaps = 10000;
+#endif
+
 // Engine offline + thread "audio" render liên tục bằng OfflineDeviceIO (đúng vai audio thread thật).
 struct OfflineEngine {
     le::io::OfflineDeviceIO* dev = nullptr;
@@ -133,12 +145,12 @@ TEST_CASE("Snapshot: publish 2 lần trước khi RT lấy → bản chưa dùng
     REQUIRE(GraphSnapshot::liveCount().load() == live0);
 }
 
-TEST_CASE("Snapshot: 10^4 lần swap trong lúc render trên thread khác (ASan/RTSan/TSan)", "[core][snapshot][stress]") {
+TEST_CASE("Snapshot: 10^4 lần swap (TSan: 10^3) trong lúc render trên thread khác (ASan/RTSan/TSan)", "[core][snapshot][stress]") {
     const int live0 = GraphSnapshot::liveCount().load();
     {
         OfflineEngine oe;
         oe.startThread();
-        for (int i = 0; i < 10000; ++i) {
+        for (int i = 0; i < kStressSwaps; ++i) {
             const int t = i % LE_MAX_TRACKS, c = (i / 8) % LE_MAX_SCENES;
             const auto r = (i % 3 == 2) ? oe.call(R"({"op":"clip.clear","track":)" + std::to_string(t) + R"(,"slot":)" +
                                                   std::to_string(c) + "}")
@@ -154,6 +166,26 @@ TEST_CASE("Snapshot: 10^4 lần swap trong lúc render trên thread khác (ASan/
         REQUIRE(oe.engine->rt().retiringCount() == 0);
     }
     REQUIRE(GraphSnapshot::liveCount().load() == live0);
+}
+
+// Hồi quy TSan 30/09: pump() đọc đồng hồ offline (renderedFrames) — debounce warp sau SET_BPM, CLIP_CHANGED — trong lúc
+// test render trên thread khác. renderedFrames_ phải là atomic; TSan báo race nếu không.
+TEST_CASE("OfflineDeviceIO: main pump() + SET_BPM đọc đồng hồ offline trong lúc thread khác render", "[core][offline][stress][tsan]") {
+    OfflineEngine oe;
+    oe.startThread();
+    std::int64_t last = 0;
+    for (int i = 0; i < 2000; ++i) {
+        LeCommand c{};
+        c.type = LE_CMD_SET_BPM;
+        c.d0 = 100.0 + (i % 50);
+        REQUIRE(oe.engine->send(c));   // [main] warpDueMs_ = debounceClockMs() + 300
+        oe.engine->pump();             // [main] so debounceClockMs() với hạn
+        const std::int64_t now = oe.dev->renderedFrames();
+        REQUIRE(now >= last);          // đồng hồ chỉ tiến
+        last = now;
+    }
+    oe.stopThread();
+    REQUIRE(oe.dev->renderedFrames() >= last);
 }
 
 TEST_CASE("Snapshot: generation còn người dùng → KHÔNG thu hồi cho tới khi voice cuối tắt", "[core][snapshot][generation]") {

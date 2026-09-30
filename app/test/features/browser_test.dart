@@ -6,6 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:music_looper/data/library_repository.dart';
+import 'package:music_looper/features/browser/browser_panel.dart';
+import 'package:music_looper/features/clip/pad_names.dart';
 import 'package:music_looper/l10n/l10n.dart';
 import 'package:music_looper/model/project.dart';
 import 'package:music_looper/model/project_codec.dart';
@@ -27,13 +29,74 @@ class _FakeLibrary extends LibraryRepository {
   }
 }
 
+/// Chữ nằm trong panel Browser (header track cũng có thể mang tên kit, 07 §4.1c).
+Finder inBrowser(String text) => find.descendant(of: find.byType(BrowserPanel), matching: find.text(text));
+
 void main() {
   final manifestJson = jsonDecode(File('assets/library/manifest.json').readAsStringSync()) as Map<String, dynamic>;
   final manifest = LibraryManifest.fromJson(manifestJson);
 
   test('manifest thật: đủ kit / nhạc cụ / loop, mọi file tham chiếu đều có trong assets', () {
-    expect(manifest.kits.single.id, 'kit_synth');
-    expect(manifest.instruments.single.id, 'inst_synth');
+    const kits = [
+      'kit_808',
+      'kit_909',
+      'kit_perc',
+      'kit_trap',
+      'kit_lofi',
+      'kit_606',
+      'kit_707',
+      'kit_linn',
+      'kit_acoustic',
+    ];
+    expect(manifest.kits.map((k) => k.id), [...kits, 'kit_synth']);
+    expect(manifest.kits.where((k) => k.hidden).map((k) => k.id), ['kit_synth'], reason: 'kit cũ ẩn, file vẫn còn');
+    expect(manifest.kits.take(3).map((k) => k.nameFor('vi')), ['Kit 808', 'Kit 909', 'Bộ gõ']);
+    expect(manifest.kits.every((k) => k.category == 'Drums'), isTrue);
+    expect(manifest.kits.take(3).map((k) => k.tags.first), ['drums', 'drums', 'percussion']);
+    // P2-30 / P2-35 (06 §4): mỗi kit 16 pad GM 36–51, pad nào cũng có region_label (tên hiện trên pad / piano roll).
+    for (final k in manifest.kits.where((k) => !k.hidden)) {
+      final pads = SfzPads.parse(File('assets/library/${k.path}').readAsStringSync());
+      expect(pads.keys, [for (var n = 36; n <= 51; n++) n], reason: k.id);
+      expect(pads[36], switch (k.id) {
+        'kit_perc' => 'Conga Lo',
+        'kit_trap' => '808 Kick',
+        _ => 'Kick',
+      }, reason: k.id);
+      expect(pads.values.where((v) => v.endsWith('.wav') || v.endsWith('.flac')), isEmpty);
+    }
+    expect(SfzPads.parse(File('assets/library/kits/kit_808/kit_808.sfz').readAsStringSync())[41], 'Floor Tom L');
+    expect(SfzPads.parse(File('assets/library/kits/kit_trap/kit_trap.sfz').readAsStringSync())[51], 'Riser');
+    // Kit acoustic (Big Rusty Drums, CC0): 2 lớp velocity mỗi pad (32 region) → vẫn 16 pad, tên theo region đầu tiên.
+    final acoustic = SfzPads.parse(File('assets/library/kits/kit_acoustic/kit_acoustic.sfz').readAsStringSync());
+    expect([acoustic[39], acoustic[40], acoustic.length], ['Rim Click', 'Rimshot', 16]);
+    // P2-35: Phím (Salamander + tổng hợp) → Dây / Kèn & sáo (VSCO-2 CE) → Synth.
+    final byCategory = <String, List<String>>{};
+    for (final i in manifest.instruments) {
+      byCategory.putIfAbsent(i.category, () => []).add(i.id);
+    }
+    expect(byCategory, {
+      'Instruments/Keys': ['inst_piano', 'inst_epiano', 'inst_organ'],
+      'Instruments/Strings': [
+        'inst_violin',
+        'inst_viola',
+        'inst_cello',
+        'inst_contrabass',
+        'inst_strings',
+        'inst_pizzicato',
+        'inst_harp',
+      ],
+      'Instruments/Winds & Brass': [
+        'inst_flute',
+        'inst_clarinet',
+        'inst_oboe',
+        'inst_trumpet',
+        'inst_horn',
+        'inst_trombone',
+      ],
+      'Instruments/Synth': ['inst_synth'],
+    });
+    expect(manifest.instruments.first.nameFor('vi'), 'Đại dương cầm');
+    expect(manifest.instruments.first.license, contains('CC BY 3.0'));
     expect(manifest.loops.length, 3);
     for (final it in [...manifest.kits, ...manifest.instruments, ...manifest.loops]) {
       expect(File('assets/library/${it.path}').existsSync(), isTrue, reason: it.path);
@@ -65,17 +128,23 @@ void main() {
     await tester.tap(find.byKey(const Key('header.name.4')));
     await tester.tap(find.byKey(const Key('panel.tab.browser')));
     await h.settle();
-    expect(find.text('Kit tổng hợp'), findsOneWidget);
-    expect(find.text('Click 4 beat · 120'), findsOneWidget);
+    expect(inBrowser('Kit 808'), findsOneWidget);
+    expect(inBrowser('Bộ gõ'), findsNWidgets(2), reason: 'tên kit + nhãn tag percussion đã dịch');
+    expect(find.text('Kit tổng hợp'), findsNothing, reason: 'kit_synth hidden');
+    expect(find.byKey(const Key('browser.pick.kit_synth')), findsNothing);
 
-    await tester.tap(find.byKey(const Key('browser.pick.kit_synth')));
+    await tester.tap(find.byKey(const Key('browser.pick.kit_808')));
     await h.settle();
     final t4 = h.session.project.trackAt(4)!;
     expect(t4.kind, TrackKind.instrument);
-    expect(t4.instrument, const InstrumentRef.sfz(path: 'kits/kit_synth/kit_synth.sfz'));
+    expect(t4.instrument, const InstrumentRef.sfz(path: 'kits/kit_808/kit_808.sfz'));
+    expect(t4.name, 'Kit 808', reason: '07 §4.1c: "Track 5" chưa có tên riêng → mang tên kit');
     final ops = h.fake.calls.map((c) => c.op).toList();
     expect(ops.sublist(ops.length - 2), ['track.configure', 'track.setInstrument']);
 
+    await tester.tap(find.byKey(const Key('browser.cat.loops'))); // 07 §4.1e: loop nằm ở danh mục Loops
+    await h.settle();
+    expect(find.text('Click 4 beat · 120'), findsOneWidget);
     await tester.tap(find.byKey(const Key('browser.pick.click_120')));
     await h.settle();
     final clip = h.session.project.trackAt(4)!.clipAt(0)! as AudioClip;
@@ -138,6 +207,8 @@ void main() {
       await tester.tap(find.byKey(const Key('header.name.4')));
       await tester.tap(find.byKey(const Key('panel.tab.browser')));
       await h.settle();
+      await tester.tap(find.byKey(const Key('browser.cat.loops')));
+      await h.settle();
       await tester.tap(find.byKey(const Key('browser.pick.beat_90')));
       await h.settle();
       await tester.tap(find.byKey(const Key('browser.pick.pad_90')));
@@ -170,19 +241,31 @@ void main() {
   });
 
   test('manifest: name là chuỗi (= en) hoặc {en, vi}; thiếu ngôn ngữ → dùng en', () {
-    final a = LibraryItem.fromJson({'id': 'x', 'name': 'E-Piano', 'path': 'p.sfz'}, pathKey: 'path');
+    final a = LibraryItem.fromJson(
+      {'id': 'x', 'name': 'E-Piano', 'path': 'p.sfz'},
+      pathKey: 'path',
+      kind: LibraryKind.instrument,
+    );
     expect([a.nameFor('vi'), a.nameFor('en')], ['E-Piano', 'E-Piano']);
-    final b = LibraryItem.fromJson({
-      'id': 'y',
-      'name': {'en': '808 Classic', 'vi': '808 Cổ điển'},
-      'path': 'p.sfz',
-    }, pathKey: 'path');
+    final b = LibraryItem.fromJson(
+      {
+        'id': 'y',
+        'name': {'en': '808 Classic', 'vi': '808 Cổ điển'},
+        'path': 'p.sfz',
+      },
+      pathKey: 'path',
+      kind: LibraryKind.kit,
+    );
     expect([b.nameFor('vi'), b.nameFor('en'), b.nameFor('fr')], ['808 Cổ điển', '808 Classic', '808 Classic']);
-    final c = LibraryItem.fromJson({
-      'id': 'z',
-      'name': {'en': 'Only en'},
-      'path': 'p.sfz',
-    }, pathKey: 'path');
+    final c = LibraryItem.fromJson(
+      {
+        'id': 'z',
+        'name': {'en': 'Only en'},
+        'path': 'p.sfz',
+      },
+      pathKey: 'path',
+      kind: LibraryKind.kit,
+    );
     expect(c.nameFor('vi'), 'Only en');
   });
 
@@ -193,8 +276,10 @@ void main() {
     await tester.tap(find.byKey(const Key('header.name.4')));
     await tester.tap(find.byKey(const Key('panel.tab.browser')));
     await h.settle();
-    expect(find.text('Synth kit'), findsOneWidget);
-    expect(find.text('Drums · Test'), findsOneWidget, reason: 'tags id tiếng Anh → nhãn ARB');
+    expect(inBrowser('808 Kit'), findsOneWidget);
+    expect(inBrowser('Percussion'), findsNWidgets(2), reason: 'tags id tiếng Anh → nhãn ARB (percussion)');
+    await tester.tap(find.byKey(const Key('browser.cat.loops')));
+    await h.settle();
     await tester.tap(find.byKey(const Key('browser.pick.click_120')));
     await h.settle();
     expect(h.session.project.trackAt(4)!.clipAt(0)!.name, 'Click 4 beats · 120');

@@ -41,6 +41,12 @@
 | [~] | P2-26 | Thư viện khởi đầu: 2 kit, 2 nhạc cụ, 10 loop (dùng để test) | W22 | 0.5d |
 | [~] | P2-28 | **Nút LOOP + pedal mode (UI)** + độ dài thu tự do (07 §3.1b), người dùng yêu cầu 29/09 | W22 | 2d |
 | [~] | P2-29 | **Vẽ nốt trong piano roll** + clip MIDI trống + nghe thử + undo (07 §4.1b), người dùng yêu cầu 29/09 | W22 | 2.5d |
+| [~] | P2-30 | **3 drum kit × 16 âm** (808, 909, Percussion) + hiện trên pad và Browser (06 §4), phản hồi từ iPad 29/09 | W22 | 1.5d |
+| [~] | P2-31 | **Piano roll v2**: kéo để vẽ nốt dài, tay nắm 32pt, chọn nhiều (khung, đoạn thời gian, tất cả), dời, đổi độ dài, nhân bản nhóm, thanh velocity (07 §4.1b), phản hồi từ iPad 29/09 | W22 | 3d |
+| [~] | P2-32 | Track không chia loại cố định (07 §4.1c) | W22 | 0.5d |
+| [~] | P2-33 | Bàn phím trong tab Clip + ghi Live/Step (07 §4.1d) | W22 | 2d |
+| [~] | P2-34 | Browser kiểu thư mục như Ableton + nghe thử (07 §4.1e, 05 `preview.*`) | W22 | 2.5d |
+| [~] | P2-35 | Thư viện mở rộng: 6 kit + 16 nhạc cụ, FLAC, danh mục (06 §4) | W22 | 4d |
 | [ ] | P2-27 | Đo hiệu năng trên iPad 8 + **review M2** | W22 | 1d |
 
 ---

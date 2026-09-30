@@ -344,3 +344,26 @@ TEST_CASE("SfzLoader: thư mục và tên sample có dấu / emoji", "[io][sfz][
     std::error_code ec;
     std::filesystem::remove_all(std::filesystem::temp_directory_path() / dirName, ec);
 }
+
+// 06 §4: region_label = tên hiện trên pad / piano roll; giá trị có dấu cách, đọc tới opcode kế tiếp hoặc hết dòng.
+TEST_CASE("SfzLoader: region_label (có dấu cách, UTF-8) vào Zone::label, không cảnh báo", "[io][sfz]") {
+    FakeLibrary lib;
+    lib.add("/lib/samples/kick.wav");
+    lib.add("/lib/samples/tom.wav");
+    lib.add("/lib/samples/hat.wav");
+    const char* text = "<control> default_path=samples/\n"
+                       "<global> loop_mode=one_shot\n"
+                       "<region> key=36 sample=kick.wav region_label=Kick\n"
+                       "<region> key=41 region_label=Floor Tom L sample=tom.wav volume=-3\n"
+                       "<region> key=42 sample=hat.wav group=1 region_label=Hat đóng 🥁\n";
+    const auto r = io::loadSfzText(text, "/lib", "kit", lib.options());
+    INFO(r.message);
+    REQUIRE(r.ok);
+    CHECK(r.warnings.empty());
+    REQUIRE(r.instrument->zones.size() == 3);
+    CHECK(r.instrument->zones[0].label == "Kick");
+    CHECK(r.instrument->zones[1].label == "Floor Tom L");   // dừng trước " sample="
+    CHECK(r.instrument->zones[1].gainDb == -3.0f);
+    CHECK(r.instrument->zones[2].label == "Hat đóng 🥁");
+    CHECK(r.instrument->zones[2].group == 1);
+}

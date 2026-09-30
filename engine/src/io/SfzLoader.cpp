@@ -91,7 +91,7 @@ bool parseFloat(std::string_view s, float& out) {
 // Opcode được hỗ trợ ở <global>/<master>/<group>/<region>, và giá trị có hợp lệ không.
 enum class Kind { Path, Note, Int, Float, LoopModeOp, Unsupported };
 Kind kindOf(const std::string& n) {
-    if (n == "sample") return Kind::Path;
+    if (n == "sample" || n == "region_label") return Kind::Path;   // giá trị có thể chứa dấu cách
     if (n == "lokey" || n == "hikey" || n == "key" || n == "pitch_keycenter") return Kind::Note;
     if (n == "lovel" || n == "hivel" || n == "loop_start" || n == "loop_end" || n == "group" || n == "off_by")
         return Kind::Int;
@@ -185,6 +185,7 @@ struct Parser {
         int64_t i = 0;
         float f = 0.0f;
         if (n == "sample") sample = op.value;
+        else if (n == "region_label") z.label = op.value;
         else if (n == "key") {
             const int k = parseSfzNote(op.value);
             z.loKey = z.hiKey = z.rootKey = static_cast<int16_t>(k);
@@ -335,7 +336,7 @@ SfzParseResult parseSfz(std::string_view rawText, const std::string& baseDir) {
         const std::string name = lower(t.substr(i, j - i));
         const size_t vs = j + 1;
         size_t ve = vs;
-        if (name == "sample" || name == "default_path") {
+        if (name == "sample" || name == "default_path" || name == "region_label") {
             ve = pathValueEnd(t, vs);
         } else {
             while (ve < t.size() && std::isspace(static_cast<unsigned char>(t[ve])) == 0 && t[ve] != '<') ++ve;

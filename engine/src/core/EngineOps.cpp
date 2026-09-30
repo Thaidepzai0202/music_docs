@@ -68,6 +68,8 @@ void Engine::registerOps() {
     ops_.add("export.jamStop", bind(&Engine::opExportJamStop));
     ops_.add("fx.set", bind(&Engine::opFxSet));        // P3-12 (EngineFxOps.cpp)
     ops_.add("fx.remove", bind(&Engine::opFxRemove));
+    ops_.add("preview.play", bind(&Engine::opPreviewPlay));   // Browser (EnginePreview.cpp)
+    ops_.add("preview.stop", bind(&Engine::opPreviewStop));
     // Spike P0 (xoá ở P1-37)
     ops_.add("spike.setBufferSize", bind(&Engine::opSetBufferSize));
     ops_.add("spike.setSessionMode", bind(&Engine::opSetSessionMode));
@@ -389,7 +391,21 @@ Reply Engine::opClipSetAudio(const juce::var& req) {
     return Reply::job(id);
 }
 
+// job.result của track.setInstrument sfz — một chỗ dựng cho cả nạp mới lẫn dùng lại cache preview (kết quả y hệt).
+static juce::var sfzResult(const std::string& name, int regions, int samplesLoaded, const std::vector<std::string>& warnings) {
+    auto* res = new juce::DynamicObject();
+    res->setProperty("name", juce::String::fromUTF8(name.c_str()));
+    res->setProperty("regions", regions);
+    res->setProperty("samplesLoaded", samplesLoaded);
+    juce::Array<juce::var> w;
+    for (const auto& x : warnings) w.add(juce::String::fromUTF8(x.c_str()));
+    res->setProperty("warnings", w);
+    return juce::var(res);
+}
+
 // P1-27: {track, instrument:{kind:"sfz", path}} → jobId. SfzLoader (80) + decodeAudioFile trên worker.
+// File đang trong cache preview (Browser vừa nghe thử) → dùng CHUNG Instrument đó: không nạp lại, không gấp đôi RAM.
+// Vẫn đi qua job (jobId, JOB_DONE sau khi model đổi) để hợp đồng không đổi.
 Reply Engine::opTrackSetInstrument(const juce::var& req) {
     int track = 0;
     if (!args::getInt(req, "track", track, 0, LE_MAX_TRACKS - 1)) return Reply::fail(LE_ERR_INVALID_ARG, "track phải là 0..7");
@@ -411,23 +427,23 @@ Reply Engine::opTrackSetInstrument(const juce::var& req) {
         std::int64_t jobId = 0;
     };
     auto sh = std::make_shared<Shared>();
+    std::optional<PreviewEntry> cached;   // bản copy (shared_ptr + kết quả SfzLoader), không phụ thuộc cache bị đẩy ra sau đó
+    if (const PreviewEntry* e = previewCachedSfz(sfz)) cached = *e;
     const auto id = jobs_->submit(
         "sfz",
-        [sfz, sh](JobSystem::Context& ctx) {   // [worker]
+        [sfz, sh, cached](JobSystem::Context& ctx) {   // [worker]
+            if (cached) {
+                sh->instrument = cached->instrument;
+                return JobOutcome::ok(sfzResult(cached->name, cached->regions, cached->samplesLoaded, cached->warnings));
+            }
             io::SfzLoadOptions o;
             o.loadSample = &io::decodeAudioFile;
             o.cancel = &ctx.cancel;
             io::SfzLoadResult r = io::loadSfzFile(sfz, o);
             if (!r.ok) return JobOutcome::fail(r.error != LE_OK ? r.error : LE_ERR_FILE_FORMAT, r.message);
-            auto* res = new juce::DynamicObject();
-            res->setProperty("name", juce::String::fromUTF8(r.instrument->name.c_str()));
-            res->setProperty("regions", r.regions);
-            res->setProperty("samplesLoaded", r.samplesLoaded);
-            juce::Array<juce::var> w;
-            for (const auto& x : r.warnings) w.add(juce::String::fromUTF8(x.c_str()));
-            res->setProperty("warnings", w);
+            juce::var res = sfzResult(r.instrument->name, r.regions, r.samplesLoaded, r.warnings);
             sh->instrument = std::move(r.instrument);
-            return JobOutcome::ok(juce::var(res));
+            return JobOutcome::ok(res);
         },
         [this, track, sh](JobOutcome& out) {   // [main]
             if (out.error != LE_OK) return;

@@ -1,0 +1,9 @@
+{
+  "id": "inst_cello",
+  "name": { "en": "Cello", "vi": "Cello" },
+  "category": "Instruments/Strings",
+  "path": "instruments/inst_cello/inst_cello.sfz",
+  "range": [34, 79],
+  "tags": ["strings"],
+  "license": "CC0 1.0 — VSCO-2 Community Edition by Versilian Studios"
+}

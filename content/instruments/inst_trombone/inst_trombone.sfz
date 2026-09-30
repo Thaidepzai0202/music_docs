@@ -1,0 +1,21 @@
+// inst_trombone — Trombone (VSCO-2 CE Tenor Trombone, sustain)
+// VSCO-2 Community Edition by Versilian Studios (Sam Gossner) / Ivy Audio (Simon Dalzell), CC0 1.0; github.com/sgossner/VSCO-2-CE — versilian-studios.com/vsco-community/
+// Rút gọn bằng engine/tools/le-import-library (agent 80, render/SampleImport.cpp): chọn phím gốc ≥ 3 nửa cung (zone đầu / cuối phủ tới phím 0 / 127), 2 lớp velocity, cắt đầu, loop crossfade, mono, FLAC 24-bit, tune đo bằng Yin, volume = cân loudness.
+<control> default_path=samples/
+<global> loop_mode=loop_continuous ampeg_attack=0.010 ampeg_release=0.30
+<region> lokey=0 hikey=35 pitch_keycenter=34 lovel=1 hivel=95 sample=trombone_034_soft.flac tune=0.28 volume=-0.8 loop_start=85633 loop_end=150719
+<region> lokey=36 hikey=39 pitch_keycenter=37 lovel=1 hivel=95 sample=trombone_037_soft.flac tune=-0.07 volume=-2.3 loop_start=67702 loop_end=153599
+<region> lokey=40 hikey=43 pitch_keycenter=41 lovel=1 hivel=95 sample=trombone_041_soft.flac tune=-0.08 volume=-0.4 loop_start=68938 loop_end=153599
+<region> lokey=44 hikey=48 pitch_keycenter=46 lovel=1 hivel=95 sample=trombone_046_soft.flac tune=0.25 volume=-3.2 loop_start=89202 loop_end=152639
+<region> lokey=49 hikey=51 pitch_keycenter=50 lovel=1 hivel=95 sample=trombone_050_soft.flac tune=0.08 volume=-4.7 loop_start=42193 loop_end=149759
+<region> lokey=52 hikey=56 pitch_keycenter=53 lovel=1 hivel=95 sample=trombone_053_soft.flac tune=0.34 volume=-6.7 loop_start=107144 loop_end=153599
+<region> lokey=57 hikey=61 pitch_keycenter=60 lovel=1 hivel=95 sample=trombone_060_soft.flac tune=-0.31 volume=-8.8 loop_start=48431 loop_end=152639
+<region> lokey=62 hikey=127 pitch_keycenter=63 lovel=1 hivel=95 sample=trombone_063_soft.flac tune=0.16 volume=-8.6 loop_start=45390 loop_end=151679
+<region> lokey=0 hikey=35 pitch_keycenter=34 lovel=96 hivel=127 sample=trombone_034_hard.flac tune=-0.49 volume=0.0 loop_start=44118 loop_end=145439
+<region> lokey=36 hikey=39 pitch_keycenter=37 lovel=96 hivel=127 sample=trombone_037_hard.flac tune=0.06 volume=-0.6 loop_start=62170 loop_end=153599
+<region> lokey=40 hikey=43 pitch_keycenter=41 lovel=96 hivel=127 sample=trombone_041_hard.flac tune=0.25 volume=-3.5 loop_start=115113 loop_end=153599
+<region> lokey=44 hikey=48 pitch_keycenter=46 lovel=96 hivel=127 sample=trombone_046_hard.flac tune=0.02 volume=-1.9 loop_start=43639 loop_end=153599
+<region> lokey=49 hikey=51 pitch_keycenter=50 lovel=96 hivel=127 sample=trombone_050_hard.flac tune=0.15 volume=-5.1 loop_start=106240 loop_end=151679
+<region> lokey=52 hikey=56 pitch_keycenter=53 lovel=96 hivel=127 sample=trombone_053_hard.flac tune=-0.03 volume=-5.1 loop_start=63848 loop_end=150719
+<region> lokey=57 hikey=61 pitch_keycenter=60 lovel=96 hivel=127 sample=trombone_060_hard.flac tune=-0.08 volume=-7.1 loop_start=97288 loop_end=149759
+<region> lokey=62 hikey=127 pitch_keycenter=63 lovel=96 hivel=127 sample=trombone_063_hard.flac tune=0.12 volume=-9.0 loop_start=72688 loop_end=151679

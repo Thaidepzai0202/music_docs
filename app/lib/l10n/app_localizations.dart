@@ -302,11 +302,29 @@ abstract class AppLocalizations {
   /// **'Engine error: {p0}'**
   String bannerLoiEngine(Object p0);
 
-  /// No description provided for @browserAssignHint.
+  /// No description provided for @browserBanThuCuaToi.
   ///
   /// In en, this message translates to:
-  /// **'+ = {action}'**
-  String browserAssignHint(Object action);
+  /// **'My recordings'**
+  String get browserBanThuCuaToi;
+
+  /// No description provided for @browserChuaCoBanThu.
+  ///
+  /// In en, this message translates to:
+  /// **'No recordings yet. Record a new instrument in the Instrument tab.'**
+  String get browserChuaCoBanThu;
+
+  /// No description provided for @browserChuaCoYeuThich.
+  ///
+  /// In en, this message translates to:
+  /// **'No favorites yet. Long-press an item to add it.'**
+  String get browserChuaCoYeuThich;
+
+  /// No description provided for @browserDaBoYeuThich.
+  ///
+  /// In en, this message translates to:
+  /// **'Removed from Favorites: {name}'**
+  String browserDaBoYeuThich(String name);
 
   /// No description provided for @browserDaThemVaoO.
   ///
@@ -314,11 +332,29 @@ abstract class AppLocalizations {
   /// **'Added \"{p0}\" to cell {p1}'**
   String browserDaThemVaoO(Object p0, Object p1);
 
+  /// No description provided for @browserDaThemYeuThich.
+  ///
+  /// In en, this message translates to:
+  /// **'Added to Favorites: {name}'**
+  String browserDaThemYeuThich(String name);
+
   /// No description provided for @browserGan.
   ///
   /// In en, this message translates to:
   /// **'assign → {trackName}'**
   String browserGan(Object trackName);
+
+  /// No description provided for @browserKeoVaoTrack.
+  ///
+  /// In en, this message translates to:
+  /// **'Drag onto a track header or clip cell'**
+  String get browserKeoVaoTrack;
+
+  /// No description provided for @browserKhongCoKetQua.
+  ///
+  /// In en, this message translates to:
+  /// **'No results'**
+  String get browserKhongCoKetQua;
 
   /// No description provided for @browserKhongDocDuocThuVien.
   ///
@@ -326,35 +362,17 @@ abstract class AppLocalizations {
   /// **'Couldn\'t read the library: {e}'**
   String browserKhongDocDuocThuVien(Object e);
 
-  /// No description provided for @browserKit.
-  ///
-  /// In en, this message translates to:
-  /// **'Kit'**
-  String get browserKit;
-
-  /// No description provided for @browserLoop.
-  ///
-  /// In en, this message translates to:
-  /// **'Loop'**
-  String get browserLoop;
-
   /// No description provided for @browserLoopInfo.
   ///
   /// In en, this message translates to:
   /// **'{bpm} BPM · {beats, plural, =1{1 beat} other{{beats} beats}}'**
   String browserLoopInfo(Object bpm, int beats);
 
-  /// No description provided for @browserNhacCu.
+  /// No description provided for @browserODaCoClip.
   ///
   /// In en, this message translates to:
-  /// **'Instruments'**
-  String get browserNhacCu;
-
-  /// No description provided for @browserSection.
-  ///
-  /// In en, this message translates to:
-  /// **'{title} ({count})'**
-  String browserSection(Object title, Object count);
+  /// **'Cell {cell} already has a clip'**
+  String browserODaCoClip(int cell);
 
   /// No description provided for @browserThemVao.
   ///
@@ -362,17 +380,77 @@ abstract class AppLocalizations {
   /// **'add to {trackName}'**
   String browserThemVao(Object trackName);
 
+  /// No description provided for @browserThuMucTrong.
+  ///
+  /// In en, this message translates to:
+  /// **'This folder is empty'**
+  String get browserThuMucTrong;
+
+  /// No description provided for @browserTimKiem.
+  ///
+  /// In en, this message translates to:
+  /// **'Search library'**
+  String get browserTimKiem;
+
+  /// No description provided for @browserTrackAudioCoClip.
+  ///
+  /// In en, this message translates to:
+  /// **'This audio track has clips. Pick an empty track to assign an instrument.'**
+  String get browserTrackAudioCoClip;
+
   /// No description provided for @browserTrackNayKhongConO.
   ///
   /// In en, this message translates to:
   /// **'No empty cells left on this track'**
   String get browserTrackNayKhongConO;
 
+  /// No description provided for @browserTrackNhacCuCoClip.
+  ///
+  /// In en, this message translates to:
+  /// **'This instrument track has MIDI clips. Pick an empty track for the loop.'**
+  String get browserTrackNhacCuCoClip;
+
+  /// No description provided for @browserTuNgheThu.
+  ///
+  /// In en, this message translates to:
+  /// **'Auto preview'**
+  String get browserTuNgheThu;
+
+  /// No description provided for @browserYeuThich.
+  ///
+  /// In en, this message translates to:
+  /// **'Favorites'**
+  String get browserYeuThich;
+
+  /// No description provided for @clipChoClipChay.
+  ///
+  /// In en, this message translates to:
+  /// **'Starting…'**
+  String get clipChoClipChay;
+
+  /// No description provided for @clipChonTatCa.
+  ///
+  /// In en, this message translates to:
+  /// **'Select all'**
+  String get clipChonTatCa;
+
   /// No description provided for @clipClear.
   ///
   /// In en, this message translates to:
   /// **'Clear'**
   String get clipClear;
+
+  /// No description provided for @clipCuonHaiNgon.
+  ///
+  /// In en, this message translates to:
+  /// **'Scroll with two fingers'**
+  String get clipCuonHaiNgon;
+
+  /// No description provided for @clipDangGhi.
+  ///
+  /// In en, this message translates to:
+  /// **'Recording'**
+  String get clipDangGhi;
 
   /// No description provided for @clipDoDaiClip.
   ///
@@ -392,6 +470,12 @@ abstract class AppLocalizations {
   /// **'Clip gain: {db} dB'**
   String clipGain(Object db);
 
+  /// No description provided for @clipGhi.
+  ///
+  /// In en, this message translates to:
+  /// **'Record'**
+  String get clipGhi;
+
   /// No description provided for @clipHoanTacOverdub.
   ///
   /// In en, this message translates to:
@@ -404,6 +488,18 @@ abstract class AppLocalizations {
   /// **'Undo'**
   String get clipHoanTacSua;
 
+  /// No description provided for @clipKhongDuCho.
+  ///
+  /// In en, this message translates to:
+  /// **'Not enough room in the clip'**
+  String get clipKhongDuCho;
+
+  /// No description provided for @clipKhongDuChoToiDa.
+  ///
+  /// In en, this message translates to:
+  /// **'{bars, plural, =1{Not enough room: a clip can be at most 1 bar.} other{Not enough room: a clip can be at most {bars} bars.}}'**
+  String clipKhongDuChoToiDa(int bars);
+
   /// No description provided for @clipLamLai.
   ///
   /// In en, this message translates to:
@@ -415,6 +511,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Loop from {p0} s · {p1} beats · original {p2} BPM'**
   String clipLoopTuSBeatGoc(Object p0, Object p1, Object p2);
+
+  /// No description provided for @clipLuiVaXoa.
+  ///
+  /// In en, this message translates to:
+  /// **'Back and delete'**
+  String get clipLuiVaXoa;
 
   /// No description provided for @clipLuoi.
   ///
@@ -434,11 +536,29 @@ abstract class AppLocalizations {
   /// **'Draw'**
   String get clipModeVe;
 
+  /// No description provided for @clipNghi.
+  ///
+  /// In en, this message translates to:
+  /// **'Rest'**
+  String get clipNghi;
+
+  /// No description provided for @clipNhanBan.
+  ///
+  /// In en, this message translates to:
+  /// **'Duplicate selected notes'**
+  String get clipNhanBan;
+
   /// No description provided for @clipNotBeat.
   ///
   /// In en, this message translates to:
   /// **'{p0, plural, =1{1 note} other{{p0} notes}} · {p1} beats'**
   String clipNotBeat(int p0, Object p1);
+
+  /// No description provided for @clipOTrongBanPhim.
+  ///
+  /// In en, this message translates to:
+  /// **'Empty cell. Open the keyboard to play, record live or enter notes step by step.'**
+  String get clipOTrongBanPhim;
 
   /// No description provided for @clipQuangTamLen.
   ///
@@ -464,6 +584,30 @@ abstract class AppLocalizations {
   /// **'Quantize {grid}'**
   String clipQuantizeGrid(Object grid);
 
+  /// No description provided for @clipStep.
+  ///
+  /// In en, this message translates to:
+  /// **'Step'**
+  String get clipStep;
+
+  /// No description provided for @clipTangDoDai.
+  ///
+  /// In en, this message translates to:
+  /// **'Extend clip'**
+  String get clipTangDoDai;
+
+  /// No description provided for @clipTangDoDaiHoi.
+  ///
+  /// In en, this message translates to:
+  /// **'{bars, plural, =1{Extend the clip to 1 bar to fit the copy?} other{Extend the clip to {bars} bars to fit the copy?}}'**
+  String clipTangDoDaiHoi(int bars);
+
+  /// No description provided for @clipVelocity.
+  ///
+  /// In en, this message translates to:
+  /// **'Velocity'**
+  String get clipVelocity;
+
   /// No description provided for @clipWarp.
   ///
   /// In en, this message translates to:
@@ -481,6 +625,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Zoom'**
   String get clipZoom;
+
+  /// No description provided for @commonCancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get commonCancel;
 
   /// No description provided for @commonOk.
   ///
@@ -878,10 +1028,16 @@ abstract class AppLocalizations {
   /// **'{kind, select, clip{Clip} scene{Scene} transport{Transport} stopAll{Stop all} trackGain{Track gain} trackMute{Track mute} fx{FX parameter} loopButton{LOOP button} trackStop{Stop track} undoOverdub{Undo overdub} other{{kind}}}'**
   String learnKind(String kind);
 
+  /// No description provided for @libraryFolder.
+  ///
+  /// In en, this message translates to:
+  /// **'{name, select, drums{Drums} instruments{Instruments} keys{Keys} strings{Strings} windsBrass{Winds & Brass} synth{Synth} loops{Loops} other{{name}}}'**
+  String libraryFolder(String name);
+
   /// No description provided for @libraryTag.
   ///
   /// In en, this message translates to:
-  /// **'{tag, select, drums{Drums} bass{Bass} keys{Keys} synth{Synth} pad{Pad} click{Click} tone{Tone} test{Test} hiphop{Hip-hop} funk{Funk} melody{Melody} vocal{Vocal} fx{FX} other{{tag}}}'**
+  /// **'{tag, select, drums{Drums} bass{Bass} keys{Keys} synth{Synth} pad{Pad} click{Click} tone{Tone} test{Test} hiphop{Hip-hop} funk{Funk} melody{Melody} vocal{Vocal} fx{FX} strings{Strings} winds{Winds} brass{Brass} percussion{Percussion} other{{tag}}}'**
   String libraryTag(String tag);
 
   /// No description provided for @licensesChuaCoFileGiayPhep.
@@ -895,6 +1051,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Not integrated yet (P4-06)'**
   String get licensesChuaTichHopP406;
+
+  /// No description provided for @licensesGhiCong.
+  ///
+  /// In en, this message translates to:
+  /// **'Credits'**
+  String get licensesGhiCong;
 
   /// No description provided for @licensesGiayPhepCacGoiFlutter.
   ///
@@ -1304,11 +1466,11 @@ abstract class AppLocalizations {
   /// **'Monitor: Auto (when armed)'**
   String get mixerMonitorTuDongKhiArm;
 
-  /// No description provided for @monitorShort.
+  /// No description provided for @monitorBadge.
   ///
   /// In en, this message translates to:
   /// **'{mode, select, off{Off} auto{Auto} always{On} other{{mode}}}'**
-  String monitorShort(String mode);
+  String monitorBadge(String mode);
 
   /// No description provided for @onboardingAmThanhChiLuuTren.
   ///

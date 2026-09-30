@@ -22,6 +22,21 @@ void main() {
     ]);
   });
 
+  test(
+    'preview.play: base "project" khi chưa project.open → INVALID_ARG; thiếu file → FILE_NOT_FOUND (như engine)',
+    () {
+      fake.create(const EngineConfig(dataDir: '/tmp', libraryDir: '/lib'));
+      fake.addSample('/lib/loops/a.wav', pitched: false);
+      Map<String, dynamic> play(Map<String, Object> source) => fake.call({'op': 'preview.play', 'source': source});
+      String? code(Map<String, dynamic> r) => (r['error'] as Map?)?['code'] as String?;
+      expect(play({'kind': 'audio', 'file': 'loops/a.wav'})['ok'], isTrue);
+      expect(code(play({'kind': 'audio', 'file': 'x.wav', 'base': 'project'})), 'INVALID_ARG');
+      fake.call({'op': 'project.open', 'dir': '/p'});
+      expect(code(play({'kind': 'audio', 'file': 'x.wav', 'base': 'project'})), 'FILE_NOT_FOUND');
+      expect(code(play({'kind': 'audio', 'file': 'loops/b.wav'})), 'FILE_NOT_FOUND');
+    },
+  );
+
   test('engine.info báo kích thước struct thật', () {
     final info = fake.callOk('engine.info');
     expect(info['apiVersion'], 1);

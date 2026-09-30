@@ -7,6 +7,7 @@ import 'package:flutter/widgets.dart' as widgets show debugOnRebuildDirtyWidget;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:music_looper/features/clip/piano_roll.dart';
 import 'package:music_looper/model/project.dart';
+import 'package:music_looper/ui_kit/keyboard_view.dart';
 
 import '../session_harness.dart';
 
@@ -132,7 +133,7 @@ void main() {
     final h = await openEmpty(tester);
     await tester.tapAt(at(tester, clipOf(h), 1.0, 60));
     await tester.pump(const Duration(milliseconds: 200));
-    await tester.tapAt(at(tester, clipOf(h), 6.0, 64));
+    await tester.tapAt(at(tester, clipOf(h), 6.0, 62)); // hàng còn trong vùng nhìn (panel thường)
     await tester.pump(const Duration(milliseconds: 200));
     expect(clipOf(h).notes.length, 2);
     await tester.tap(find.byKey(const Key('midi.undo')));
@@ -155,21 +156,36 @@ void main() {
     await h.unmount();
   });
 
-  testWidgets('track kit: mỗi hàng là một pad (tên từ SFZ), không có phím ±quãng tám', (tester) async {
+  testWidgets('track kit: mỗi hàng là một pad (tên từ SFZ), không có phím ±quãng tám; pad Instrument hiện tên', (
+    tester,
+  ) async {
     final h = SessionHarness(tester);
     await h.pump();
     await tester.tap(find.byKey(const Key('transport.edit')));
     await tester.pump();
-    await tester.tap(cell(0, 0)); // Drums · Beat A (kit_synth)
+    await tester.tap(cell(0, 0)); // Drums · Beat A (kit_808, P2-30)
     await tester.runAsync(() => Future<void>.delayed(const Duration(milliseconds: 50))); // đọc SFZ từ asset
     await h.settle();
     final editor = tester.widget<PianoRollEditor>(find.byType(PianoRollEditor));
     expect(editor.kit, isTrue);
     final labels = {for (final r in editor.rows) r.pitch: r.label};
+    expect(labels.keys, [for (var n = 51; n >= 36; n--) n], reason: '16 pad GM 36–51, cao ở trên');
     expect(labels, containsPair(36, 'Kick'));
     expect(labels, containsPair(38, 'Snare'));
-    expect(labels, containsPair(42, 'Hat closed'));
+    expect(labels, containsPair(42, 'Closed Hat'));
+    expect(labels, containsPair(41, 'Floor Tom L'));
     expect(find.byKey(const Key('midi.octUp')), findsNothing);
+
+    // 06 §4: pad 4×4 ở tab Instrument hiện region_label.
+    await tester.tap(find.byKey(const Key('panel.tab.instrument')));
+    await h.settle();
+    final pads = tester
+        .renderObjectList(find.byType(CustomPaint))
+        .whereType<RenderCustomPaint>()
+        .map((r) => r.painter)
+        .whereType<PadPainter>()
+        .single;
+    expect([pads.names[36], pads.names[46], pads.names[51]], ['Kick', 'Open Hat', 'Ride']);
     await h.unmount();
   });
 
@@ -223,8 +239,8 @@ void main() {
     final geo = geoOf(tester, clipOf(h));
     final start = noteCenter(tester, clipOf(h), 0) - Offset(geo.xOf(0.25) / 2 - 2, 0);
     final g = await tester.startGesture(start);
-    await g.moveBy(const Offset(0, -1));
-    await tester.pump(); // bắt đầu kéo: lớp nốt vẽ bản mờ một lần
+    await g.moveBy(const Offset(PianoRollEditor.dragSlop + 2, 0));
+    await tester.pump(); // qua ngưỡng kéo: lớp nốt vẽ bản mờ một lần
     await g.moveBy(Offset(geo.xOf(1), 0));
     await tester.pump(null, EnginePhase.layout); // dừng trước paint
     expect(drag.debugNeedsPaint, isTrue);

@@ -1,0 +1,9 @@
+{
+  "id": "inst_horn",
+  "name": { "en": "French Horn", "vi": "Kèn horn" },
+  "category": "Instruments/Winds & Brass",
+  "path": "instruments/inst_horn/inst_horn.sfz",
+  "range": [31, 79],
+  "tags": ["brass"],
+  "license": "CC0 1.0 — VSCO-2 Community Edition by Versilian Studios"
+}

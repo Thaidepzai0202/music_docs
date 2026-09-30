@@ -1,0 +1,9 @@
+{
+  "id": "inst_strings",
+  "name": { "en": "String Ensemble", "vi": "Dàn dây" },
+  "category": "Instruments/Strings",
+  "path": "instruments/inst_strings/inst_strings.sfz",
+  "range": [28, 88],
+  "tags": ["strings"],
+  "license": "CC0 1.0 — VSCO-2 Community Edition by Versilian Studios"
+}

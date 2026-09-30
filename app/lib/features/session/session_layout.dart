@@ -35,6 +35,19 @@ Color parseHexColor(String hex, {Color fallback = const Color(0xFF9AA0A6)}) {
 /// Grid của màn Session (chỉ có một Session tại một thời điểm) — dùng để đổi vị trí ngón tay → ô.
 final sessionGridKey = GlobalKey(debugLabel: 'sessionGrid');
 
+/// Hàng header track — kéo thả mục Browser vào header (07 §4.1e).
+final sessionHeaderKey = GlobalKey(debugLabel: 'sessionHeader');
+
+/// Track của header dưới điểm [global], null nếu ngoài hàng header (kể cả cột nút LOOP).
+int? trackHeaderAtGlobal(Offset global) {
+  final box = sessionHeaderKey.currentContext?.findRenderObject() as RenderBox?;
+  if (box == null || !box.hasSize) return null;
+  final p = box.globalToLocal(global);
+  final w = box.size.width - SessionLayout.sceneColumnWidth;
+  if (p.dx < 0 || p.dy < 0 || p.dx >= w || p.dy >= box.size.height) return null;
+  return (p.dx / (w / SessionLayout.tracks)).floor();
+}
+
 /// Ô dưới điểm [global] trên màn hình, null nếu ngoài lưới 8×8 (kể cả cột scene).
 CellRef? cellAtGlobal(Offset global) {
   final box = sessionGridKey.currentContext?.findRenderObject() as RenderBox?;

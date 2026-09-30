@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/router.dart';
 import '../../app/theme.dart';
+import '../../data/library_repository.dart';
 import '../../data/data_providers.dart';
 import '../../engine/engine_providers.dart';
 import '../projects/demo_project.dart';
@@ -59,7 +60,10 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
       _error = null;
     });
     try {
-      final dir = await createDemoProject(ref.read(projectRepositoryProvider));
+      final dir = await createDemoProject(
+        ref.read(projectRepositoryProvider),
+        library: ref.read(libraryRepositoryProvider),
+      );
       _finish(openDir: dir);
     } catch (e) {
       if (mounted) {

@@ -14,6 +14,7 @@
 #include "core/RtQueues.h"
 #include "core/Metronome.h"
 #include "core/Mixer.h"
+#include "core/PreviewPlayer.h"
 #include "core/Recorder.h"
 #include "core/Track.h"
 #include "core/StatePublisher.h"
@@ -102,6 +103,9 @@ public:
     };
     JamRing* offerJam(JamRing* r) noexcept { return jamOffer_.exchange(r, std::memory_order_acq_rel); }
     void stopJam(std::uint32_t id) noexcept { jamStop_.store(id, std::memory_order_release); }
+
+    // [main] preview.play / preview.stop (05 §3): kênh nghe thử ngoài 8 track (PreviewPlayer.h).
+    PreviewPlayer& preview() noexcept { return preview_; }
 
     // [main] Cho spike.* trong le_call (P0-06/P0-09).
     const spike::SpikeProcessor& spikeProcessor() const noexcept { return spike_; }
@@ -193,6 +197,7 @@ private:
     JamRing* jam_ = nullptr;            // [RT] ring đang ghi
     FxChain fx_[LE_MAX_TRACKS];         // P3-12: bus track → FX → mixer
     MasterEq masterEq_;                 // P3-15: master gain → EQ3 → limiter
+    PreviewPlayer preview_;             // Browser: sau master EQ, trước limiter (không theo master gain / EQ)
     double fxRate_ = 48000.0;           // [main] sample rate mà mọi Processor trong snapshot đã được prepare
     Mixer mixer_;
     PeakMeter inputMeter_;

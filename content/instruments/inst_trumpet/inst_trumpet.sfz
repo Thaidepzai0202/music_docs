@@ -1,0 +1,25 @@
+// inst_trumpet — Trumpet (VSCO-2 CE Trumpet, sustain vibrato)
+// VSCO-2 Community Edition by Versilian Studios (Sam Gossner) / Ivy Audio (Simon Dalzell), CC0 1.0; github.com/sgossner/VSCO-2-CE — versilian-studios.com/vsco-community/
+// Rút gọn bằng engine/tools/le-import-library (agent 80, render/SampleImport.cpp): chọn phím gốc ≥ 3 nửa cung (zone đầu / cuối phủ tới phím 0 / 127), 2 lớp velocity, cắt đầu, loop crossfade, mono, FLAC 24-bit, tune đo bằng Yin, volume = cân loudness.
+<control> default_path=samples/
+<global> loop_mode=loop_continuous ampeg_attack=0.010 ampeg_release=0.25
+<region> lokey=0 hikey=55 pitch_keycenter=53 lovel=1 hivel=95 sample=trumpet_053_soft.flac tune=10.99 volume=-1.2 loop_start=77385 loop_end=150719
+<region> lokey=56 hikey=58 pitch_keycenter=57 lovel=1 hivel=95 sample=trumpet_057_soft.flac tune=-0.41 volume=-2.0 loop_start=109696 loop_end=151679
+<region> lokey=59 hikey=61 pitch_keycenter=60 lovel=1 hivel=95 sample=trumpet_060_soft.flac tune=1.49 volume=-2.3 loop_start=113114 loop_end=151679
+<region> lokey=62 hikey=65 pitch_keycenter=63 lovel=1 hivel=95 sample=trumpet_063_soft.flac tune=3.27 volume=-2.4 loop_start=94679 loop_end=149759
+<region> lokey=66 hikey=68 pitch_keycenter=67 lovel=1 hivel=95 sample=trumpet_067_soft.flac tune=1.52 volume=-5.6 loop_start=91648 loop_end=153599
+<region> lokey=69 hikey=72 pitch_keycenter=70 lovel=1 hivel=95 sample=trumpet_070_soft.flac tune=-0.70 volume=-2.4 loop_start=101391 loop_end=153599
+<region> lokey=73 hikey=75 pitch_keycenter=74 lovel=1 hivel=95 sample=trumpet_074_soft.flac tune=-2.96 volume=-6.5 loop_start=103672 loop_end=152639
+<region> lokey=76 hikey=79 pitch_keycenter=77 lovel=1 hivel=95 sample=trumpet_077_soft.flac tune=-3.80 volume=-7.2 loop_start=75953 loop_end=151679
+<region> lokey=80 hikey=82 pitch_keycenter=81 lovel=1 hivel=95 sample=trumpet_081_soft.flac tune=-1.36 volume=-6.8 loop_start=94321 loop_end=149759
+<region> lokey=83 hikey=127 pitch_keycenter=84 lovel=1 hivel=95 sample=trumpet_084_soft.flac tune=0.03 volume=-6.7 loop_start=111096 loop_end=152639
+<region> lokey=0 hikey=55 pitch_keycenter=53 lovel=96 hivel=127 sample=trumpet_053_hard.flac tune=3.78 volume=-0.8 loop_start=105030 loop_end=149759
+<region> lokey=56 hikey=58 pitch_keycenter=57 lovel=96 hivel=127 sample=trumpet_057_hard.flac tune=0.48 volume=-1.4 loop_start=114456 loop_end=153599
+<region> lokey=59 hikey=61 pitch_keycenter=60 lovel=96 hivel=127 sample=trumpet_060_hard.flac tune=2.98 volume=0.0 loop_start=114055 loop_end=153599
+<region> lokey=62 hikey=65 pitch_keycenter=63 lovel=96 hivel=127 sample=trumpet_063_hard.flac tune=-5.20 volume=-2.7 loop_start=109960 loop_end=152639
+<region> lokey=66 hikey=68 pitch_keycenter=67 lovel=96 hivel=127 sample=trumpet_067_hard.flac tune=2.35 volume=-4.5 loop_start=90063 loop_end=152639
+<region> lokey=69 hikey=72 pitch_keycenter=70 lovel=96 hivel=127 sample=trumpet_070_hard.flac tune=1.21 volume=-4.6 loop_start=101608 loop_end=149759
+<region> lokey=73 hikey=75 pitch_keycenter=74 lovel=96 hivel=127 sample=trumpet_074_hard.flac tune=4.87 volume=-3.6 loop_start=104552 loop_end=152639
+<region> lokey=76 hikey=79 pitch_keycenter=77 lovel=96 hivel=127 sample=trumpet_077_hard.flac tune=-0.75 volume=-5.0 loop_start=84807 loop_end=151679
+<region> lokey=80 hikey=82 pitch_keycenter=81 lovel=96 hivel=127 sample=trumpet_081_hard.flac tune=0.32 volume=-5.6 loop_start=110520 loop_end=149759
+<region> lokey=83 hikey=127 pitch_keycenter=84 lovel=96 hivel=127 sample=trumpet_084_hard.flac tune=3.81 volume=-6.2 loop_start=98823 loop_end=152639

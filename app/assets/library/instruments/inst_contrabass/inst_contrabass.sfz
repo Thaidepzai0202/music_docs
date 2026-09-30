@@ -1,0 +1,23 @@
+// inst_contrabass — Contrabass (VSCO-2 CE Solo Contrabass, sustain vibrato)
+// VSCO-2 Community Edition by Versilian Studios (Sam Gossner) / Ivy Audio (Simon Dalzell), CC0 1.0; github.com/sgossner/VSCO-2-CE — versilian-studios.com/vsco-community/
+// Rút gọn bằng engine/tools/le-import-library (agent 80, render/SampleImport.cpp): chọn phím gốc ≥ 3 nửa cung (zone đầu / cuối phủ tới phím 0 / 127), 2 lớp velocity, cắt đầu, loop crossfade, mono, FLAC 24-bit, tune đo bằng Yin, volume = cân loudness.
+<control> default_path=samples/
+<global> loop_mode=loop_continuous ampeg_attack=0.010 ampeg_release=0.35
+<region> lokey=0 hikey=32 pitch_keycenter=30 lovel=1 hivel=95 sample=contrabass_030_soft.flac tune=0.19 volume=0.0 loop_start=98591 loop_end=153599
+<region> lokey=33 hikey=36 pitch_keycenter=34 lovel=1 hivel=95 sample=contrabass_034_soft.flac tune=-0.19 volume=-3.6 loop_start=107068 loop_end=150719
+<region> lokey=37 hikey=40 pitch_keycenter=38 lovel=1 hivel=95 sample=contrabass_038_soft.flac tune=-1.00 volume=-3.0 loop_start=70088 loop_end=149759
+<region> lokey=41 hikey=43 pitch_keycenter=42 lovel=1 hivel=95 sample=contrabass_042_soft.flac tune=0.47 volume=-1.8 loop_start=112166 loop_end=152639
+<region> lokey=44 hikey=47 pitch_keycenter=45 lovel=1 hivel=95 sample=contrabass_045_soft.flac tune=0.01 volume=-3.9 loop_start=109770 loop_end=151679
+<region> lokey=48 hikey=50 pitch_keycenter=49 lovel=1 hivel=95 sample=contrabass_049_soft.flac tune=-1.45 volume=-1.7 loop_start=110527 loop_end=150719
+<region> lokey=51 hikey=54 pitch_keycenter=52 lovel=1 hivel=95 sample=contrabass_052_soft.flac tune=-0.43 volume=-3.4 loop_start=75752 loop_end=152639
+<region> lokey=55 hikey=57 pitch_keycenter=56 lovel=1 hivel=95 sample=contrabass_056_soft.flac tune=-2.54 volume=-2.2 loop_start=98889 loop_end=149759
+<region> lokey=58 hikey=127 pitch_keycenter=59 lovel=1 hivel=95 sample=contrabass_059_soft.flac tune=0.37 volume=-4.4 loop_start=69073 loop_end=153599
+<region> lokey=0 hikey=32 pitch_keycenter=30 lovel=96 hivel=127 sample=contrabass_030_hard.flac tune=0.06 volume=-0.2 loop_start=113228 loop_end=152639
+<region> lokey=33 hikey=36 pitch_keycenter=34 lovel=96 hivel=127 sample=contrabass_034_hard.flac tune=0.32 volume=-3.3 loop_start=61645 loop_end=149759
+<region> lokey=37 hikey=40 pitch_keycenter=38 lovel=96 hivel=127 sample=contrabass_038_hard.flac tune=0.79 volume=-2.2 loop_start=98325 loop_end=149759
+<region> lokey=41 hikey=43 pitch_keycenter=42 lovel=96 hivel=127 sample=contrabass_042_hard.flac tune=0.08 volume=-3.1 loop_start=98701 loop_end=150719
+<region> lokey=44 hikey=47 pitch_keycenter=45 lovel=96 hivel=127 sample=contrabass_045_hard.flac tune=-1.27 volume=-3.5 loop_start=110072 loop_end=153599
+<region> lokey=48 hikey=50 pitch_keycenter=49 lovel=96 hivel=127 sample=contrabass_049_hard.flac tune=-0.12 volume=-3.3 loop_start=111252 loop_end=149759
+<region> lokey=51 hikey=54 pitch_keycenter=52 lovel=96 hivel=127 sample=contrabass_052_hard.flac tune=-0.56 volume=-2.0 loop_start=112855 loop_end=152639
+<region> lokey=55 hikey=57 pitch_keycenter=56 lovel=96 hivel=127 sample=contrabass_056_hard.flac tune=-0.69 volume=-4.0 loop_start=105891 loop_end=153599
+<region> lokey=58 hikey=127 pitch_keycenter=59 lovel=96 hivel=127 sample=contrabass_059_hard.flac tune=-0.09 volume=-4.8 loop_start=107983 loop_end=149759

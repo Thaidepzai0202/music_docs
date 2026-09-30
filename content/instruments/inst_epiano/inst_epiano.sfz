@@ -1,0 +1,56 @@
+// inst_epiano — E-Piano kiểu Rhodes (FM 2 operator + tremolo nhẹ), E1–E7
+// Tổng hợp bằng code: engine/tools/le-gen-instruments (agent 80, render/SynthInstruments.cpp). Không dùng
+// sample bên thứ ba. Zone mỗi 3 nửa cung × 2 lớp velocity (zone đầu / cuối phủ tới phím 0 / 127);
+// tune bù tần số nguyên Hz; volume = cân loudness.
+<control> default_path=samples/
+<global> loop_mode=loop_continuous ampeg_attack=0.001 ampeg_sustain=0 ampeg_release=0.3
+<region> lokey=0 hikey=30 pitch_keycenter=29 lovel=1 hivel=95 sample=ep_029_soft.flac tune=-13.69 volume=0.0 loop_start=62400 loop_end=110399 ampeg_decay=9.0
+<region> lokey=0 hikey=30 pitch_keycenter=29 lovel=96 hivel=127 sample=ep_029_hard.flac tune=-13.69 volume=-3.9 loop_start=62400 loop_end=110399 ampeg_decay=9.0
+<region> lokey=31 hikey=33 pitch_keycenter=32 lovel=1 hivel=95 sample=ep_032_soft.flac tune=-2.90 volume=-0.6 loop_start=60960 loop_end=108959 ampeg_decay=8.7
+<region> lokey=31 hikey=33 pitch_keycenter=32 lovel=96 hivel=127 sample=ep_032_hard.flac tune=-2.90 volume=-4.2 loop_start=60960 loop_end=108959 ampeg_decay=8.7
+<region> lokey=34 hikey=36 pitch_keycenter=35 lovel=1 hivel=95 sample=ep_035_soft.flac tune=-7.40 volume=-1.1 loop_start=59520 loop_end=107519 ampeg_decay=8.5
+<region> lokey=34 hikey=36 pitch_keycenter=35 lovel=96 hivel=127 sample=ep_035_hard.flac tune=-7.40 volume=-4.6 loop_start=59520 loop_end=107519 ampeg_decay=8.5
+<region> lokey=37 hikey=39 pitch_keycenter=38 lovel=1 hivel=95 sample=ep_038_soft.flac tune=9.84 volume=-1.4 loop_start=58080 loop_end=106079 ampeg_decay=8.2
+<region> lokey=37 hikey=39 pitch_keycenter=38 lovel=96 hivel=127 sample=ep_038_hard.flac tune=9.84 volume=-4.8 loop_start=58080 loop_end=106079 ampeg_decay=8.2
+<region> lokey=40 hikey=42 pitch_keycenter=41 lovel=1 hivel=95 sample=ep_041_soft.flac tune=6.10 volume=-1.7 loop_start=56640 loop_end=104639 ampeg_decay=7.9
+<region> lokey=40 hikey=42 pitch_keycenter=41 lovel=96 hivel=127 sample=ep_041_hard.flac tune=6.10 volume=-5.0 loop_start=56640 loop_end=104639 ampeg_decay=7.9
+<region> lokey=43 hikey=45 pitch_keycenter=44 lovel=1 hivel=95 sample=ep_044_soft.flac tune=-2.90 volume=-2.0 loop_start=55200 loop_end=103199 ampeg_decay=7.7
+<region> lokey=43 hikey=45 pitch_keycenter=44 lovel=96 hivel=127 sample=ep_044_hard.flac tune=-2.90 volume=-5.1 loop_start=55200 loop_end=103199 ampeg_decay=7.7
+<region> lokey=46 hikey=48 pitch_keycenter=47 lovel=1 hivel=95 sample=ep_047_soft.flac tune=6.61 volume=-2.1 loop_start=53760 loop_end=101759 ampeg_decay=7.4
+<region> lokey=46 hikey=48 pitch_keycenter=47 lovel=96 hivel=127 sample=ep_047_hard.flac tune=6.61 volume=-5.1 loop_start=53760 loop_end=101759 ampeg_decay=7.4
+<region> lokey=49 hikey=51 pitch_keycenter=50 lovel=1 hivel=95 sample=ep_050_soft.flac tune=-1.98 volume=-2.2 loop_start=52320 loop_end=100319 ampeg_decay=7.1
+<region> lokey=49 hikey=51 pitch_keycenter=50 lovel=96 hivel=127 sample=ep_050_hard.flac tune=-1.98 volume=-5.1 loop_start=52320 loop_end=100319 ampeg_decay=7.1
+<region> lokey=52 hikey=54 pitch_keycenter=53 lovel=1 hivel=95 sample=ep_053_soft.flac tune=-3.82 volume=-2.4 loop_start=50880 loop_end=98879 ampeg_decay=6.8
+<region> lokey=52 hikey=54 pitch_keycenter=53 lovel=96 hivel=127 sample=ep_053_hard.flac tune=-3.82 volume=-5.1 loop_start=50880 loop_end=98879 ampeg_decay=6.8
+<region> lokey=55 hikey=57 pitch_keycenter=56 lovel=1 hivel=95 sample=ep_056_soft.flac tune=-2.90 volume=-2.3 loop_start=49440 loop_end=97439 ampeg_decay=6.6
+<region> lokey=55 hikey=57 pitch_keycenter=56 lovel=96 hivel=127 sample=ep_056_hard.flac tune=-2.90 volume=-5.1 loop_start=49440 loop_end=97439 ampeg_decay=6.6
+<region> lokey=58 hikey=60 pitch_keycenter=59 lovel=1 hivel=95 sample=ep_059_soft.flac tune=-0.41 volume=-2.4 loop_start=48000 loop_end=95999 ampeg_decay=6.3
+<region> lokey=58 hikey=60 pitch_keycenter=59 lovel=96 hivel=127 sample=ep_059_hard.flac tune=-0.41 volume=-5.1 loop_start=48000 loop_end=95999 ampeg_decay=6.3
+<region> lokey=61 hikey=63 pitch_keycenter=62 lovel=1 hivel=95 sample=ep_062_soft.flac tune=-1.98 volume=-2.5 loop_start=46560 loop_end=94559 ampeg_decay=6.0
+<region> lokey=61 hikey=63 pitch_keycenter=62 lovel=96 hivel=127 sample=ep_062_hard.flac tune=-1.98 volume=-5.1 loop_start=46560 loop_end=94559 ampeg_decay=6.0
+<region> lokey=64 hikey=66 pitch_keycenter=65 lovel=1 hivel=95 sample=ep_065_soft.flac tune=1.13 volume=-2.5 loop_start=45120 loop_end=93119 ampeg_decay=5.8
+<region> lokey=64 hikey=66 pitch_keycenter=65 lovel=96 hivel=127 sample=ep_065_hard.flac tune=1.13 volume=-5.0 loop_start=45120 loop_end=93119 ampeg_decay=5.8
+<region> lokey=67 hikey=69 pitch_keycenter=68 lovel=1 hivel=95 sample=ep_068_soft.flac tune=1.27 volume=-2.6 loop_start=43680 loop_end=91679 ampeg_decay=5.5
+<region> lokey=67 hikey=69 pitch_keycenter=68 lovel=96 hivel=127 sample=ep_068_hard.flac tune=1.27 volume=-5.0 loop_start=43680 loop_end=91679 ampeg_decay=5.5
+<region> lokey=70 hikey=72 pitch_keycenter=71 lovel=1 hivel=95 sample=ep_071_soft.flac tune=-0.41 volume=-2.7 loop_start=42240 loop_end=90239 ampeg_decay=5.2
+<region> lokey=70 hikey=72 pitch_keycenter=71 lovel=96 hivel=127 sample=ep_071_hard.flac tune=-0.41 volume=-5.2 loop_start=42240 loop_end=90239 ampeg_decay=5.2
+<region> lokey=73 hikey=75 pitch_keycenter=74 lovel=1 hivel=95 sample=ep_074_soft.flac tune=0.97 volume=-2.8 loop_start=40800 loop_end=88799 ampeg_decay=5.0
+<region> lokey=73 hikey=75 pitch_keycenter=74 lovel=96 hivel=127 sample=ep_074_hard.flac tune=0.97 volume=-5.3 loop_start=40800 loop_end=88799 ampeg_decay=5.0
+<region> lokey=76 hikey=78 pitch_keycenter=77 lovel=1 hivel=95 sample=ep_077_soft.flac tune=1.13 volume=-2.9 loop_start=39360 loop_end=87359 ampeg_decay=4.7
+<region> lokey=76 hikey=78 pitch_keycenter=77 lovel=96 hivel=127 sample=ep_077_hard.flac tune=1.13 volume=-5.7 loop_start=39360 loop_end=87359 ampeg_decay=4.7
+<region> lokey=79 hikey=81 pitch_keycenter=80 lovel=1 hivel=95 sample=ep_080_soft.flac tune=-0.81 volume=-3.1 loop_start=37920 loop_end=85919 ampeg_decay=4.4
+<region> lokey=79 hikey=81 pitch_keycenter=80 lovel=96 hivel=127 sample=ep_080_hard.flac tune=-0.81 volume=-6.1 loop_start=37920 loop_end=85919 ampeg_decay=4.4
+<region> lokey=82 hikey=84 pitch_keycenter=83 lovel=1 hivel=95 sample=ep_083_soft.flac tune=-0.41 volume=-3.4 loop_start=36480 loop_end=84479 ampeg_decay=4.1
+<region> lokey=82 hikey=84 pitch_keycenter=83 lovel=96 hivel=127 sample=ep_083_hard.flac tune=-0.41 volume=-6.4 loop_start=36480 loop_end=84479 ampeg_decay=4.1
+<region> lokey=85 hikey=87 pitch_keycenter=86 lovel=1 hivel=95 sample=ep_086_soft.flac tune=-0.50 volume=-3.8 loop_start=35040 loop_end=83039 ampeg_decay=3.9
+<region> lokey=85 hikey=87 pitch_keycenter=86 lovel=96 hivel=127 sample=ep_086_hard.flac tune=-0.50 volume=-6.7 loop_start=35040 loop_end=83039 ampeg_decay=3.9
+<region> lokey=88 hikey=90 pitch_keycenter=89 lovel=1 hivel=95 sample=ep_089_soft.flac tune=-0.11 volume=-4.2 loop_start=33600 loop_end=81599 ampeg_decay=3.6
+<region> lokey=88 hikey=90 pitch_keycenter=89 lovel=96 hivel=127 sample=ep_089_hard.flac tune=-0.11 volume=-6.9 loop_start=33600 loop_end=81599 ampeg_decay=3.6
+<region> lokey=91 hikey=93 pitch_keycenter=92 lovel=1 hivel=95 sample=ep_092_soft.flac tune=0.23 volume=-4.8 loop_start=32160 loop_end=80159 ampeg_decay=3.3
+<region> lokey=91 hikey=93 pitch_keycenter=92 lovel=96 hivel=127 sample=ep_092_hard.flac tune=0.23 volume=-7.0 loop_start=32160 loop_end=80159 ampeg_decay=3.3
+<region> lokey=94 hikey=96 pitch_keycenter=95 lovel=1 hivel=95 sample=ep_095_soft.flac tune=-0.41 volume=-5.3 loop_start=30720 loop_end=78719 ampeg_decay=3.1
+<region> lokey=94 hikey=96 pitch_keycenter=95 lovel=96 hivel=127 sample=ep_095_hard.flac tune=-0.41 volume=-7.1 loop_start=30720 loop_end=78719 ampeg_decay=3.1
+<region> lokey=97 hikey=99 pitch_keycenter=98 lovel=1 hivel=95 sample=ep_098_soft.flac tune=0.23 volume=-6.5 loop_start=29280 loop_end=77279 ampeg_decay=2.8
+<region> lokey=97 hikey=99 pitch_keycenter=98 lovel=96 hivel=127 sample=ep_098_hard.flac tune=0.23 volume=-6.9 loop_start=29280 loop_end=77279 ampeg_decay=2.8
+<region> lokey=100 hikey=127 pitch_keycenter=101 lovel=1 hivel=95 sample=ep_101_soft.flac tune=-0.11 volume=-6.9 loop_start=28800 loop_end=76799 ampeg_decay=2.5
+<region> lokey=100 hikey=127 pitch_keycenter=101 lovel=96 hivel=127 sample=ep_101_hard.flac tune=-0.11 volume=-7.2 loop_start=28800 loop_end=76799 ampeg_decay=2.5

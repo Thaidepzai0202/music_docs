@@ -1,0 +1,9 @@
+{
+  "id": "inst_trumpet",
+  "name": { "en": "Trumpet", "vi": "Kèn trumpet" },
+  "category": "Instruments/Winds & Brass",
+  "path": "instruments/inst_trumpet/inst_trumpet.sfz",
+  "range": [51, 86],
+  "tags": ["brass"],
+  "license": "CC0 1.0 — VSCO-2 Community Edition by Versilian Studios"
+}

@@ -8,6 +8,7 @@ import 'latency_service.dart';
 import 'link_service.dart';
 import 'midi_service.dart';
 import 'peaks_service.dart';
+import 'preview_service.dart';
 import 'share_service.dart';
 
 /// Tầng gọi engine (07 §5): widget → `ProjectController` (thay đổi project) hoặc service theo tính năng → engine.
@@ -20,4 +21,5 @@ final peaksServiceProvider = Provider<PeaksService>((ref) => PeaksService(ref.wa
 final latencyServiceProvider = Provider<LatencyService>((ref) => LatencyService(ref.watch(engineProvider)));
 final audioDeviceServiceProvider = Provider<AudioDeviceService>((ref) => AudioDeviceService(ref.watch(engineProvider)));
 final linkServiceProvider = Provider<LinkService>((ref) => LinkService(ref.watch(engineProvider)));
+final previewServiceProvider = Provider<PreviewService>((ref) => PreviewService(ref.watch(engineProvider)));
 final shareServiceProvider = Provider<ShareService>((ref) => const SharePlusService());

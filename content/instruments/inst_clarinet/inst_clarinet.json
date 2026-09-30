@@ -1,0 +1,9 @@
+{
+  "id": "inst_clarinet",
+  "name": { "en": "Clarinet", "vi": "Clarinet" },
+  "category": "Instruments/Winds & Brass",
+  "path": "instruments/inst_clarinet/inst_clarinet.sfz",
+  "range": [48, 92],
+  "tags": ["winds"],
+  "license": "CC0 1.0 — VSCO-2 Community Edition by Versilian Studios"
+}

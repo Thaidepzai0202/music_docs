@@ -1,0 +1,9 @@
+{
+  "id": "inst_trombone",
+  "name": { "en": "Trombone", "vi": "Kèn trombone" },
+  "category": "Instruments/Winds & Brass",
+  "path": "instruments/inst_trombone/inst_trombone.sfz",
+  "range": [32, 65],
+  "tags": ["brass"],
+  "license": "CC0 1.0 — VSCO-2 Community Edition by Versilian Studios"
+}

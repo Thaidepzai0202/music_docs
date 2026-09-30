@@ -135,8 +135,17 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String browserAssignHint(Object action) {
-    return '+ = $action';
+  String get browserBanThuCuaToi => 'My recordings';
+
+  @override
+  String get browserChuaCoBanThu => 'No recordings yet. Record a new instrument in the Instrument tab.';
+
+  @override
+  String get browserChuaCoYeuThich => 'No favorites yet. Long-press an item to add it.';
+
+  @override
+  String browserDaBoYeuThich(String name) {
+    return 'Removed from Favorites: $name';
   }
 
   @override
@@ -145,20 +154,25 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String browserDaThemYeuThich(String name) {
+    return 'Added to Favorites: $name';
+  }
+
+  @override
   String browserGan(Object trackName) {
     return 'assign → $trackName';
   }
 
   @override
+  String get browserKeoVaoTrack => 'Drag onto a track header or clip cell';
+
+  @override
+  String get browserKhongCoKetQua => 'No results';
+
+  @override
   String browserKhongDocDuocThuVien(Object e) {
     return 'Couldn\'t read the library: $e';
   }
-
-  @override
-  String get browserKit => 'Kit';
-
-  @override
-  String get browserLoop => 'Loop';
 
   @override
   String browserLoopInfo(Object bpm, int beats) {
@@ -167,11 +181,8 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get browserNhacCu => 'Instruments';
-
-  @override
-  String browserSection(Object title, Object count) {
-    return '$title ($count)';
+  String browserODaCoClip(int cell) {
+    return 'Cell $cell already has a clip';
   }
 
   @override
@@ -180,10 +191,40 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get browserThuMucTrong => 'This folder is empty';
+
+  @override
+  String get browserTimKiem => 'Search library';
+
+  @override
+  String get browserTrackAudioCoClip => 'This audio track has clips. Pick an empty track to assign an instrument.';
+
+  @override
   String get browserTrackNayKhongConO => 'No empty cells left on this track';
 
   @override
+  String get browserTrackNhacCuCoClip => 'This instrument track has MIDI clips. Pick an empty track for the loop.';
+
+  @override
+  String get browserTuNgheThu => 'Auto preview';
+
+  @override
+  String get browserYeuThich => 'Favorites';
+
+  @override
+  String get clipChoClipChay => 'Starting…';
+
+  @override
+  String get clipChonTatCa => 'Select all';
+
+  @override
   String get clipClear => 'Clear';
+
+  @override
+  String get clipCuonHaiNgon => 'Scroll with two fingers';
+
+  @override
+  String get clipDangGhi => 'Recording';
 
   @override
   String get clipDoDaiClip => 'Clip length';
@@ -197,10 +238,27 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get clipGhi => 'Record';
+
+  @override
   String get clipHoanTacOverdub => 'Undo overdub';
 
   @override
   String get clipHoanTacSua => 'Undo';
+
+  @override
+  String get clipKhongDuCho => 'Not enough room in the clip';
+
+  @override
+  String clipKhongDuChoToiDa(int bars) {
+    String _temp0 = intl.Intl.pluralLogic(
+      bars,
+      locale: localeName,
+      other: 'Not enough room: a clip can be at most $bars bars.',
+      one: 'Not enough room: a clip can be at most 1 bar.',
+    );
+    return '$_temp0';
+  }
 
   @override
   String get clipLamLai => 'Redo';
@@ -209,6 +267,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String clipLoopTuSBeatGoc(Object p0, Object p1, Object p2) {
     return 'Loop from $p0 s · $p1 beats · original $p2 BPM';
   }
+
+  @override
+  String get clipLuiVaXoa => 'Back and delete';
 
   @override
   String get clipLuoi => 'Grid';
@@ -220,10 +281,19 @@ class AppLocalizationsEn extends AppLocalizations {
   String get clipModeVe => 'Draw';
 
   @override
+  String get clipNghi => 'Rest';
+
+  @override
+  String get clipNhanBan => 'Duplicate selected notes';
+
+  @override
   String clipNotBeat(int p0, Object p1) {
     String _temp0 = intl.Intl.pluralLogic(p0, locale: localeName, other: '$p0 notes', one: '1 note');
     return '$_temp0 · $p1 beats';
   }
+
+  @override
+  String get clipOTrongBanPhim => 'Empty cell. Open the keyboard to play, record live or enter notes step by step.';
 
   @override
   String get clipQuangTamLen => 'Octave up';
@@ -240,6 +310,26 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get clipStep => 'Step';
+
+  @override
+  String get clipTangDoDai => 'Extend clip';
+
+  @override
+  String clipTangDoDaiHoi(int bars) {
+    String _temp0 = intl.Intl.pluralLogic(
+      bars,
+      locale: localeName,
+      other: 'Extend the clip to $bars bars to fit the copy?',
+      one: 'Extend the clip to 1 bar to fit the copy?',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get clipVelocity => 'Velocity';
+
+  @override
   String get clipWarp => 'Warp';
 
   @override
@@ -249,6 +339,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get clipZoom => 'Zoom';
+
+  @override
+  String get commonCancel => 'Cancel';
 
   @override
   String get commonOk => 'OK';
@@ -594,6 +687,21 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String libraryFolder(String name) {
+    String _temp0 = intl.Intl.selectLogic(name, {
+      'drums': 'Drums',
+      'instruments': 'Instruments',
+      'keys': 'Keys',
+      'strings': 'Strings',
+      'windsBrass': 'Winds & Brass',
+      'synth': 'Synth',
+      'loops': 'Loops',
+      'other': '$name',
+    });
+    return '$_temp0';
+  }
+
+  @override
   String libraryTag(String tag) {
     String _temp0 = intl.Intl.selectLogic(tag, {
       'drums': 'Drums',
@@ -609,6 +717,10 @@ class AppLocalizationsEn extends AppLocalizations {
       'melody': 'Melody',
       'vocal': 'Vocal',
       'fx': 'FX',
+      'strings': 'Strings',
+      'winds': 'Winds',
+      'brass': 'Brass',
+      'percussion': 'Percussion',
       'other': '$tag',
     });
     return '$_temp0';
@@ -619,6 +731,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get licensesChuaTichHopP406 => 'Not integrated yet (P4-06)';
+
+  @override
+  String get licensesGhiCong => 'Credits';
 
   @override
   String get licensesGiayPhepCacGoiFlutter => 'Licenses of Flutter/Dart packages';
@@ -897,7 +1012,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get mixerMonitorTuDongKhiArm => 'Monitor: Auto (when armed)';
 
   @override
-  String monitorShort(String mode) {
+  String monitorBadge(String mode) {
     String _temp0 = intl.Intl.selectLogic(mode, {'off': 'Off', 'auto': 'Auto', 'always': 'On', 'other': '$mode'});
     return '$_temp0';
   }

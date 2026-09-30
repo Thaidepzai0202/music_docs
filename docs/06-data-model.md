@@ -171,7 +171,7 @@ Ví dụ drum kit:
 - `name` là object theo ngôn ngữ `{en, vi}`. Thiếu ngôn ngữ nào thì dùng `en`. `tags` là **id tiếng Anh cố định** (`drums`, `bass`…), UI map sang nhãn đã dịch qua ARB, dùng một khoá select `libraryTag` (id lạ thì hiện nguyên id).
 - Clip gán từ Library **chép `tags` vào `clips[].tags`** (06 §2), để gợi ý "loop trống → Re-Pitch" vẫn còn sau khi mở lại project. Take tự thu thì `tags: []`.
 - Sample trong bundle: **FLAC 24-bit / 48 kHz**. Dùng mono nếu nguồn là mono. Decode sang float32 lúc nạp (trên worker).
-- Mỗi mục có trường `license`. Toàn bộ file license được lưu ở `content/LICENSES/` trong repo và hiện ở màn "Giấy phép" trong app.
+- Mỗi mục có trường `license`. Trường tuỳ chọn **`hidden: true`**: Browser không liệt kê mục đó, nhưng file vẫn nằm trong bundle để project cũ vẫn mở được (dùng cho `kit_synth` cũ). Toàn bộ file license được lưu ở `content/LICENSES/` trong repo và hiện ở màn "Giấy phép" trong app.
 
 ### Nguồn nội dung gợi ý (phải tự kiểm tra lại license từng bộ trước khi dùng)
 | Nguồn | License | Dùng cho |
@@ -180,6 +180,52 @@ Ví dụ drum kit:
 | Salamander Grand Piano | CC-BY 3.0 (phải ghi công) | Piano |
 | Freesound (lọc chỉ CC0) | CC0 | Drum hit, FX |
 | Tự thu hoặc tự tổng hợp | Của bạn | Bass, pad, loop |
+
+**Drum kit (chốt 29/09, theo phản hồi từ iPad):** mỗi kit **16 âm** theo map **General MIDI 36–51**, khớp với pad 4×4.
+
+| Nốt | Kit trống (808 · 909) | Kit Percussion |
+|---|---|---|
+| 36 | Kick | Conga thấp |
+| 37 | Rim / side stick | Conga cao |
+| 38 | Snare | Bongo thấp |
+| 39 | Clap | Bongo cao |
+| 40 | Snare 2 | Cowbell |
+| 41 | Tom sàn thấp | Tambourine |
+| 42 | Hat đóng (choke 46) | Shaker |
+| 43 | Tom sàn cao | Clave |
+| 44 | Hat chân (choke 46) | Triangle tắt (choke 45) |
+| 45 | Tom thấp | Triangle mở |
+| 46 | Hat mở | Agogô thấp |
+| 47 | Tom trung | Agogô cao |
+| 48 | Tom trung cao | Guiro |
+| 49 | Crash | Cabasa |
+| 50 | Tom cao | Timbale thấp |
+| 51 | Ride | Timbale cao |
+
+- **Giai đoạn 1:** 3 kit **tổng hợp bằng code** (`kit_808`, `kit_909`, `kit_perc`). Không vướng license, ghi vào `content/LICENSES/SYNTHESIZED.md`.
+- **Giai đoạn 2:** 1 kit **acoustic** từ mẫu thu thật **CC0**, người dùng duyệt nguồn trước khi dùng.
+- Pad gõ **velocity cố định**. Mạnh nhẹ chỉnh bằng thanh velocity trong piano roll (07 §4.1b). Mỗi region có `region_label` (tên hiện trên pad và trên hàng của piano roll).
+
+**Mở rộng thư viện (chốt 30/09, người dùng yêu cầu):**
+- **Kit trống**, mỗi kit 16 âm theo map GM ở trên:
+  - Đã có: 808, 909, Percussion.
+  - **Thêm tổng hợp bằng code:** Trap, Lo-fi/Boom-bap, 606, 707, Linn.
+  - **Thêm mẫu thật CC0:** Acoustic. Người dùng **duyệt nguồn** trước khi tải về.
+- **Nhạc cụ giai điệu:**
+  - **Phím:** Grand Piano (mẫu Salamander Grand Piano, **CC-BY 3.0**, phải ghi công; rút gọn còn 3 lớp velocity, mỗi mẫu cách 3 nửa cung), E-Piano kiểu Rhodes (tổng hợp FM), Organ (tổng hợp drawbar).
+  - **Dây** (VSCO-2 Community Edition, **CC0**): Violin, Viola, Cello, Contrabass, String Ensemble, Pizzicato, Harp.
+  - **Kèn & sáo** (VSCO-2 CE, CC0): Flute, Clarinet, Oboe, Trumpet, French Horn, Trombone.
+- **Định dạng trong bundle:** chuyển sang **FLAC 24-bit** (không còn WAV) để app nhẹ. Engine decode FLAC trên worker. Ngân sách cho mẫu thật: **≤ 150 MB**.
+- **Danh mục kiểu thư mục (Browser như Ableton):** mỗi mục trong manifest có `category` là đường dẫn thư mục, ví dụ `"Drums"`, `"Instruments/Keys"`, `"Instruments/Strings"`, `"Instruments/Winds & Brass"`, `"Instruments/Synth"`, `"Loops/Drums"`. Tên hiển thị của từng thư mục được dịch qua ARB.
+- **Nạp lười:** chỉ nhạc cụ đang được gán cho track mới nằm trong RAM. Bỏ gán thì nhả khỏi RAM (vẫn trong ngân sách RAM ở 04 §16).
+- **Phủ phím (chốt 30/09, người dùng báo "C1 không có tiếng"):**
+  - Mọi nhạc cụ giai điệu phải kêu ở **mọi phím 0–127**, ở mọi lớp velocity. Zone thấp nhất có `lokey=0`, zone cao nhất có `hikey=127`; ngoài dải tự nhiên thì Sampler repitch sample ở rìa.
+  - `range` trong `<id>.json` là **dải tự nhiên** của nhạc cụ. Bàn phím chỉ đánh dấu nhẹ dải này, không chặn phím.
+  - Tên nốt theo quy ước **C4 = 60**, nên C1 = 24. Bàn phím dịch được từ C0 tới C8.
+  - Tone tổng hợp (`inst_synth`) có bản thư viện riêng ở `content/instruments/`, với zone thật trải C0–C8. `engine/tests/fixtures/inst_synth` chỉ dùng cho test.
+- **Chốt nội dung mẫu thật (30/09):**
+  - Piano **mono**, 3 lớp velocity. Đuôi tối đa 6 s cho nốt trầm và 2 s cho nốt cao, để RAM khoảng 65 MB.
+  - Kit Acoustic lấy từ **Karoryfer "Big Rusty Drums" (CC0)**, id `kit_acoustic`. Pad 39 dùng rim click hoặc snare chổi, vì bộ này không có clap.
 
 **Ngân sách dung lượng MVP:** 4 drum kit, 6–8 nhạc cụ, khoảng 40 loop, tổng ≤ 250 MB FLAC.
 

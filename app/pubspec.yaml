@@ -79,8 +79,58 @@ flutter:
     - assets/demo/
     # Thư viện khởi đầu (app/tool/sync_library.sh). Flutter không quét thư mục con → liệt kê từng thư mục.
     - assets/library/
+    - assets/library/kits/kit_808/
+    - assets/library/kits/kit_808/samples/
+    - assets/library/kits/kit_909/
+    - assets/library/kits/kit_909/samples/
+    - assets/library/kits/kit_perc/
+    - assets/library/kits/kit_perc/samples/
+    - assets/library/kits/kit_trap/
+    - assets/library/kits/kit_trap/samples/
+    - assets/library/kits/kit_lofi/
+    - assets/library/kits/kit_lofi/samples/
+    - assets/library/kits/kit_606/
+    - assets/library/kits/kit_606/samples/
+    - assets/library/kits/kit_707/
+    - assets/library/kits/kit_707/samples/
+    - assets/library/kits/kit_linn/
+    - assets/library/kits/kit_linn/samples/
+    - assets/library/kits/kit_acoustic/
+    - assets/library/kits/kit_acoustic/samples/
     - assets/library/kits/kit_synth/
     - assets/library/kits/kit_synth/samples/
+    - assets/library/instruments/inst_epiano/
+    - assets/library/instruments/inst_epiano/samples/
+    - assets/library/instruments/inst_organ/
+    - assets/library/instruments/inst_organ/samples/
+    - assets/library/instruments/inst_piano/
+    - assets/library/instruments/inst_piano/samples/
+    - assets/library/instruments/inst_violin/
+    - assets/library/instruments/inst_violin/samples/
+    - assets/library/instruments/inst_viola/
+    - assets/library/instruments/inst_viola/samples/
+    - assets/library/instruments/inst_cello/
+    - assets/library/instruments/inst_cello/samples/
+    - assets/library/instruments/inst_contrabass/
+    - assets/library/instruments/inst_contrabass/samples/
+    - assets/library/instruments/inst_strings/
+    - assets/library/instruments/inst_strings/samples/
+    - assets/library/instruments/inst_pizzicato/
+    - assets/library/instruments/inst_pizzicato/samples/
+    - assets/library/instruments/inst_harp/
+    - assets/library/instruments/inst_harp/samples/
+    - assets/library/instruments/inst_flute/
+    - assets/library/instruments/inst_flute/samples/
+    - assets/library/instruments/inst_clarinet/
+    - assets/library/instruments/inst_clarinet/samples/
+    - assets/library/instruments/inst_oboe/
+    - assets/library/instruments/inst_oboe/samples/
+    - assets/library/instruments/inst_trumpet/
+    - assets/library/instruments/inst_trumpet/samples/
+    - assets/library/instruments/inst_horn/
+    - assets/library/instruments/inst_horn/samples/
+    - assets/library/instruments/inst_trombone/
+    - assets/library/instruments/inst_trombone/samples/
     - assets/library/instruments/inst_synth/
     - assets/library/instruments/inst_synth/samples/
     - assets/library/loops/

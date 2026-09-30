@@ -58,6 +58,8 @@ struct Zone {
     int32_t offBy = 0;
 
     const AudioData* data = nullptr;   // MƯỢN từ Instrument::samples. nullptr = zone hỏng, bị bỏ qua
+
+    std::string label;                 // [NRT] SFZ region_label: tên hiện trên pad / hàng piano roll (06 §4). RT không đọc
 };
 
 struct Instrument {

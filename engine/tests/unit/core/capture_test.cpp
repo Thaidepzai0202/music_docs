@@ -2,7 +2,9 @@
 // setEnvelope · track.setInstrument {kind:"user"} · P1-30 RECORDING_FINISHED khi lượt overdub MIDI kết thúc.
 #include <catch2/catch_test_macros.hpp>
 
+#include <algorithm>
 #include <chrono>
+#include <iterator>
 #include <cmath>
 #include <memory>
 #include <thread>
@@ -286,4 +288,58 @@ TEST_CASE("P1-30: lượt overdub MIDI kết thúc (tắt / TRANSPORT_STOP) → 
     REQUIRE(evs().back().value == 1.0);
     const auto notes = r.call(R"({"op":"clip.getMidi","track":2,"slot":1})")["result"]["notes"];
     REQUIRE(notes.size() == 3);
+}
+
+TEST_CASE("LE_EVT_CLIP_CHANGED: overdub MIDI 2 vòng, 5 nốt → piano roll cập nhật ≤ 10 lần/s, lần cuối trước RECORDING_FINISHED",
+          "[core][midi][overdub]") {
+    Rig r;
+    r.hz = 0.0;
+    REQUIRE(r.ok(R"({"op":"clip.setMidi","track":2,"slot":1,"clipId":"m","lengthBeats":4,"notes":[{"p":48,"v":100,"s":0,"d":0.5}]})"));
+    r.send(LE_CMD_SET_QUANTIZE, -1, -1, LE_Q_NONE);
+    r.send(LE_CMD_CLIP_LAUNCH, 2, 1);
+    r.render(2400);
+    r.send(LE_CMD_OVERDUB_TOGGLE, 2);
+    r.render(1024);
+    evs().clear();
+
+    // (giây từ lúc bật overdub, note, on?) — vòng 1 (clip 4 beat @120 = 2 s): 3 nốt sát nhau; vòng 2: 2 nốt
+    struct Step { double sec; int note; bool on; };
+    const Step plan[] = {{0.30, 60, true}, {0.35, 60, false}, {0.40, 62, true}, {0.42, 62, false}, {0.43, 64, true},
+                         {0.45, 64, false}, {2.50, 65, true}, {2.80, 65, false}, {3.20, 67, true}, {3.30, 67, false}};
+    struct Seen { double sec; int notes; };
+    std::vector<Seen> seen;   // mỗi CLIP_CHANGED: lúc thấy + số nốt clip.getMidi trả về LÚC ĐÓ
+    std::size_t checked = 0, next = 0;
+    for (int f = 0; f < 48000 * 4; f += 128) {
+        const double now = f / 48000.0;
+        while (next < std::size(plan) && plan[next].sec <= now) {
+            if (plan[next].on) r.send(LE_CMD_NOTE_ON, 2, -1, plan[next].note, 0.7f);
+            else r.send(LE_CMD_NOTE_OFF, 2, -1, plan[next].note);
+            ++next;
+        }
+        r.render(128);
+        for (; checked < evs().size(); ++checked) {
+            const Ev& ev = evs()[checked];
+            if (ev.type != LE_EVT_CLIP_CHANGED) continue;
+            REQUIRE(ev.a == 2);
+            REQUIRE(ev.b == 1);
+            seen.push_back({now, (int) r.call(R"({"op":"clip.getMidi","track":2,"slot":1})")["result"]["notes"].size()});
+        }
+    }
+    REQUIRE(r.count(LE_EVT_RECORDING_FINISHED) == 0);
+    REQUIRE(seen.size() >= 2);
+    CHECK(seen.front().notes >= 2);                 // lần đầu đã có nốt mới (clip gốc có 1 nốt)
+    CHECK(seen.front().sec < 0.35 + 0.01);          // nốt đầu tiên: phát ngay (không chờ)
+    CHECK(seen.size() < 5);                         // 3 nốt sát nhau ở vòng 1 → gom lại
+    for (std::size_t i = 1; i < seen.size(); ++i) CHECK(seen[i].sec - seen[i - 1].sec >= 0.1 - 0.003);
+    CHECK(seen.back().notes == 1 + 5);
+
+    r.send(LE_CMD_OVERDUB_TOGGLE, 2);   // tắt → CLIP_CHANGED cuối rồi RECORDING_FINISHED
+    r.render(1024);
+    REQUIRE(r.count(LE_EVT_RECORDING_FINISHED) == 1);
+    const auto fin = std::find_if(evs().begin(), evs().end(), [](const Ev& e) { return e.type == LE_EVT_RECORDING_FINISHED; });
+    REQUIRE(fin != evs().begin());
+    CHECK(std::prev(fin)->type == LE_EVT_CLIP_CHANGED);
+    CHECK(std::prev(fin)->a == 2);
+    CHECK(std::prev(fin)->b == 1);
+    CHECK(fin->value == 5.0);
 }

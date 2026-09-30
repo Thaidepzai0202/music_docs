@@ -1,0 +1,23 @@
+// inst_oboe — Oboe (VSCO-2 CE Oboe, vibrato)
+// VSCO-2 Community Edition by Versilian Studios (Sam Gossner) / Ivy Audio (Simon Dalzell), CC0 1.0; github.com/sgossner/VSCO-2-CE — versilian-studios.com/vsco-community/
+// Rút gọn bằng engine/tools/le-import-library (agent 80, render/SampleImport.cpp): chọn phím gốc ≥ 3 nửa cung (zone đầu / cuối phủ tới phím 0 / 127), 2 lớp velocity, cắt đầu, loop crossfade, mono, FLAC 24-bit, tune đo bằng Yin, volume = cân loudness.
+<control> default_path=samples/
+<global> loop_mode=loop_continuous ampeg_attack=0.010 ampeg_release=0.25
+<region> lokey=0 hikey=60 pitch_keycenter=58 lovel=1 hivel=95 sample=oboe_058_soft.flac tune=-2.60 volume=0.0 loop_start=104063 loop_end=149759
+<region> lokey=61 hikey=63 pitch_keycenter=62 lovel=1 hivel=95 sample=oboe_062_soft.flac tune=2.56 volume=-3.4 loop_start=112288 loop_end=150719
+<region> lokey=64 hikey=67 pitch_keycenter=65 lovel=1 hivel=95 sample=oboe_065_soft.flac tune=2.35 volume=-2.1 loop_start=90112 loop_end=149759
+<region> lokey=68 hikey=72 pitch_keycenter=70 lovel=1 hivel=95 sample=oboe_070_soft.flac tune=1.61 volume=-4.4 loop_start=86705 loop_end=153599
+<region> lokey=73 hikey=75 pitch_keycenter=74 lovel=1 hivel=95 sample=oboe_074_soft.flac tune=-1.48 volume=-2.8 loop_start=88423 loop_end=152639
+<region> lokey=76 hikey=79 pitch_keycenter=77 lovel=1 hivel=95 sample=oboe_077_soft.flac tune=-5.29 volume=-5.7 loop_start=92336 loop_end=151679
+<region> lokey=80 hikey=84 pitch_keycenter=82 lovel=1 hivel=95 sample=oboe_082_soft.flac tune=0.89 volume=-3.9 loop_start=71632 loop_end=152639
+<region> lokey=85 hikey=87 pitch_keycenter=86 lovel=1 hivel=95 sample=oboe_086_soft.flac tune=1.11 volume=-4.8 loop_start=37384 loop_end=153599
+<region> lokey=88 hikey=127 pitch_keycenter=89 lovel=1 hivel=95 sample=oboe_089_soft.flac tune=2.58 volume=-3.5 loop_start=100872 loop_end=153599
+<region> lokey=0 hikey=60 pitch_keycenter=58 lovel=96 hivel=127 sample=oboe_058_hard.flac tune=-4.17 volume=-2.5 loop_start=109209 loop_end=149759
+<region> lokey=61 hikey=63 pitch_keycenter=62 lovel=96 hivel=127 sample=oboe_062_hard.flac tune=-1.66 volume=-2.2 loop_start=111168 loop_end=149759
+<region> lokey=64 hikey=67 pitch_keycenter=65 lovel=96 hivel=127 sample=oboe_065_hard.flac tune=-0.06 volume=-3.7 loop_start=110599 loop_end=149759
+<region> lokey=68 hikey=72 pitch_keycenter=70 lovel=96 hivel=127 sample=oboe_070_hard.flac tune=-0.35 volume=-3.7 loop_start=89911 loop_end=149759
+<region> lokey=73 hikey=75 pitch_keycenter=74 lovel=96 hivel=127 sample=oboe_074_hard.flac tune=0.29 volume=-2.5 loop_start=68392 loop_end=153599
+<region> lokey=76 hikey=79 pitch_keycenter=77 lovel=96 hivel=127 sample=oboe_077_hard.flac tune=-2.20 volume=-6.6 loop_start=48560 loop_end=153599
+<region> lokey=80 hikey=84 pitch_keycenter=82 lovel=96 hivel=127 sample=oboe_082_hard.flac tune=0.40 volume=-2.3 loop_start=76688 loop_end=149759
+<region> lokey=85 hikey=87 pitch_keycenter=86 lovel=96 hivel=127 sample=oboe_086_hard.flac tune=9.03 volume=-3.8 loop_start=71112 loop_end=152639
+<region> lokey=88 hikey=127 pitch_keycenter=89 lovel=96 hivel=127 sample=oboe_089_hard.flac tune=4.54 volume=-5.4 loop_start=52440 loop_end=153599

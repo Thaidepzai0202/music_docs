@@ -35,6 +35,12 @@ abstract interface class ClipEngineHarness {
   /// [pitched]: sine C4 (nốt 60) hoặc noise. Engine thật: ghi WAV bằng [writeTestWav]; Fake: chỉ đăng ký.
   void addSample(String path, {required bool pitched});
 
+  /// `LeConfig.libraryDir` của engine đang test (gốc của đường dẫn `base: "library"`).
+  String get libraryDir;
+
+  /// Ghi file văn bản (SFZ…) ở [path]. Engine thật: ghi đĩa; Fake: chỉ đăng ký là có file.
+  void addTextFile(String path, String content);
+
   /// Lần `latency.calibrate` kế tiếp không nghe được tín hiệu (engine thật: sim không có input; Fake: bật cờ).
   void makeCalibrationSilent();
 
@@ -1234,6 +1240,51 @@ void defineClipSchedulerContract(
         await op('midi.setMappings', {'mappings': <Object>[]});
       });
 
+      tc('preview.play {source sfz|audio, base library|project, note?, durationMs?} → {}; nguồn sai → INVALID_ARG; '
+          'preview.stop → {}', () async {
+        final lib = h.libraryDir;
+        h.addSample('$lib/preview/tone.wav', pitched: true);
+        h.addTextFile('$lib/preview/tone.sfz', '<region> sample=tone.wav pitch_keycenter=60\n');
+        await op('preview.play', {
+          'source': {'kind': 'sfz', 'path': 'preview/tone.sfz'},
+        });
+        await op('preview.play', {
+          'source': {'kind': 'audio', 'file': 'preview/tone.wav', 'base': 'library'},
+          'note': 60,
+          'durationMs': 1500,
+        });
+        // base "project": tương đối theo thư mục của project.open (Bản thu của tôi).
+        final proj = '$lib/preview_project.loopproj';
+        await op('project.open', {'dir': proj});
+        h.addSample('$proj/instruments/i_1/source.wav', pitched: true);
+        await op('preview.play', {
+          'source': {'kind': 'audio', 'file': 'instruments/i_1/source.wav', 'base': 'project'},
+        });
+        expect(
+          errCode({
+            'op': 'preview.play',
+            'source': {'kind': 'audio', 'file': 'preview/khong_co.wav'},
+          }),
+          'FILE_NOT_FOUND',
+        );
+        for (final bad in <Map<String, Object>>[
+          {'kind': 'midi', 'path': 'x'},
+          {'kind': 'sfz', 'path': ''},
+          {'kind': 'audio', 'file': 'a.wav', 'base': 'cloud'},
+        ]) {
+          expect(errCode({'op': 'preview.play', 'source': bad}), 'INVALID_ARG', reason: '$bad');
+        }
+        expect(
+          errCode({
+            'op': 'preview.play',
+            'source': {'kind': 'sfz', 'path': 'kits/kit_808/kit_808.sfz'},
+            'note': 200,
+          }),
+          'INVALID_ARG',
+        );
+        await op('preview.stop');
+      });
+
       tc('memory.pressure {warning|critical} → {freedMB, usedMB} + MEMORY_WARNING; engine.info.memoryMB', () async {
         final ev = h.deliversEvents
             ? e().events.firstWhere((x) => x is MemoryWarning).timeout(const Duration(seconds: 5))
@@ -1391,6 +1442,41 @@ void defineClipSchedulerContract(
       final notes = e().callOk('clip.getMidi', {'track': 2, 'slot': 1})['notes'] as List;
       expect(notes.map((n) => (n as Map)['p']), [64]);
       expect(st(2, 1), playing);
+    });
+
+    tc('overdub MIDI: nốt chồng → CLIP_CHANGED(track, slot) ≤ 10 lần/s, luôn một lần cuối trước RECORDING_FINISHED; '
+        'clip.getMidi lúc đó đã có nốt', () async {
+      await op('track.configure', {'track': 3, 'kind': 'instrument', 'name': 'Keys'});
+      await clip(3, 2);
+      await launch(3, 2);
+      final got = <EngineEvent>[];
+      final sub = e().events.listen(got.add);
+      await cmd(LeCommandType.LE_CMD_OVERDUB_TOGGLE, track: 3);
+      await h.advanceBeats(0.25);
+      for (var k = 0; k < 20; k++) {
+        await cmd(LeCommandType.LE_CMD_NOTE_ON, track: 3, i0: 60 + k % 12, f0: 0.7);
+        await h.advanceSeconds(0.025);
+        await cmd(LeCommandType.LE_CMD_NOTE_OFF, track: 3, i0: 60 + k % 12);
+        await h.advanceSeconds(0.025);
+      }
+      final midway = (e().callOk('clip.getMidi', {'track': 3, 'slot': 2})['notes'] as List).length;
+      expect(midway, 20, reason: 'đang overdub đã đọc được nốt (app vẽ ngay khi có CLIP_CHANGED)');
+      await cmd(LeCommandType.LE_CMD_OVERDUB_TOGGLE, track: 3);
+      await h.advanceSeconds(0.1);
+      await h.settle();
+      await sub.cancel();
+      if (!h.deliversEvents) return;
+      final changed = [
+        for (final x in got)
+          if (x is ClipChanged && x.track == 3 && x.slot == 2) x,
+      ];
+      final finished = got.indexWhere((x) => x is RecordingFinished && x.track == 3 && x.slot == 2);
+      expect(changed.length, inInclusiveRange(2, 12), reason: '20 nốt trong 1 s → ≤ 10 lần/s (+ lần cuối)');
+      expect(
+        finished,
+        greaterThan(got.lastIndexOf(changed.last)),
+        reason: 'CLIP_CHANGED cuối trước RECORDING_FINISHED',
+      );
     });
 
     tc('project.open reset state RT: 120 BPM, 4/4, quantize 1 bar (thiết lập toàn cục giữ nguyên)', () async {

@@ -22,8 +22,10 @@ case "$MODE" in
 esac
 
 # 1. Tìm iPad đang kết nối (CoreDevice identifier)
-DEVICE="$(xcrun devicectl list devices 2>/dev/null \
-  | awk '/connected/ && /iPad/ { for (i = 1; i <= NF; i++) if ($i ~ /^[0-9A-F]{8}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{12}$/) { print $i; exit } }')"
+#    Chỉ nhận iPad "connected" hoặc "available (paired)"; loại "unavailable" (máy đã ghép nhưng không có mặt).
+#    Nhiều iPad cùng lúc thì chỉ định bằng DEVICE_ID=<CoreDevice identifier>.
+DEVICE="${DEVICE_ID:-$(xcrun devicectl list devices 2>/dev/null \
+  | awk '/iPad/ && !/unavailable/ && (/connected/ || /available/) { for (i = 1; i <= NF; i++) if ($i ~ /^[0-9A-F]{8}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{12}$/) { print $i; exit } }')}"
 if [ -z "$DEVICE" ]; then
   echo "Không thấy iPad nào đang kết nối. Cắm cáp, mở khoá iPad, bấm 'Trust' nếu được hỏi, rồi chạy lại."
   exit 1

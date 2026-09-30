@@ -1,0 +1,29 @@
+// inst_viola — Viola (VSCO-2 CE Viola Section, sustain vibrato)
+// VSCO-2 Community Edition by Versilian Studios (Sam Gossner) / Ivy Audio (Simon Dalzell), CC0 1.0; github.com/sgossner/VSCO-2-CE — versilian-studios.com/vsco-community/
+// Rút gọn bằng engine/tools/le-import-library (agent 80, render/SampleImport.cpp): chọn phím gốc ≥ 3 nửa cung (zone đầu / cuối phủ tới phím 0 / 127), 2 lớp velocity, cắt đầu, loop crossfade, mono, FLAC 24-bit, tune đo bằng Yin, volume = cân loudness.
+<control> default_path=samples/
+<global> loop_mode=loop_continuous ampeg_attack=0.010 ampeg_release=0.35
+<region> lokey=0 hikey=50 pitch_keycenter=48 lovel=1 hivel=95 sample=viola_048_soft.flac tune=-0.79 volume=-2.3 loop_start=114001 loop_end=153599
+<region> lokey=51 hikey=53 pitch_keycenter=52 lovel=1 hivel=95 sample=viola_052_soft.flac tune=-0.29 volume=-2.6 loop_start=108113 loop_end=152639
+<region> lokey=54 hikey=57 pitch_keycenter=55 lovel=1 hivel=95 sample=viola_055_soft.flac tune=1.25 volume=-0.7 loop_start=84591 loop_end=150719
+<region> lokey=58 hikey=60 pitch_keycenter=59 lovel=1 hivel=95 sample=viola_059_soft.flac tune=-0.93 volume=-1.3 loop_start=99848 loop_end=153599
+<region> lokey=61 hikey=63 pitch_keycenter=62 lovel=1 hivel=95 sample=viola_062_soft.flac tune=-1.03 volume=-1.5 loop_start=72447 loop_end=153599
+<region> lokey=64 hikey=67 pitch_keycenter=65 lovel=1 hivel=95 sample=viola_065_soft.flac tune=1.25 volume=-3.2 loop_start=61672 loop_end=153599
+<region> lokey=68 hikey=70 pitch_keycenter=69 lovel=1 hivel=95 sample=viola_069_soft.flac tune=-0.01 volume=-3.5 loop_start=92185 loop_end=149759
+<region> lokey=71 hikey=74 pitch_keycenter=72 lovel=1 hivel=95 sample=viola_072_soft.flac tune=1.35 volume=-3.4 loop_start=89023 loop_end=151679
+<region> lokey=75 hikey=77 pitch_keycenter=76 lovel=1 hivel=95 sample=viola_076_soft.flac tune=0.76 volume=-1.5 loop_start=42408 loop_end=153599
+<region> lokey=78 hikey=81 pitch_keycenter=79 lovel=1 hivel=95 sample=viola_079_soft.flac tune=0.15 volume=-3.0 loop_start=108232 loop_end=152639
+<region> lokey=82 hikey=84 pitch_keycenter=83 lovel=1 hivel=95 sample=viola_083_soft.flac tune=-3.57 volume=-1.8 loop_start=81888 loop_end=150719
+<region> lokey=85 hikey=127 pitch_keycenter=86 lovel=1 hivel=95 sample=viola_086_soft.flac tune=-1.38 volume=-3.6 loop_start=86048 loop_end=151679
+<region> lokey=0 hikey=50 pitch_keycenter=48 lovel=96 hivel=127 sample=viola_048_hard.flac tune=-0.05 volume=-3.2 loop_start=93270 loop_end=153599
+<region> lokey=51 hikey=53 pitch_keycenter=52 lovel=96 hivel=127 sample=viola_052_hard.flac tune=-1.66 volume=0.0 loop_start=47585 loop_end=151679
+<region> lokey=54 hikey=57 pitch_keycenter=55 lovel=96 hivel=127 sample=viola_055_hard.flac tune=2.15 volume=-2.8 loop_start=56787 loop_end=151679
+<region> lokey=58 hikey=60 pitch_keycenter=59 lovel=96 hivel=127 sample=viola_059_hard.flac tune=-0.57 volume=-1.0 loop_start=103146 loop_end=152639
+<region> lokey=61 hikey=63 pitch_keycenter=62 lovel=96 hivel=127 sample=viola_062_hard.flac tune=3.52 volume=-2.0 loop_start=108312 loop_end=152639
+<region> lokey=64 hikey=67 pitch_keycenter=65 lovel=96 hivel=127 sample=viola_065_hard.flac tune=-2.93 volume=-2.8 loop_start=113112 loop_end=151679
+<region> lokey=68 hikey=70 pitch_keycenter=69 lovel=96 hivel=127 sample=viola_069_hard.flac tune=-1.11 volume=-3.8 loop_start=69545 loop_end=152639
+<region> lokey=71 hikey=74 pitch_keycenter=72 lovel=96 hivel=127 sample=viola_072_hard.flac tune=0.53 volume=-2.2 loop_start=97177 loop_end=152639
+<region> lokey=75 hikey=77 pitch_keycenter=76 lovel=96 hivel=127 sample=viola_076_hard.flac tune=1.02 volume=-2.4 loop_start=56338 loop_end=150719
+<region> lokey=78 hikey=81 pitch_keycenter=79 lovel=96 hivel=127 sample=viola_079_hard.flac tune=-0.59 volume=-3.3 loop_start=38703 loop_end=152639
+<region> lokey=82 hikey=84 pitch_keycenter=83 lovel=96 hivel=127 sample=viola_083_hard.flac tune=1.93 volume=-3.0 loop_start=90880 loop_end=149759
+<region> lokey=85 hikey=127 pitch_keycenter=86 lovel=96 hivel=127 sample=viola_086_hard.flac tune=-0.04 volume=-4.0 loop_start=46584 loop_end=153599

@@ -1,0 +1,20 @@
+// kit_perc — 16 pad map General MIDI 36–51 (06 §4). Tổng hợp bằng code: engine/tools/le-gen-kits
+// (agent 80, render/DrumKits*.cpp). Không dùng sample bên thứ ba. volume = cân loudness trong kit.
+<control> default_path=samples/
+<global> loop_mode=one_shot ampeg_release=0.05
+<region> key=36 sample=conga_lo.flac volume=-2.5 region_label=Conga Lo
+<region> key=37 sample=conga_hi.flac volume=-2.4 region_label=Conga Hi
+<region> key=38 sample=bongo_lo.flac volume=-0.7 region_label=Bongo Lo
+<region> key=39 sample=bongo_hi.flac volume=-0.4 region_label=Bongo Hi
+<region> key=40 sample=cowbell.flac volume=-1.2 region_label=Cowbell
+<region> key=41 sample=tambourine.flac region_label=Tambourine
+<region> key=42 sample=shaker.flac volume=-3.6 region_label=Shaker
+<region> key=43 sample=clave.flac volume=-2.4 region_label=Clave
+<region> key=44 sample=triangle_mute.flac volume=-0.8 group=3 region_label=Triangle Mute
+<region> key=45 sample=triangle_open.flac volume=-2.7 group=4 off_by=3 region_label=Triangle Open
+<region> key=46 sample=agogo_lo.flac volume=-1.2 region_label=Agogo Lo
+<region> key=47 sample=agogo_hi.flac volume=-1.9 region_label=Agogo Hi
+<region> key=48 sample=guiro.flac volume=-0.9 region_label=Guiro
+<region> key=49 sample=cabasa.flac volume=-3.6 region_label=Cabasa
+<region> key=50 sample=timbale_lo.flac volume=-0.8 region_label=Timbale Lo
+<region> key=51 sample=timbale_hi.flac volume=-1.2 region_label=Timbale Hi

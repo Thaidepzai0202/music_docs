@@ -7,12 +7,15 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../engine/app_error.dart';
 import '../../engine/engine_providers.dart';
 import '../../engine/job_tracker.dart';
+import '../../data/library_repository.dart';
 import '../../engine/project_replay.dart';
 import '../../model/ids.dart';
 import '../../model/names.dart';
 import '../../model/project.dart';
 import '../fx/fx_specs.dart';
 import '../settings/app_settings.dart';
+import 'live_clip_notes.dart';
+import 'track_naming.dart';
 import '../../l10n/l10n.dart';
 
 /// Vị trí ô (track, slot) cho thao tác kéo/copy.
@@ -396,19 +399,28 @@ class ProjectController extends Notifier<ProjectSession?> {
     _updateTrack(track, (x) => x.copyWith(name: clean));
   }
 
-  /// Đổi loại track audio ↔ instrument — chỉ khi track TRỐNG (không còn clip). Sang audio thì bỏ nhạc cụ.
+  /// Đổi loại track audio ↔ instrument — chỉ khi track TRỐNG (không còn clip). Sang audio thì bỏ nhạc cụ, và track
+  /// đang mang tên nhạc cụ (tên tự động, 07 §4.1c) thì về "Track N".
   bool setTrackKind(int track, TrackKind kind) {
     if (_editable() == null) return false;
     _ensureTrack(track);
     final t = state!.project.trackAt(track)!;
     if (t.kind == kind || t.clips.isNotEmpty) return false;
-    if (!_callOk('track.configure', trackConfigure(track, t.copyWith(kind: kind)))) return false;
+    final name = kind == TrackKind.audio && _isAutoName(t) ? S.sessionTrackName(track + 1) : t.name;
+    if (!_callOk('track.configure', trackConfigure(track, t.copyWith(kind: kind, name: name)))) return false;
     _updateTrack(
       track,
-      (x) => kind == TrackKind.audio ? x.copyWith(kind: kind, instrument: null) : x.copyWith(kind: kind),
+      (x) => kind == TrackKind.audio ? x.copyWith(kind: kind, instrument: null, name: name) : x.copyWith(kind: kind),
     );
     return true;
   }
+
+  /// Track chưa có tên riêng (07 §4.1c) → được đổi tên theo nhạc cụ khi gán.
+  bool _isAutoName(Track t) => TrackNaming.isAuto(
+    t,
+    library: ref.read(libraryManifestProvider).value,
+    users: state?.project.userInstruments ?? const [],
+  );
 
   /// Tên scene (chỉ model — engine không dùng tên scene).
   void renameScene(int scene, String name) {
@@ -512,8 +524,13 @@ class ProjectController extends Notifier<ProjectSession?> {
       _refreshTempo();
       return;
     }
+    if (e is ClipChanged) {
+      _onClipChanged(e);
+      return;
+    }
     if (e is! RecordingFinished || e.track < 0 || e.slot < 0) return; // track -1 = spike P0
     _onRecordingFinished(e);
+    ref.read(liveClipNotesProvider).clear(e.track, e.slot); // model đã có nốt cuối → lớp nốt vẽ theo model
     _refreshTempo(fallbackFirstLoop: state?.project.trackAt(e.track)?.clipAt(e.slot)?.lengthBeats);
   }
 
@@ -599,6 +616,17 @@ class ProjectController extends Notifier<ProjectSession?> {
   }
 
   // ───────── MIDI clip (P2-18/19) ─────────
+
+  /// Overdub MIDI đang trộn nốt (nốt từ bàn phím app hoặc MIDI ngoài): đọc lại nốt cho piano roll vẽ ngay — không đổi
+  /// model (07 §4.1d).
+  void _onClipChanged(ClipChanged e) {
+    if (state?.project.trackAt(e.track)?.clipAt(e.slot) is! MidiClip) return;
+    try {
+      ref.read(liveClipNotesProvider).of(e.track, e.slot).value = _fetchNotes(e.track, e.slot);
+    } on EngineCallException {
+      // Lần CLIP_CHANGED sau / RECORDING_FINISHED sẽ đọc lại.
+    }
+  }
 
   List<Note> _fetchNotes(int track, int slot) {
     final r = _engine.callOk('clip.getMidi', {'track': track, 'slot': slot});
@@ -744,10 +772,14 @@ class ProjectController extends Notifier<ProjectSession?> {
   });
 
   /// Đặt clip audio mới (ví dụ loop từ Browser, file đã chép vào project; `clip.tags` chép từ Library).
+  /// Clip audio (loop từ Browser…). Track nhạc cụ còn trống thì thành track audio (07 §4.1c); track nhạc cụ đang có
+  /// clip MIDI thì không thêm được (trả false).
   bool addAudioClip(int track, int slot, AudioClip clip) {
     if (_editable() == null) return false;
     _ensureTrack(track);
-    if (state!.project.trackAt(track)!.clipAt(slot) != null) return false;
+    final t = state!.project.trackAt(track)!;
+    if (t.clipAt(slot) != null) return false;
+    if (t.kind == TrackKind.instrument && !setTrackKind(track, TrackKind.audio)) return false;
     final c = clip.copyWith(slot: slot);
     _sendAudio(track, slot, c);
     _updateTrack(track, (t) => t.copyWith(clips: [...t.clips, c]));
@@ -785,13 +817,21 @@ class ProjectController extends Notifier<ProjectSession?> {
 
   // ───────── Nhạc cụ (P2-22) ─────────
 
-  /// Gán nhạc cụ SFZ từ thư viện. Track audio được chuyển thành instrument (`track.configure`).
-  void setInstrument(int track, InstrumentRef instrument) {
-    if (_editable() == null) return;
+  /// Gán kit / nhạc cụ. Track audio còn trống được chuyển thành instrument (`track.configure`); track audio đang có
+  /// clip thì không đổi được (trả false, 07 §4.1c). [name] = tên nhạc cụ theo ngôn ngữ lúc gán: track chưa có tên riêng
+  /// thì mang tên này.
+  bool setInstrument(int track, InstrumentRef instrument, {String? name}) {
+    if (_editable() == null) return false;
     _ensureTrack(track);
     final t = state!.project.trackAt(track)!;
-    if (t.kind != TrackKind.instrument) {
-      _engine.call({'op': 'track.configure', ...trackConfigure(track, t.copyWith(kind: TrackKind.instrument))});
+    if (t.kind == TrackKind.audio && t.clips.isNotEmpty) return false;
+    final clean = name == null ? '' : cleanName(name);
+    final rename = clean.isNotEmpty && clean != t.name && _isAutoName(t) ? clean : null;
+    if (t.kind != TrackKind.instrument || rename != null) {
+      _engine.call({
+        'op': 'track.configure',
+        ...trackConfigure(track, t.copyWith(kind: TrackKind.instrument, name: rename ?? t.name)),
+      });
     }
     try {
       _engine.callJob('track.setInstrument', {'track': track, 'instrument': instrument.toJson()});
@@ -799,7 +839,8 @@ class ProjectController extends Notifier<ProjectSession?> {
       final s = state!;
       state = s.copyWith(errors: List.unmodifiable([...s.errors, AppError(ex.code, op: 'track.setInstrument')]));
     }
-    _updateTrack(track, (x) => x.copyWith(kind: TrackKind.instrument, instrument: instrument));
+    _updateTrack(track, (x) => x.copyWith(kind: TrackKind.instrument, instrument: instrument, name: rename ?? x.name));
+    return true;
   }
 
   /// Gắn nhạc cụ tự thu (P3-03): thêm vào `userInstruments` (06 §2) rồi gán cho track.
@@ -812,7 +853,7 @@ class ProjectController extends Notifier<ProjectSession?> {
         userInstruments: [...s.project.userInstruments.where((u) => u.id != instrument.id), instrument],
       ),
     );
-    setInstrument(track, InstrumentRef.user(id: instrument.id));
+    setInstrument(track, InstrumentRef.user(id: instrument.id), name: instrument.name);
   }
 
   // ───────── MIDI learn + Link (P4-04/09, Settings) ─────────

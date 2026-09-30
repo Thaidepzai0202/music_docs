@@ -1,0 +1,9 @@
+{
+  "id": "inst_viola",
+  "name": { "en": "Viola", "vi": "Viola" },
+  "category": "Instruments/Strings",
+  "path": "instruments/inst_viola/inst_viola.sfz",
+  "range": [46, 88],
+  "tags": ["strings"],
+  "license": "CC0 1.0 — VSCO-2 Community Edition by Versilian Studios"
+}

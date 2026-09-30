@@ -24,7 +24,7 @@ struct RtMessage {
     enum Kind : std::int32_t { Event = 1, Retire = 2, TakeFinished = 3, MidiTakeFinished = 4, MidiNote = 5, MidiOverdubNote = 6,
                               OverdubFinished = 7, MidiOverdubFinished = 8, CaptureFinished = 9,
                               JamStopped = 10, MidiLearned = 11, MappedChange = 12, LoopButton = 13,
-                              UndoOverdub = 14 };
+                              UndoOverdub = 14, PreviewReleased = 15 };
     Kind kind = Event;
     std::int32_t type = 0;   // LeEventType (Event)
     std::int32_t a = 0;
@@ -40,6 +40,7 @@ struct RtMessage {
     // CaptureFinished: a = id lượt capture, i0 = số frame đã ghi, i1 = 1 nếu tự dừng vì đầy (maxSeconds)
     // JamStopped: a = id ring ghi jam — RT không còn con trỏ tới ring (main nhả được)
     // MidiLearned (P4-04): a = source (thiết bị), b = LearnKind (0 nốt, 1 CC), i0 = kênh 0..15, i1 = số 0..127
+    // PreviewReleased: a = id vé preview — RT không còn đọc instrument / audio của vé (main nhả được)
     // UndoOverdub: mapping {kind:"undoOverdub"} được nhấn, a = track đang chọn → main hoàn tác lớp overdub của ô đang phát
     // LoopButton (P1-39): mapping MIDI {kind:"loopButton"} được nhấn, a = track đang chọn → main chạy LE_CMD_LOOP_BUTTON
     // MappedChange (P4-04): mapping MIDI đổi state RT mà model phải biết. a = 0 gain dB / 1 mute / 2 FX param,

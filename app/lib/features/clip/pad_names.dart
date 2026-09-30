@@ -3,8 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../data/library_repository.dart';
 
-/// Tên pad của kit SFZ (07 §4.1b: piano roll track kit — mỗi hàng là một pad, chỉ các phím có sample).
-/// Tên lấy từ `region_label` nếu có, không thì tên file sample ("hat_open.wav" → "Hat open").
+/// Tên pad của kit SFZ (07 §4.1b: piano roll track kit — mỗi hàng là một pad, chỉ các phím có sample; 06 §4: tên
+/// hiện trên pad). Tên lấy từ `region_label` nếu có (được có dấu cách: "Floor Tom L"), không thì tên file sample
+/// ("hat_open.wav" → "Hat open").
 abstract final class SfzPads {
   /// key MIDI → tên, theo thứ tự xuất hiện trong file.
   static Map<int, String> parse(String sfz) {
@@ -14,8 +15,9 @@ abstract final class SfzPads {
       final opcodes = <String, String>{};
       for (final line in body.split('\n')) {
         final code = line.split('//').first;
-        for (final m in RegExp(r'(\w+)=(\S+)').allMatches(code)) {
-          opcodes[m[1]!] = m[2]!;
+        // Giá trị kéo tới trước opcode kế tiếp ("… region_label=Open Hat group=2") hoặc hết dòng.
+        for (final m in RegExp(r'(\w+)=(.*?)(?=\s+\w+=|\s*$)').allMatches(code)) {
+          opcodes[m[1]!] = m[2]!.trim();
         }
       }
       final key =

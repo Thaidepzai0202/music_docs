@@ -1,0 +1,48 @@
+// inst_organ — Organ drawbar kiểu tonewheel (888000000; lớp mạnh + 4' và percussion), C2–C7
+// Tổng hợp bằng code: engine/tools/le-gen-instruments (agent 80, render/SynthInstruments.cpp). Không dùng
+// sample bên thứ ba. Zone mỗi 3 nửa cung × 2 lớp velocity (zone đầu / cuối phủ tới phím 0 / 127);
+// tune bù tần số nguyên Hz; volume = cân loudness.
+<control> default_path=samples/
+<global> loop_mode=loop_continuous ampeg_attack=0.003 ampeg_release=0.06
+<region> lokey=0 hikey=38 pitch_keycenter=37 lovel=1 hivel=95 sample=organ_037_soft.flac tune=-17.51 volume=-0.9 loop_start=28800 loop_end=76799
+<region> lokey=0 hikey=38 pitch_keycenter=37 lovel=96 hivel=127 sample=organ_037_hard.flac tune=-17.51 volume=-0.4 loop_start=28800 loop_end=76799
+<region> lokey=39 hikey=41 pitch_keycenter=40 lovel=1 hivel=95 sample=organ_040_soft.flac tune=8.57 volume=-1.4 loop_start=28800 loop_end=76799
+<region> lokey=39 hikey=41 pitch_keycenter=40 lovel=96 hivel=127 sample=organ_040_hard.flac tune=8.57 volume=0.0 loop_start=28800 loop_end=76799
+<region> lokey=42 hikey=44 pitch_keycenter=43 lovel=1 hivel=95 sample=organ_043_soft.flac tune=-0.02 volume=-2.0 loop_start=28800 loop_end=76799
+<region> lokey=42 hikey=44 pitch_keycenter=43 lovel=96 hivel=127 sample=organ_043_hard.flac tune=-0.02 volume=-0.9 loop_start=28800 loop_end=76799
+<region> lokey=45 hikey=47 pitch_keycenter=46 lovel=1 hivel=95 sample=organ_046_soft.flac tune=8.05 volume=-2.8 loop_start=28800 loop_end=76799
+<region> lokey=45 hikey=47 pitch_keycenter=46 lovel=96 hivel=127 sample=organ_046_hard.flac tune=8.05 volume=-2.3 loop_start=28800 loop_end=76799
+<region> lokey=48 hikey=50 pitch_keycenter=49 lovel=1 hivel=95 sample=organ_049_soft.flac tune=7.40 volume=-3.6 loop_start=28800 loop_end=76799
+<region> lokey=48 hikey=50 pitch_keycenter=49 lovel=96 hivel=127 sample=organ_049_hard.flac tune=7.40 volume=-1.7 loop_start=28800 loop_end=76799
+<region> lokey=51 hikey=53 pitch_keycenter=52 lovel=1 hivel=95 sample=organ_052_soft.flac tune=8.57 volume=-3.7 loop_start=28800 loop_end=76799
+<region> lokey=51 hikey=53 pitch_keycenter=52 lovel=96 hivel=127 sample=organ_052_hard.flac tune=8.57 volume=-2.3 loop_start=28800 loop_end=76799
+<region> lokey=54 hikey=56 pitch_keycenter=55 lovel=1 hivel=95 sample=organ_055_soft.flac tune=-0.02 volume=-3.4 loop_start=28800 loop_end=76799
+<region> lokey=54 hikey=56 pitch_keycenter=55 lovel=96 hivel=127 sample=organ_055_hard.flac tune=-0.02 volume=-3.1 loop_start=28800 loop_end=76799
+<region> lokey=57 hikey=59 pitch_keycenter=58 lovel=1 hivel=95 sample=organ_058_soft.flac tune=-6.81 volume=-3.2 loop_start=28800 loop_end=76799
+<region> lokey=57 hikey=59 pitch_keycenter=58 lovel=96 hivel=127 sample=organ_058_hard.flac tune=-6.81 volume=-1.7 loop_start=28800 loop_end=76799
+<region> lokey=60 hikey=62 pitch_keycenter=61 lovel=1 hivel=95 sample=organ_061_soft.flac tune=-5.10 volume=-3.0 loop_start=28800 loop_end=76799
+<region> lokey=60 hikey=62 pitch_keycenter=61 lovel=96 hivel=127 sample=organ_061_hard.flac tune=-5.10 volume=-2.6 loop_start=28800 loop_end=76799
+<region> lokey=63 hikey=65 pitch_keycenter=64 lovel=1 hivel=95 sample=organ_064_soft.flac tune=-1.96 volume=-3.0 loop_start=28800 loop_end=76799
+<region> lokey=63 hikey=65 pitch_keycenter=64 lovel=96 hivel=127 sample=organ_064_hard.flac tune=-1.96 volume=-2.1 loop_start=28800 loop_end=76799
+<region> lokey=66 hikey=68 pitch_keycenter=67 lovel=1 hivel=95 sample=organ_067_soft.flac tune=-0.02 volume=-3.0 loop_start=28800 loop_end=76799
+<region> lokey=66 hikey=68 pitch_keycenter=67 lovel=96 hivel=127 sample=organ_067_hard.flac tune=-0.02 volume=-1.5 loop_start=28800 loop_end=76799
+<region> lokey=69 hikey=71 pitch_keycenter=70 lovel=1 hivel=95 sample=organ_070_soft.flac tune=0.61 volume=-3.0 loop_start=28800 loop_end=76799
+<region> lokey=69 hikey=71 pitch_keycenter=70 lovel=96 hivel=127 sample=organ_070_hard.flac tune=0.61 volume=-2.5 loop_start=28800 loop_end=76799
+<region> lokey=72 hikey=74 pitch_keycenter=73 lovel=1 hivel=95 sample=organ_073_soft.flac tune=1.14 volume=-3.2 loop_start=28800 loop_end=76799
+<region> lokey=72 hikey=74 pitch_keycenter=73 lovel=96 hivel=127 sample=organ_073_hard.flac tune=1.14 volume=-1.5 loop_start=28800 loop_end=76799
+<region> lokey=75 hikey=77 pitch_keycenter=76 lovel=1 hivel=95 sample=organ_076_soft.flac tune=-1.96 volume=-3.4 loop_start=28800 loop_end=76799
+<region> lokey=75 hikey=77 pitch_keycenter=76 lovel=96 hivel=127 sample=organ_076_hard.flac tune=-1.96 volume=-2.9 loop_start=28800 loop_end=76799
+<region> lokey=78 hikey=80 pitch_keycenter=79 lovel=1 hivel=95 sample=organ_079_soft.flac tune=-0.02 volume=-3.9 loop_start=28800 loop_end=76799
+<region> lokey=78 hikey=80 pitch_keycenter=79 lovel=96 hivel=127 sample=organ_079_hard.flac tune=-0.02 volume=-2.7 loop_start=28800 loop_end=76799
+<region> lokey=81 hikey=83 pitch_keycenter=82 lovel=1 hivel=95 sample=organ_082_soft.flac tune=0.61 volume=-4.4 loop_start=28800 loop_end=76799
+<region> lokey=81 hikey=83 pitch_keycenter=82 lovel=96 hivel=127 sample=organ_082_hard.flac tune=0.61 volume=-3.1 loop_start=28800 loop_end=76799
+<region> lokey=84 hikey=86 pitch_keycenter=85 lovel=1 hivel=95 sample=organ_085_soft.flac tune=1.14 volume=-5.3 loop_start=28800 loop_end=76799
+<region> lokey=84 hikey=86 pitch_keycenter=85 lovel=96 hivel=127 sample=organ_085_hard.flac tune=1.14 volume=-4.9 loop_start=28800 loop_end=76799
+<region> lokey=87 hikey=89 pitch_keycenter=88 lovel=1 hivel=95 sample=organ_088_soft.flac tune=0.67 volume=-5.9 loop_start=28800 loop_end=76799
+<region> lokey=87 hikey=89 pitch_keycenter=88 lovel=96 hivel=127 sample=organ_088_hard.flac tune=0.67 volume=-4.4 loop_start=28800 loop_end=76799
+<region> lokey=90 hikey=92 pitch_keycenter=91 lovel=1 hivel=95 sample=organ_091_soft.flac tune=-0.02 volume=-5.9 loop_start=28800 loop_end=76799
+<region> lokey=90 hikey=92 pitch_keycenter=91 lovel=96 hivel=127 sample=organ_091_hard.flac tune=-0.02 volume=-4.5 loop_start=28800 loop_end=76799
+<region> lokey=93 hikey=95 pitch_keycenter=94 lovel=1 hivel=95 sample=organ_094_soft.flac tune=0.61 volume=-6.0 loop_start=28800 loop_end=76799
+<region> lokey=93 hikey=95 pitch_keycenter=94 lovel=96 hivel=127 sample=organ_094_hard.flac tune=0.61 volume=-5.8 loop_start=28800 loop_end=76799
+<region> lokey=96 hikey=127 pitch_keycenter=97 lovel=1 hivel=95 sample=organ_097_soft.flac tune=-0.42 volume=-6.1 loop_start=28800 loop_end=76799
+<region> lokey=96 hikey=127 pitch_keycenter=97 lovel=96 hivel=127 sample=organ_097_hard.flac tune=-0.42 volume=-4.7 loop_start=28800 loop_end=76799

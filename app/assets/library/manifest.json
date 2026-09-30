@@ -2,32 +2,427 @@
   "version": 1,
   "kits": [
     {
+      "id": "kit_808",
+      "name": {
+        "en": "808 Kit",
+        "vi": "Kit 808"
+      },
+      "path": "kits/kit_808/kit_808.sfz",
+      "category": "Drums",
+      "tags": [
+        "drums"
+      ],
+      "license": "Self-synthesized (le-gen-kits), no third-party license"
+    },
+    {
+      "id": "kit_909",
+      "name": {
+        "en": "909 Kit",
+        "vi": "Kit 909"
+      },
+      "path": "kits/kit_909/kit_909.sfz",
+      "category": "Drums",
+      "tags": [
+        "drums"
+      ],
+      "license": "Self-synthesized (le-gen-kits), no third-party license"
+    },
+    {
+      "id": "kit_perc",
+      "name": {
+        "en": "Percussion",
+        "vi": "Bộ gõ"
+      },
+      "path": "kits/kit_perc/kit_perc.sfz",
+      "category": "Drums",
+      "tags": [
+        "percussion"
+      ],
+      "license": "Self-synthesized (le-gen-kits), no third-party license"
+    },
+    {
+      "id": "kit_trap",
+      "name": {
+        "en": "Trap Kit",
+        "vi": "Kit Trap"
+      },
+      "path": "kits/kit_trap/kit_trap.sfz",
+      "category": "Drums",
+      "tags": [
+        "drums"
+      ],
+      "license": "Self-synthesized (le-gen-kits), no third-party license"
+    },
+    {
+      "id": "kit_lofi",
+      "name": {
+        "en": "Lo-fi Kit",
+        "vi": "Kit Lo-fi"
+      },
+      "path": "kits/kit_lofi/kit_lofi.sfz",
+      "category": "Drums",
+      "tags": [
+        "drums"
+      ],
+      "license": "Self-synthesized (le-gen-kits), no third-party license"
+    },
+    {
+      "id": "kit_606",
+      "name": {
+        "en": "606 Kit",
+        "vi": "Kit 606"
+      },
+      "path": "kits/kit_606/kit_606.sfz",
+      "category": "Drums",
+      "tags": [
+        "drums"
+      ],
+      "license": "Self-synthesized (le-gen-kits), no third-party license"
+    },
+    {
+      "id": "kit_707",
+      "name": {
+        "en": "707 Kit",
+        "vi": "Kit 707"
+      },
+      "path": "kits/kit_707/kit_707.sfz",
+      "category": "Drums",
+      "tags": [
+        "drums"
+      ],
+      "license": "Self-synthesized (le-gen-kits), no third-party license"
+    },
+    {
+      "id": "kit_linn",
+      "name": {
+        "en": "Linn Kit",
+        "vi": "Kit Linn"
+      },
+      "path": "kits/kit_linn/kit_linn.sfz",
+      "category": "Drums",
+      "tags": [
+        "drums"
+      ],
+      "license": "Self-synthesized (le-gen-kits), no third-party license"
+    },
+    {
+      "id": "kit_acoustic",
+      "name": {
+        "en": "Acoustic",
+        "vi": "Trống thật"
+      },
+      "path": "kits/kit_acoustic/kit_acoustic.sfz",
+      "category": "Drums",
+      "tags": [
+        "drums"
+      ],
+      "license": "CC0 1.0 — Big Rusty Drums by Karoryfer Samples"
+    },
+    {
       "id": "kit_synth",
       "name": {
         "en": "Synth kit",
         "vi": "Kit tổng hợp"
       },
       "path": "kits/kit_synth/kit_synth.sfz",
+      "category": "Drums",
       "tags": [
         "drums",
         "test"
       ],
-      "license": "Self-synthesized (le-gen-fixtures), no third-party license"
+      "license": "Self-synthesized (le-gen-fixtures), no third-party license",
+      "hidden": true
     }
   ],
   "instruments": [
     {
+      "id": "inst_piano",
+      "name": {
+        "en": "Grand Piano",
+        "vi": "Đại dương cầm"
+      },
+      "path": "instruments/inst_piano/inst_piano.sfz",
+      "category": "Instruments/Keys",
+      "range": [
+        19,
+        110
+      ],
+      "tags": [
+        "keys"
+      ],
+      "license": "CC BY 3.0 — Salamander Grand Piano V3 by Alexander Holm (modified)"
+    },
+    {
+      "id": "inst_epiano",
+      "name": {
+        "en": "E-Piano",
+        "vi": "Piano điện"
+      },
+      "path": "instruments/inst_epiano/inst_epiano.sfz",
+      "category": "Instruments/Keys",
+      "range": [
+        28,
+        100
+      ],
+      "tags": [
+        "keys"
+      ],
+      "license": "Self-synthesized (le-gen-instruments), no third-party license"
+    },
+    {
+      "id": "inst_organ",
+      "name": {
+        "en": "Organ",
+        "vi": "Organ"
+      },
+      "path": "instruments/inst_organ/inst_organ.sfz",
+      "category": "Instruments/Keys",
+      "range": [
+        36,
+        96
+      ],
+      "tags": [
+        "keys"
+      ],
+      "license": "Self-synthesized (le-gen-instruments), no third-party license"
+    },
+    {
+      "id": "inst_violin",
+      "name": {
+        "en": "Violin",
+        "vi": "Violin"
+      },
+      "path": "instruments/inst_violin/inst_violin.sfz",
+      "category": "Instruments/Strings",
+      "range": [
+        53,
+        98
+      ],
+      "tags": [
+        "strings"
+      ],
+      "license": "CC0 1.0 — VSCO-2 Community Edition by Versilian Studios"
+    },
+    {
+      "id": "inst_viola",
+      "name": {
+        "en": "Viola",
+        "vi": "Viola"
+      },
+      "path": "instruments/inst_viola/inst_viola.sfz",
+      "category": "Instruments/Strings",
+      "range": [
+        46,
+        88
+      ],
+      "tags": [
+        "strings"
+      ],
+      "license": "CC0 1.0 — VSCO-2 Community Edition by Versilian Studios"
+    },
+    {
+      "id": "inst_cello",
+      "name": {
+        "en": "Cello",
+        "vi": "Cello"
+      },
+      "path": "instruments/inst_cello/inst_cello.sfz",
+      "category": "Instruments/Strings",
+      "range": [
+        34,
+        79
+      ],
+      "tags": [
+        "strings"
+      ],
+      "license": "CC0 1.0 — VSCO-2 Community Edition by Versilian Studios"
+    },
+    {
+      "id": "inst_contrabass",
+      "name": {
+        "en": "Contrabass",
+        "vi": "Contrabass"
+      },
+      "path": "instruments/inst_contrabass/inst_contrabass.sfz",
+      "category": "Instruments/Strings",
+      "range": [
+        28,
+        61
+      ],
+      "tags": [
+        "strings"
+      ],
+      "license": "CC0 1.0 — VSCO-2 Community Edition by Versilian Studios"
+    },
+    {
+      "id": "inst_strings",
+      "name": {
+        "en": "String Ensemble",
+        "vi": "Dàn dây"
+      },
+      "path": "instruments/inst_strings/inst_strings.sfz",
+      "category": "Instruments/Strings",
+      "range": [
+        28,
+        88
+      ],
+      "tags": [
+        "strings"
+      ],
+      "license": "CC0 1.0 — VSCO-2 Community Edition by Versilian Studios"
+    },
+    {
+      "id": "inst_pizzicato",
+      "name": {
+        "en": "Pizzicato",
+        "vi": "Pizzicato"
+      },
+      "path": "instruments/inst_pizzicato/inst_pizzicato.sfz",
+      "category": "Instruments/Strings",
+      "range": [
+        26,
+        88
+      ],
+      "tags": [
+        "strings"
+      ],
+      "license": "CC0 1.0 — VSCO-2 Community Edition by Versilian Studios"
+    },
+    {
+      "id": "inst_harp",
+      "name": {
+        "en": "Harp",
+        "vi": "Đàn hạc"
+      },
+      "path": "instruments/inst_harp/inst_harp.sfz",
+      "category": "Instruments/Strings",
+      "range": [
+        26,
+        103
+      ],
+      "tags": [
+        "strings"
+      ],
+      "license": "CC0 1.0 — VSCO-2 Community Edition by Versilian Studios"
+    },
+    {
+      "id": "inst_flute",
+      "name": {
+        "en": "Flute",
+        "vi": "Sáo"
+      },
+      "path": "instruments/inst_flute/inst_flute.sfz",
+      "category": "Instruments/Winds & Brass",
+      "range": [
+        58,
+        98
+      ],
+      "tags": [
+        "winds"
+      ],
+      "license": "CC0 1.0 — VSCO-2 Community Edition by Versilian Studios"
+    },
+    {
+      "id": "inst_clarinet",
+      "name": {
+        "en": "Clarinet",
+        "vi": "Clarinet"
+      },
+      "path": "instruments/inst_clarinet/inst_clarinet.sfz",
+      "category": "Instruments/Winds & Brass",
+      "range": [
+        48,
+        92
+      ],
+      "tags": [
+        "winds"
+      ],
+      "license": "CC0 1.0 — VSCO-2 Community Edition by Versilian Studios"
+    },
+    {
+      "id": "inst_oboe",
+      "name": {
+        "en": "Oboe",
+        "vi": "Oboe"
+      },
+      "path": "instruments/inst_oboe/inst_oboe.sfz",
+      "category": "Instruments/Winds & Brass",
+      "range": [
+        56,
+        91
+      ],
+      "tags": [
+        "winds"
+      ],
+      "license": "CC0 1.0 — VSCO-2 Community Edition by Versilian Studios"
+    },
+    {
+      "id": "inst_trumpet",
+      "name": {
+        "en": "Trumpet",
+        "vi": "Kèn trumpet"
+      },
+      "path": "instruments/inst_trumpet/inst_trumpet.sfz",
+      "category": "Instruments/Winds & Brass",
+      "range": [
+        51,
+        86
+      ],
+      "tags": [
+        "brass"
+      ],
+      "license": "CC0 1.0 — VSCO-2 Community Edition by Versilian Studios"
+    },
+    {
+      "id": "inst_horn",
+      "name": {
+        "en": "French Horn",
+        "vi": "Kèn horn"
+      },
+      "path": "instruments/inst_horn/inst_horn.sfz",
+      "category": "Instruments/Winds & Brass",
+      "range": [
+        31,
+        79
+      ],
+      "tags": [
+        "brass"
+      ],
+      "license": "CC0 1.0 — VSCO-2 Community Edition by Versilian Studios"
+    },
+    {
+      "id": "inst_trombone",
+      "name": {
+        "en": "Trombone",
+        "vi": "Kèn trombone"
+      },
+      "path": "instruments/inst_trombone/inst_trombone.sfz",
+      "category": "Instruments/Winds & Brass",
+      "range": [
+        32,
+        65
+      ],
+      "tags": [
+        "brass"
+      ],
+      "license": "CC0 1.0 — VSCO-2 Community Edition by Versilian Studios"
+    },
+    {
       "id": "inst_synth",
       "name": {
-        "en": "Synth tone",
+        "en": "Synth Tone",
         "vi": "Tone tổng hợp"
       },
       "path": "instruments/inst_synth/inst_synth.sfz",
+      "category": "Instruments/Synth",
       "range": [
-        36,
-        84
+        12,
+        108
       ],
-      "license": "Self-synthesized (le-gen-fixtures), no third-party license"
+      "tags": [
+        "synth"
+      ],
+      "license": "Self-synthesized (le-gen-instruments), no third-party license"
     }
   ],
   "loops": [
@@ -38,6 +433,7 @@
         "vi": "Click 4 beat · 120"
       },
       "file": "loops/clip_click_4beats_120.wav",
+      "category": "Loops",
       "bpm": 120,
       "beats": 4,
       "key": null,
@@ -54,6 +450,7 @@
         "vi": "Click 4 beat · 100"
       },
       "file": "loops/clip_click_4beats_100.wav",
+      "category": "Loops",
       "bpm": 100,
       "beats": 4,
       "key": null,
@@ -70,6 +467,7 @@
         "vi": "Sine 4 beat · 120"
       },
       "file": "loops/clip_sine_4beats_120.wav",
+      "category": "Loops",
       "bpm": 120,
       "beats": 4,
       "key": null,

@@ -1,0 +1,37 @@
+// kit_acoustic — Acoustic — Big Rusty Drums (Karoryfer Samples), bộ trống cổ Ba Lan, 16 pad map GM
+// Big Rusty Drums by Karoryfer Samples, CC0 1.0 — github.com/sfzinstruments/karoryfer.big-rusty-drums
+// Rút gọn bằng engine/tools/le-import-library (agent 80, render/SampleImport.cpp): 16 pad map GM 36–51, trộn micro → mono, cắt đầu / đuôi + fade, nén đỉnh ≤ 6 dB cho pad nhỏ, FLAC 24-bit, volume = cân loudness.
+<control> default_path=samples/
+<global> loop_mode=one_shot ampeg_release=0.05
+<region> key=36 lovel=1 hivel=95 sample=kick_soft.flac region_label=Kick
+<region> key=36 lovel=96 hivel=127 sample=kick_hard.flac region_label=Kick
+<region> key=37 lovel=1 hivel=95 sample=sidestick_soft.flac volume=-0.2 region_label=Side Stick
+<region> key=37 lovel=96 hivel=127 sample=sidestick_hard.flac region_label=Side Stick
+<region> key=38 lovel=1 hivel=95 sample=snare_soft.flac volume=-0.5 region_label=Snare
+<region> key=38 lovel=96 hivel=127 sample=snare_hard.flac region_label=Snare
+<region> key=39 lovel=1 hivel=95 sample=rimclick_soft.flac region_label=Rim Click
+<region> key=39 lovel=96 hivel=127 sample=rimclick_hard.flac region_label=Rim Click
+<region> key=40 lovel=1 hivel=95 sample=rimshot_soft.flac region_label=Rimshot
+<region> key=40 lovel=96 hivel=127 sample=rimshot_hard.flac region_label=Rimshot
+<region> key=41 lovel=1 hivel=95 sample=tom_22_soft.flac volume=-2.1 region_label=Floor Tom L
+<region> key=41 lovel=96 hivel=127 sample=tom_22_hard.flac volume=-0.5 region_label=Floor Tom L
+<region> key=42 lovel=1 hivel=95 sample=hat_closed_soft.flac volume=-0.4 group=1 region_label=Closed Hat
+<region> key=42 lovel=96 hivel=127 sample=hat_closed_hard.flac volume=-0.1 group=1 region_label=Closed Hat
+<region> key=43 lovel=1 hivel=95 sample=tom_18_soft.flac volume=-2.9 region_label=Floor Tom H
+<region> key=43 lovel=96 hivel=127 sample=tom_18_hard.flac volume=-2.1 region_label=Floor Tom H
+<region> key=44 lovel=1 hivel=95 sample=hat_pedal_soft.flac volume=-2.6 group=1 region_label=Pedal Hat
+<region> key=44 lovel=96 hivel=127 sample=hat_pedal_hard.flac volume=-1.9 group=1 region_label=Pedal Hat
+<region> key=45 lovel=1 hivel=95 sample=tom_15_soft.flac volume=-4.2 region_label=Low Tom
+<region> key=45 lovel=96 hivel=127 sample=tom_15_hard.flac volume=-3.0 region_label=Low Tom
+<region> key=46 lovel=1 hivel=95 sample=hat_open_soft.flac volume=-4.6 group=2 off_by=1 region_label=Open Hat
+<region> key=46 lovel=96 hivel=127 sample=hat_open_hard.flac volume=-4.1 group=2 off_by=1 region_label=Open Hat
+<region> key=47 lovel=1 hivel=95 sample=tom_14_soft.flac volume=-2.1 region_label=Mid Tom
+<region> key=47 lovel=96 hivel=127 sample=tom_14_hard.flac volume=-2.4 region_label=Mid Tom
+<region> key=48 lovel=1 hivel=95 sample=tom_14_soft.flac tune=300 volume=-2.1 region_label=Hi-Mid Tom
+<region> key=48 lovel=96 hivel=127 sample=tom_14_hard.flac tune=300 volume=-2.4 region_label=Hi-Mid Tom
+<region> key=49 lovel=1 hivel=95 sample=crash_soft.flac volume=-0.4 region_label=Crash
+<region> key=49 lovel=96 hivel=127 sample=crash_hard.flac volume=-0.2 region_label=Crash
+<region> key=50 lovel=1 hivel=95 sample=tom_14_soft.flac tune=600 volume=-2.1 region_label=High Tom
+<region> key=50 lovel=96 hivel=127 sample=tom_14_hard.flac tune=600 volume=-2.4 region_label=High Tom
+<region> key=51 lovel=1 hivel=95 sample=ride_soft.flac region_label=Ride
+<region> key=51 lovel=96 hivel=127 sample=ride_hard.flac region_label=Ride

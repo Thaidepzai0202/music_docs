@@ -67,6 +67,13 @@ public:
     std::weak_ptr<dsp::Processor> fxProcessor(int track, int slot) const;
     // [test] Số frame của buffer thu track t (0 = chưa cấp).
     std::int64_t recordBufferFrames(int t) const { return takeBuffers_[t] != nullptr ? takeBuffers_[t]->numFrames() : 0; }
+    // [test] preview: job nạp đang chờ (0 = không), số vé RT có thể còn giữ (tới PreviewReleased), số mục cache LRU.
+    std::int64_t previewJob() const noexcept { return previewJob_; }
+    std::size_t previewLiveTickets() const noexcept { return previewLive_.size(); }
+    std::size_t previewCacheSize() const noexcept { return previewCache_.size(); }
+    const dsp::Instrument* previewCachedInstrument(std::size_t i) const noexcept {
+        return i < previewCache_.size() ? previewCache_[i].instrument.get() : nullptr;
+    }
 
 private:
     // EngineOps.cpp
@@ -102,6 +109,11 @@ private:
     void fitRecordBuffersToRate();                      // [main] R7: sau khi device (re)start
     void handleTakeFinished(const RtMessage& m);        // [main] P1-21
     void handleMidiMessage(const RtMessage& m);         // [main] P1-30: nốt thu / take MIDI xong / overdub
+    // [main] LE_EVT_CLIP_CHANGED: ô (t, s) vừa đổi nội dung MIDI. Phát ngay nếu lần trước đã ≥ kClipChangedMs, không thì
+    // dồn lại cho pump(); final = hết lượt overdub → luôn phát (trước RECORDING_FINISHED).
+    static constexpr double kClipChangedMs = 100.0;
+    void clipChanged(int t, int s, bool final);
+    void flushClipChanged();
     // [main] P1-22 + R1: quyết định BẬT/TẮT (ghi i0) và đưa vé cho lượt bật. false = không push bây giờ (hoãn).
     bool prepareOverdubCommand(LeCommand& c);
     bool offerOverdubTicket(int track);                 // [main] copy clip → target, snapshot, đưa vé cho RT
@@ -131,6 +143,24 @@ private:
     Reply setUserInstrument(int track, const std::string& id);   // track.setInstrument {kind:"user"}
     void applyUserInstrument(const std::string& id);
     std::int64_t submitUserInstrumentRender(const std::string& id);   // job theo UserInstrumentModel::source
+    // EnginePreview.cpp (05 §3 preview.*, Browser)
+    static constexpr std::size_t kPreviewCacheSize = 3;
+    struct PreviewEntry {   // [main] một mục nghe thử đã nạp (instrument HOẶC audio)
+        std::string key;    // kind + ":" + đường dẫn tuyệt đối
+        dsp::InstrumentPtr instrument;
+        dsp::AudioDataPtr audio;
+        // Kết quả SfzLoader (sfz): track.setInstrument dùng lại bản cache → job.result y như nạp mới
+        std::string name;
+        int regions = 0, samplesLoaded = 0;
+        std::vector<std::string> warnings;
+    };
+    Reply opPreviewPlay(const juce::var& req);
+    Reply opPreviewStop(const juce::var& req);
+    void offerPreview(const PreviewEntry& e, std::uint32_t id, int note, double durationMs);
+    void releasePreviewTicket(std::uint32_t id);
+    void handlePreviewReleased(const RtMessage& m) { releasePreviewTicket((std::uint32_t) m.a); }
+    // [main] Mục cache của đường dẫn SFZ tuyệt đối (nullptr = chưa có); trúng → đưa lên đầu LRU.
+    const PreviewEntry* previewCachedSfz(const std::string& absPath);
     // EngineMemory.cpp (P4-17)
     Reply opMemoryPressure(const juce::var& req);
     std::int64_t releaseMemory(bool critical);   // byte đã nhả (ước lượng)
@@ -208,7 +238,7 @@ private:
     OpenNotes midiTake_[LE_MAX_TRACKS];
     OpenNotes midiOverdub_[LE_MAX_TRACKS];
     double recordQuantize_ = 0.0;   // midi.setRecordQuantize (beat), 0 = tắt
-    std::uint32_t fxInstanceCounter_ = 0;
+    std::uint32_t fxInstanceCounter_ = 0;   // instanceId của Processor FX, không lặp lại trong đời engine
     // P3-08: BPM project mới nhất main biết (SET_BPM), hạn debounce, job WarpRenderer đang chạy của từng ô.
     double bpm_ = 120.0;
     double warpDueMs_ = -1.0;
@@ -229,6 +259,10 @@ private:
     std::string captureFile_, captureAbs_;
     double captureSeconds_ = 0.0;
     int midiOverdubNotes_[LE_MAX_TRACKS] = {};   // nốt đã trộn trong lượt overdub MIDI hiện tại
+    double clipChangedMs_[LE_MAX_TRACKS][LE_MAX_SCENES] = {};    // lần phát CLIP_CHANGED gần nhất (debounceClockMs)
+    bool clipChangedSent_[LE_MAX_TRACKS][LE_MAX_SCENES] = {};    // đã từng phát (clipChangedMs_ có nghĩa)
+    bool clipChangedPending_[LE_MAX_TRACKS][LE_MAX_SCENES] = {}; // đổi sau lần phát gần nhất, chờ hết khoảng 100 ms
+    bool anyClipChangedPending_ = false;                         // pump() rảnh: không đọc đồng hồ, không quét 64 ô
     // P3-17: phiên ghi jam hiện tại + ring RT có thể còn giữ (tới JamStopped).
     struct JamSession {
         std::shared_ptr<RtEngine::JamRing> ring;
@@ -241,7 +275,7 @@ private:
     JamSession jam_;
     std::vector<std::shared_ptr<RtEngine::JamRing>> jamRings_;
     std::uint32_t jamCounter_ = 0;
-    int latencyOffset_ = 0;
+    int latencyOffset_ = 0;         // latency.setOffset / calibrate: cộng vào roundTrip device báo (toàn cục)
     bool tempoFound_ = false;       // pedal mode: vòng đầu đã chốt trong phiên này
     double firstLoopBeats_ = 0.0;   // độ dài vòng đầu (beat) — vòng sau làm tròn lên bội số của nó
     // P4: thiết bị MIDI + mapping (state project) + learn đang chờ + kết quả learn gần nhất.
@@ -255,7 +289,18 @@ private:
         midi::LearnKind kind = midi::LearnKind::Note;
         int channel = 0, number = 0;
     };
-    std::optional<LastLearn> lastLearn_;   // latency.setOffset / calibrate: cộng vào roundTrip device báo (toàn cục)   // instanceId của Processor FX, không lặp lại trong đời engine
+    std::optional<LastLearn> lastLearn_;
+    // Preview (EnginePreview.cpp): cache LRU (front = dùng gần nhất) + vé RT có thể còn đọc (giữ dữ liệu riêng, không
+    // phụ thuộc cache) + lượt mới nhất (id vé; job nạp xong mà lượt đã đổi thì chỉ vào cache, không phát).
+    std::vector<PreviewEntry> previewCache_;
+    struct PreviewLive {
+        std::unique_ptr<PreviewPlayer::Ticket> ticket;
+        dsp::InstrumentPtr instrument;
+        dsp::AudioDataPtr audio;
+    };
+    std::vector<PreviewLive> previewLive_;
+    std::uint32_t previewSeq_ = 0;
+    std::int64_t previewJob_ = 0;   // job nạp của lượt mới nhất (0 = không có)
     // P1-22 + R1: mỗi lượt overdub audio = một vé đã đưa cho RT. Main giữ vé + target sống cho tới khi RT trả vé
     // (OverdubFinished cùng session) — kể cả khi ô đã bị clip.clear / project.open trong lúc RT còn ghi.
     struct OverdubRound {

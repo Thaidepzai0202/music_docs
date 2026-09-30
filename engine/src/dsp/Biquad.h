@@ -29,6 +29,20 @@ struct BiquadCoeffs {
         return norm(1 + alpha * A, -2 * c, 1 - alpha * A, 1 + alpha / A, -2 * c, 1 - alpha / A);
     }
 
+    // RBJ lọc thông thấp / thông cao theo Q (0.707 = Butterworth), thông dải đỉnh 0 dB (constant peak gain).
+    static BiquadCoeffs lowPass(double f0, double q, double sr) noexcept [[clang::nonblocking]] {
+        const double w = 2.0 * kPi * f0 / sr, c = std::cos(w), alpha = std::sin(w) / (2.0 * q);
+        return norm((1 - c) / 2, 1 - c, (1 - c) / 2, 1 + alpha, -2 * c, 1 - alpha);
+    }
+    static BiquadCoeffs highPass(double f0, double q, double sr) noexcept [[clang::nonblocking]] {
+        const double w = 2.0 * kPi * f0 / sr, c = std::cos(w), alpha = std::sin(w) / (2.0 * q);
+        return norm((1 + c) / 2, -(1 + c), (1 + c) / 2, 1 + alpha, -2 * c, 1 - alpha);
+    }
+    static BiquadCoeffs bandPass(double f0, double q, double sr) noexcept [[clang::nonblocking]] {
+        const double w = 2.0 * kPi * f0 / sr, c = std::cos(w), alpha = std::sin(w) / (2.0 * q);
+        return norm(alpha, 0.0, -alpha, 1 + alpha, -2 * c, 1 - alpha);
+    }
+
 private:
     static constexpr double kPi = 3.14159265358979323846;
     static BiquadCoeffs norm(double b0, double b1, double b2, double a0, double a1, double a2) noexcept

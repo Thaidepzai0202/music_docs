@@ -133,8 +133,17 @@ class AppLocalizationsVi extends AppLocalizations {
   }
 
   @override
-  String browserAssignHint(Object action) {
-    return '+ = $action';
+  String get browserBanThuCuaToi => 'Bản thu của tôi';
+
+  @override
+  String get browserChuaCoBanThu => 'Chưa có bản thu. Thu nhạc cụ mới ở tab Nhạc cụ.';
+
+  @override
+  String get browserChuaCoYeuThich => 'Chưa có mục yêu thích. Nhấn giữ một mục để thêm.';
+
+  @override
+  String browserDaBoYeuThich(String name) {
+    return 'Đã bỏ khỏi Yêu thích: $name';
   }
 
   @override
@@ -143,9 +152,20 @@ class AppLocalizationsVi extends AppLocalizations {
   }
 
   @override
+  String browserDaThemYeuThich(String name) {
+    return 'Đã thêm vào Yêu thích: $name';
+  }
+
+  @override
   String browserGan(Object trackName) {
     return 'gán → $trackName';
   }
+
+  @override
+  String get browserKeoVaoTrack => 'Kéo vào header track hoặc ô clip';
+
+  @override
+  String get browserKhongCoKetQua => 'Không có kết quả';
 
   @override
   String browserKhongDocDuocThuVien(Object e) {
@@ -153,22 +173,13 @@ class AppLocalizationsVi extends AppLocalizations {
   }
 
   @override
-  String get browserKit => 'Kit';
-
-  @override
-  String get browserLoop => 'Loop';
-
-  @override
   String browserLoopInfo(Object bpm, int beats) {
     return '$bpm BPM · $beats beat';
   }
 
   @override
-  String get browserNhacCu => 'Nhạc cụ';
-
-  @override
-  String browserSection(Object title, Object count) {
-    return '$title ($count)';
+  String browserODaCoClip(int cell) {
+    return 'Ô $cell đã có clip';
   }
 
   @override
@@ -177,10 +188,40 @@ class AppLocalizationsVi extends AppLocalizations {
   }
 
   @override
+  String get browserThuMucTrong => 'Thư mục trống';
+
+  @override
+  String get browserTimKiem => 'Tìm trong thư viện';
+
+  @override
+  String get browserTrackAudioCoClip => 'Track audio này đang có clip. Chọn track trống để gán nhạc cụ.';
+
+  @override
   String get browserTrackNayKhongConO => 'Track này không còn ô trống';
 
   @override
+  String get browserTrackNhacCuCoClip => 'Track nhạc cụ này đang có clip MIDI. Chọn track trống để thêm loop.';
+
+  @override
+  String get browserTuNgheThu => 'Tự nghe thử';
+
+  @override
+  String get browserYeuThich => 'Yêu thích';
+
+  @override
+  String get clipChoClipChay => 'Chờ clip chạy…';
+
+  @override
+  String get clipChonTatCa => 'Chọn tất cả';
+
+  @override
   String get clipClear => 'Xoá hết';
+
+  @override
+  String get clipCuonHaiNgon => 'Cuộn bằng hai ngón';
+
+  @override
+  String get clipDangGhi => 'Đang ghi';
 
   @override
   String get clipDoDaiClip => 'Độ dài clip';
@@ -194,10 +235,21 @@ class AppLocalizationsVi extends AppLocalizations {
   }
 
   @override
+  String get clipGhi => 'Ghi';
+
+  @override
   String get clipHoanTacOverdub => 'Hoàn tác overdub';
 
   @override
   String get clipHoanTacSua => 'Hoàn tác';
+
+  @override
+  String get clipKhongDuCho => 'Clip không đủ chỗ';
+
+  @override
+  String clipKhongDuChoToiDa(int bars) {
+    return 'Không đủ chỗ: clip dài tối đa $bars bar.';
+  }
 
   @override
   String get clipLamLai => 'Làm lại';
@@ -206,6 +258,9 @@ class AppLocalizationsVi extends AppLocalizations {
   String clipLoopTuSBeatGoc(Object p0, Object p1, Object p2) {
     return 'Loop từ $p0 s · $p1 beat · gốc $p2 BPM';
   }
+
+  @override
+  String get clipLuiVaXoa => 'Lùi và xoá';
 
   @override
   String get clipLuoi => 'Lưới';
@@ -217,9 +272,18 @@ class AppLocalizationsVi extends AppLocalizations {
   String get clipModeVe => 'Vẽ';
 
   @override
+  String get clipNghi => 'Nghỉ';
+
+  @override
+  String get clipNhanBan => 'Nhân bản nốt đã chọn';
+
+  @override
   String clipNotBeat(int p0, Object p1) {
     return '$p0 nốt · $p1 beat';
   }
+
+  @override
+  String get clipOTrongBanPhim => 'Ô trống. Mở bàn phím để chơi, ghi trực tiếp hoặc nhập từng nốt.';
 
   @override
   String get clipQuangTamLen => 'Lên một quãng tám';
@@ -236,6 +300,20 @@ class AppLocalizationsVi extends AppLocalizations {
   }
 
   @override
+  String get clipStep => 'Từng nốt';
+
+  @override
+  String get clipTangDoDai => 'Tăng độ dài';
+
+  @override
+  String clipTangDoDaiHoi(int bars) {
+    return 'Tăng độ dài clip lên $bars bar để chứa bản chép?';
+  }
+
+  @override
+  String get clipVelocity => 'Velocity';
+
+  @override
   String get clipWarp => 'Warp';
 
   @override
@@ -245,6 +323,9 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get clipZoom => 'Thu phóng';
+
+  @override
+  String get commonCancel => 'Huỷ';
 
   @override
   String get commonOk => 'OK';
@@ -581,6 +662,21 @@ class AppLocalizationsVi extends AppLocalizations {
   }
 
   @override
+  String libraryFolder(String name) {
+    String _temp0 = intl.Intl.selectLogic(name, {
+      'drums': 'Trống',
+      'instruments': 'Nhạc cụ',
+      'keys': 'Phím',
+      'strings': 'Dây',
+      'windsBrass': 'Kèn & sáo',
+      'synth': 'Synth',
+      'loops': 'Loop',
+      'other': '$name',
+    });
+    return '$_temp0';
+  }
+
+  @override
   String libraryTag(String tag) {
     String _temp0 = intl.Intl.selectLogic(tag, {
       'drums': 'Trống',
@@ -596,6 +692,10 @@ class AppLocalizationsVi extends AppLocalizations {
       'melody': 'Giai điệu',
       'vocal': 'Giọng',
       'fx': 'FX',
+      'strings': 'Bộ dây',
+      'winds': 'Bộ gỗ',
+      'brass': 'Bộ đồng',
+      'percussion': 'Bộ gõ',
       'other': '$tag',
     });
     return '$_temp0';
@@ -606,6 +706,9 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get licensesChuaTichHopP406 => 'Chưa tích hợp (P4-06)';
+
+  @override
+  String get licensesGhiCong => 'Ghi công';
 
   @override
   String get licensesGiayPhepCacGoiFlutter => 'Giấy phép các gói Flutter/Dart';
@@ -868,8 +971,8 @@ class AppLocalizationsVi extends AppLocalizations {
   String get mixerMonitorTuDongKhiArm => 'Monitor: Tự động (khi arm)';
 
   @override
-  String monitorShort(String mode) {
-    String _temp0 = intl.Intl.selectLogic(mode, {'off': 'Tắt', 'auto': 'Tự động', 'always': 'Bật', 'other': '$mode'});
+  String monitorBadge(String mode) {
+    String _temp0 = intl.Intl.selectLogic(mode, {'off': 'Tắt', 'auto': 'Auto', 'always': 'Bật', 'other': '$mode'});
     return '$_temp0';
   }
 

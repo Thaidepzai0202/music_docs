@@ -1,0 +1,8 @@
+{
+  "id": "kit_lofi",
+  "name": { "en": "Lo-fi Kit", "vi": "Kit Lo-fi" },
+  "category": "Drums",
+  "path": "kits/kit_lofi/kit_lofi.sfz",
+  "tags": ["drums"],
+  "license": "Self-synthesized (le-gen-kits), no third-party license"
+}

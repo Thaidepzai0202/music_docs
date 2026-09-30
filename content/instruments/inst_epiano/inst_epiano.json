@@ -1,0 +1,9 @@
+{
+  "id": "inst_epiano",
+  "name": { "en": "E-Piano", "vi": "Piano điện" },
+  "category": "Instruments/Keys",
+  "path": "instruments/inst_epiano/inst_epiano.sfz",
+  "range": [28, 100],
+  "tags": ["keys"],
+  "license": "Self-synthesized (le-gen-instruments), no third-party license"
+}

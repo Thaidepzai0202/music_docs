@@ -65,18 +65,34 @@ String noteName(int note) {
 
 /// Vẽ bàn phím; phím đang giữ tô màu [accent]. Repaint theo [held], không rebuild.
 class KeyboardPainter extends CustomPainter {
-  KeyboardPainter({required this.layout, required this.held, required Color accent, this.font = const TextStyle()})
-    : _accent = Paint()..color = accent,
-      super(repaint: held);
+  KeyboardPainter({
+    required this.layout,
+    required this.held,
+    required Color accent,
+    this.range,
+    this.font = const TextStyle(),
+  }) : _accent = Paint()..color = accent,
+       _mark = Paint()..color = accent.withValues(alpha: 0.85),
+       super(repaint: held);
 
   final KeyboardLayout layout;
+
+  /// Dải phím tự nhiên của nhạc cụ (manifest `range`): phím trong dải có vạch accent mảnh ở đầu phím, phím ngoài dải
+  /// nhạt hơn (vẫn bấm được, vẫn kêu). null = không đánh dấu.
+  final (int, int)? range;
 
   /// Font của theme (`painterFont`) cho nhãn nốt.
   final TextStyle font;
   final ValueListenable<Set<int>> held;
   final Paint _accent;
+  final Paint _mark;
   static final _white = Paint()..color = const Color(0xFFE8EAED);
   static final _black = Paint()..color = const Color(0xFF1C1E22);
+  static final _whiteOut = Paint()..color = const Color(0xFFB4B8BF);
+  static final _blackOut = Paint()..color = const Color(0xFF3C4047);
+  static const markHeight = 3.0;
+
+  bool inRange(int note) => range == null || (note >= range!.$1 && note <= range!.$2);
   static final _line = Paint()
     ..color = AppColors.border
     ..strokeWidth = 1;
@@ -89,7 +105,9 @@ class KeyboardPainter extends CustomPainter {
     for (var i = 0; i < layout.whiteCount; i++) {
       final n = layout.whiteNote(i);
       final r = Rect.fromLTWH(i * w, 0, w, size.height);
-      canvas.drawRect(r.deflate(1), h.contains(n) ? _accent : _white);
+      final inside = inRange(n);
+      canvas.drawRect(r.deflate(1), h.contains(n) ? _accent : (inside ? _white : _whiteOut));
+      if (range != null && inside) canvas.drawRect(Rect.fromLTWH(r.left + 1, 1, w - 2, markHeight), _mark);
       canvas.drawLine(r.topRight, r.bottomRight, _line);
       if (n % 12 == 0) {
         final tp = _labels.putIfAbsent(
@@ -106,13 +124,20 @@ class KeyboardPainter extends CustomPainter {
       }
     }
     for (final k in layout.blackKeys(size)) {
-      canvas.drawRect(k.rect, h.contains(k.note) ? _accent : _black);
+      final inside = inRange(k.note);
+      canvas.drawRect(k.rect, h.contains(k.note) ? _accent : (inside ? _black : _blackOut));
+      if (range != null && inside) {
+        canvas.drawRect(Rect.fromLTWH(k.rect.left + 1, k.rect.top, k.rect.width - 2, markHeight), _mark);
+      }
     }
   }
 
   @override
   bool shouldRepaint(KeyboardPainter old) =>
-      old.layout.baseNote != layout.baseNote || old.held != held || old._accent.color != _accent.color;
+      old.layout.baseNote != layout.baseNote ||
+      old.held != held ||
+      old.range != range ||
+      old._accent.color != _accent.color;
 }
 
 /// Lưới pad 4×4 kiểu MPC: pad dưới-trái = [baseNote], tăng dần trái→phải, dưới→trên.
@@ -139,12 +164,20 @@ class PadLayout {
 }
 
 class PadPainter extends CustomPainter {
-  PadPainter({required this.layout, required this.held, required Color accent, this.font = const TextStyle()})
-    : _accent = Paint()..color = accent,
-      _idle = Paint()..color = accent.withValues(alpha: 0.25),
-      super(repaint: held);
+  PadPainter({
+    required this.layout,
+    required this.held,
+    required Color accent,
+    this.names = const {},
+    this.font = const TextStyle(),
+  }) : _accent = Paint()..color = accent,
+       _idle = Paint()..color = accent.withValues(alpha: 0.25),
+       super(repaint: held);
 
   final PadLayout layout;
+
+  /// Tên pad theo nốt (06 §4: `region_label` của kit), hiện dưới số nốt, tối đa 2 dòng.
+  final Map<int, String> names;
 
   /// Font của theme (`painterFont`) cho số nốt.
   final TextStyle font;
@@ -152,6 +185,8 @@ class PadPainter extends CustomPainter {
   final Paint _accent;
   final Paint _idle;
   final _labels = <int, TextPainter>{};
+  final _names = <int, TextPainter>{};
+  double _namesWidth = -1;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -172,10 +207,34 @@ class PadPainter extends CustomPainter {
           )..layout(),
         );
         tp.paint(canvas, rect.topLeft + const Offset(6, 4));
+        _nameOf(n, rect.width - 12)?.paint(canvas, rect.topLeft + Offset(6, 6 + tp.height));
       }
     }
   }
 
+  /// Chữ tên pad, chỉ dựng lại khi bề rộng pad đổi (không theo từng lần vẽ lúc bấm pad).
+  TextPainter? _nameOf(int note, double maxWidth) {
+    final text = names[note];
+    if (text == null || maxWidth <= 0) return null;
+    if (maxWidth != _namesWidth) {
+      _names.clear();
+      _namesWidth = maxWidth;
+    }
+    return _names.putIfAbsent(
+      note,
+      () => TextPainter(
+        text: TextSpan(
+          text: text,
+          style: font.merge(const TextStyle(color: AppColors.textPrimary, fontSize: 10, height: 1.15)),
+        ),
+        maxLines: 2,
+        ellipsis: '…',
+        textDirection: TextDirection.ltr,
+      )..layout(maxWidth: maxWidth),
+    );
+  }
+
   @override
-  bool shouldRepaint(PadPainter old) => old.held != held || old._accent.color != _accent.color;
+  bool shouldRepaint(PadPainter old) =>
+      old.held != held || old._accent.color != _accent.color || !mapEquals(old.names, names);
 }

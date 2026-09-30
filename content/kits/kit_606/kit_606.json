@@ -1,0 +1,8 @@
+{
+  "id": "kit_606",
+  "name": { "en": "606 Kit", "vi": "Kit 606" },
+  "category": "Drums",
+  "path": "kits/kit_606/kit_606.sfz",
+  "tags": ["drums"],
+  "license": "Self-synthesized (le-gen-kits), no third-party license"
+}

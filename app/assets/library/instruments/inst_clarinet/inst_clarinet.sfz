@@ -1,0 +1,27 @@
+// inst_clarinet — Clarinet (VSCO-2 CE Clarinet, long sustain)
+// VSCO-2 Community Edition by Versilian Studios (Sam Gossner) / Ivy Audio (Simon Dalzell), CC0 1.0; github.com/sgossner/VSCO-2-CE — versilian-studios.com/vsco-community/
+// Rút gọn bằng engine/tools/le-import-library (agent 80, render/SampleImport.cpp): chọn phím gốc ≥ 3 nửa cung (zone đầu / cuối phủ tới phím 0 / 127), 2 lớp velocity, cắt đầu, loop crossfade, mono, FLAC 24-bit, tune đo bằng Yin, volume = cân loudness.
+<control> default_path=samples/
+<global> loop_mode=loop_continuous ampeg_attack=0.010 ampeg_release=0.25
+<region> lokey=0 hikey=51 pitch_keycenter=50 lovel=1 hivel=95 sample=clarinet_050_soft.flac tune=-1.22 volume=-0.1 loop_start=93486 loop_end=149759
+<region> lokey=52 hikey=55 pitch_keycenter=53 lovel=1 hivel=95 sample=clarinet_053_soft.flac tune=-1.98 volume=-0.1 loop_start=103808 loop_end=153599
+<region> lokey=56 hikey=60 pitch_keycenter=58 lovel=1 hivel=95 sample=clarinet_058_soft.flac tune=-2.55 volume=-3.8 loop_start=74639 loop_end=153599
+<region> lokey=61 hikey=63 pitch_keycenter=62 lovel=1 hivel=95 sample=clarinet_062_soft.flac tune=-3.64 volume=-4.1 loop_start=76902 loop_end=151679
+<region> lokey=64 hikey=67 pitch_keycenter=65 lovel=1 hivel=95 sample=clarinet_065_soft.flac tune=-0.48 volume=-4.2 loop_start=43096 loop_end=152639
+<region> lokey=68 hikey=72 pitch_keycenter=70 lovel=1 hivel=95 sample=clarinet_070_soft.flac tune=-4.08 volume=-5.3 loop_start=81617 loop_end=149759
+<region> lokey=73 hikey=75 pitch_keycenter=74 lovel=1 hivel=95 sample=clarinet_074_soft.flac tune=-3.11 volume=-3.1 loop_start=111353 loop_end=150719
+<region> lokey=76 hikey=79 pitch_keycenter=77 lovel=1 hivel=95 sample=clarinet_077_soft.flac tune=-1.82 volume=-3.3 loop_start=113224 loop_end=152639
+<region> lokey=80 hikey=84 pitch_keycenter=82 lovel=1 hivel=95 sample=clarinet_082_soft.flac tune=-4.89 volume=-4.0 loop_start=92296 loop_end=150719
+<region> lokey=85 hikey=88 pitch_keycenter=86 lovel=1 hivel=95 sample=clarinet_086_soft.flac tune=-3.06 volume=-5.0 loop_start=107064 loop_end=151679
+<region> lokey=89 hikey=127 pitch_keycenter=89 lovel=1 hivel=95 sample=clarinet_090_soft.flac tune=0.23 volume=-4.8 loop_start=86352 loop_end=149759
+<region> lokey=0 hikey=51 pitch_keycenter=50 lovel=96 hivel=127 sample=clarinet_050_hard.flac tune=-4.61 volume=-1.4 loop_start=69984 loop_end=150719
+<region> lokey=52 hikey=55 pitch_keycenter=53 lovel=96 hivel=127 sample=clarinet_053_hard.flac tune=-2.57 volume=0.0 loop_start=114120 loop_end=152639
+<region> lokey=56 hikey=60 pitch_keycenter=58 lovel=96 hivel=127 sample=clarinet_058_hard.flac tune=-1.31 volume=-1.5 loop_start=93304 loop_end=152639
+<region> lokey=61 hikey=63 pitch_keycenter=62 lovel=96 hivel=127 sample=clarinet_062_hard.flac tune=-2.10 volume=-2.8 loop_start=72512 loop_end=152639
+<region> lokey=64 hikey=67 pitch_keycenter=65 lovel=96 hivel=127 sample=clarinet_065_hard.flac tune=-1.30 volume=-2.8 loop_start=114105 loop_end=152639
+<region> lokey=68 hikey=72 pitch_keycenter=70 lovel=96 hivel=127 sample=clarinet_070_hard.flac tune=-1.94 volume=-3.5 loop_start=114472 loop_end=153599
+<region> lokey=73 hikey=75 pitch_keycenter=74 lovel=96 hivel=127 sample=clarinet_074_hard.flac tune=-2.42 volume=-1.6 loop_start=84264 loop_end=153599
+<region> lokey=76 hikey=79 pitch_keycenter=77 lovel=96 hivel=127 sample=clarinet_077_hard.flac tune=-1.75 volume=-3.7 loop_start=94704 loop_end=149759
+<region> lokey=80 hikey=84 pitch_keycenter=82 lovel=96 hivel=127 sample=clarinet_082_hard.flac tune=-3.35 volume=-4.3 loop_start=104080 loop_end=149759
+<region> lokey=85 hikey=88 pitch_keycenter=86 lovel=96 hivel=127 sample=clarinet_086_hard.flac tune=-0.29 volume=-3.3 loop_start=61288 loop_end=151679
+<region> lokey=89 hikey=127 pitch_keycenter=89 lovel=96 hivel=127 sample=clarinet_090_hard.flac tune=2.06 volume=-5.6 loop_start=65320 loop_end=149759

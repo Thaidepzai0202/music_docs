@@ -3,6 +3,7 @@
 #include <juce_audio_formats/juce_audio_formats.h>
 
 #include <algorithm>
+#include <cmath>
 #include <limits>
 #include <memory>
 
@@ -55,6 +56,56 @@ bool writeWavFloat(const std::string& path, const float* const* channels, int nu
             return fail(error, "ghi dữ liệu thất bại: " + file.getFullPathName().toStdString());
     }
     writer.reset();   // flush + đóng file
+    return true;
+}
+
+// [main] / [worker]
+bool writeFlac24(const std::string& path, const float* const* channels, int numChannels, int64_t numSamples,
+                 double sampleRate, int compression, std::string* error) {
+    if (numChannels <= 0 || numChannels > 8 || numSamples < 0 || !(sampleRate > 0.0) || compression < 1 || compression > 8)
+        return fail(error, "tham số không hợp lệ");
+
+    const juce::File file = toFile(path);
+    if (!file.getParentDirectory().createDirectory())
+        return fail(error, "không tạo được thư mục " + file.getParentDirectory().getFullPathName().toStdString());
+    file.deleteFile();
+
+    auto fileStream = std::make_unique<juce::FileOutputStream>(file);
+    if (!fileStream->openedOk())
+        return fail(error, "không mở được file để ghi: " + file.getFullPathName().toStdString());
+    std::unique_ptr<juce::OutputStream> stream = std::move(fileStream);
+
+    juce::FlacAudioFormat flac;
+    // qualityOptionIndex = mức nén (JUCE bỏ qua index 0 → libFLAC mặc định 5; vì vậy chỉ nhận 1..8)
+    const auto options = juce::AudioFormatWriterOptions{}
+                             .withSampleRate(sampleRate)
+                             .withNumChannels(numChannels)
+                             .withBitsPerSample(24)
+                             .withQualityOptionIndex(compression);
+    std::unique_ptr<juce::AudioFormatWriter> writer = flac.createWriterFor(stream, options);
+    if (writer == nullptr) return fail(error, "JUCE không tạo được FLAC writer");
+
+    // Writer FLAC của JUCE nhận int32 "căn trái" (giá trị 24-bit << 8) rồi tự dịch phải 8 bit.
+    constexpr int kChunk = 8192;
+    constexpr double kScale = 8388608.0;   // 2^23
+    std::vector<int> buf(static_cast<size_t>(numChannels) * kChunk);
+    std::vector<const int*> ptrs(static_cast<size_t>(numChannels) + 1, nullptr);
+    for (int64_t done = 0; done < numSamples; done += kChunk) {
+        const int count = static_cast<int>(std::min<int64_t>(kChunk, numSamples - done));
+        for (int c = 0; c < numChannels; ++c) {
+            int* dst = buf.data() + static_cast<size_t>(c) * kChunk;
+            const float* src = channels[c] + done;
+            for (int i = 0; i < count; ++i) {
+                const double v = static_cast<double>(src[i]);
+                const double k = std::isfinite(v) ? std::clamp(std::round(v * kScale), -kScale, kScale - 1.0) : 0.0;
+                dst[i] = static_cast<int>(k) * 256;
+            }
+            ptrs[static_cast<size_t>(c)] = dst;
+        }
+        if (!writer->write(ptrs.data(), count))
+            return fail(error, "ghi dữ liệu thất bại: " + file.getFullPathName().toStdString());
+    }
+    writer.reset();   // flush + đóng file (ghi lại STREAMINFO: tổng số mẫu, MD5)
     return true;
 }
 

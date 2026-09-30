@@ -9,20 +9,17 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:music_looper/data/library_repository.dart';
 import 'package:music_looper/l10n/l10n.dart';
 import 'package:music_looper/model/ids.dart';
 
 import '../session_harness.dart';
+import 'real_fonts.dart';
 
-Future<void> loadRealFonts() async {
-  final fonts = '${Platform.environment['FLUTTER_ROOT']}/bin/cache/artifacts/material_fonts';
-  Future<ByteData> file(String name) async => ByteData.sublistView(File('$fonts/$name').readAsBytesSync());
-  final roboto = FontLoader('Roboto');
-  for (final w in ['Regular', 'Medium', 'Bold']) {
-    roboto.addFont(file('Roboto-$w.ttf'));
-  }
-  await roboto.load();
-  await (FontLoader('MaterialIcons')..addFont(file('MaterialIcons-Regular.otf'))).load();
+/// Manifest thật, trả ngay (rootBundle trong test đọc bất đồng bộ → golden chụp vòng xoay).
+class _GoldenLibrary extends LibraryRepository {
+  @override
+  Future<LibraryManifest> manifest() async => testLibrary();
 }
 
 void main() {
@@ -47,6 +44,21 @@ void main() {
       await tester.tap(find.byKey(const Key('transport.settings')));
       await h.settle();
       await expectLater(find.byType(MaterialApp), matchesGoldenFile('goldens/settings_$lang.png'));
+      // P2-35: Giấy phép — nhóm Ghi công (Salamander CC BY 3.0, VSCO-2 CE) hiện thẳng câu chữ. Đọc sẵn file giấy phép
+      // bằng I/O thật (rootBundle giữ cache) để màn dựng xong trong thời gian ảo của test.
+      await tester.runAsync(() async {
+        for (final f in ['BIG-RUSTY-DRUMS.md', 'SALAMANDER-GRAND-PIANO.md', 'SYNTHESIZED.md', 'VSCO-2-CE.md']) {
+          await rootBundle.loadString('assets/licenses/content/$f');
+        }
+      });
+      await tester.tap(find.byKey(const Key('settings.nav.licenses')));
+      for (var i = 0; i < 20 && find.byKey(const Key('licenses.credit.VSCO-2-CE.md')).evaluate().isEmpty; i++) {
+        await tester.runAsync(() => Future<void>.delayed(const Duration(milliseconds: 50)));
+        await tester.pump();
+      }
+      await h.settle();
+      expect(find.byKey(const Key('licenses.credit.SALAMANDER-GRAND-PIANO.md')), findsOneWidget);
+      await expectLater(find.byType(MaterialApp), matchesGoldenFile('goldens/licenses_$lang.png'));
       await tester.tap(find.byKey(const Key('settings.back')));
       await h.settle();
       await h.unmount();
@@ -54,7 +66,7 @@ void main() {
 
     testWidgets('[$lang] Tab Clip: piano roll chế độ Vẽ (clip Keys)', skip: skip, (tester) async {
       final h = SessionHarness(tester);
-      await h.pump(locale: locale);
+      await h.pump(locale: locale, extraOverrides: [libraryRepositoryProvider.overrideWithValue(_GoldenLibrary())]);
       await tester.tap(find.byKey(const Key('transport.edit')));
       await tester.pump();
       await tester.tap(find.byKey(const Key('cell.2.0')));
@@ -65,6 +77,22 @@ void main() {
       await tester.tap(find.byKey(const Key('session.panel.expand'))); // ⤢ panel ~70% màn hình
       await h.settle();
       await expectLater(find.byType(MaterialApp), matchesGoldenFile('goldens/pianoroll_expanded_$lang.png'));
+      // P2-33: bàn phím dưới piano roll, ⇥ Step bật (con trỏ trên lưới, Nghỉ / ⌫).
+      await tester.tap(find.byKey(const Key('midi.keyboard')));
+      await h.settle();
+      await tester.tap(find.byKey(const Key('clip.step')));
+      await h.settle();
+      await expectLater(find.byType(MaterialApp), matchesGoldenFile('goldens/pianoroll_keyboard_$lang.png'));
+      await h.unmount();
+    });
+
+    testWidgets('[$lang] Tab Browser: danh mục + thư mục + tìm kiếm + 🎧 (07 §4.1e)', skip: skip, (tester) async {
+      final h = SessionHarness(tester);
+      await h.pump(locale: locale, extraOverrides: [libraryRepositoryProvider.overrideWithValue(_GoldenLibrary())]);
+      await tester.tap(find.byKey(const Key('header.name.5')));
+      await tester.tap(find.byKey(const Key('panel.tab.browser')));
+      await h.settle();
+      await expectLater(find.byType(MaterialApp), matchesGoldenFile('goldens/browser_$lang.png'));
       await h.unmount();
     });
 

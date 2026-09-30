@@ -1,5 +1,11 @@
 # gen-l10n (07 §8): tiếng Anh là file mẫu, tiếng Việt dịch đủ. Key giữ slug của strings.dart cũ.
 arb-dir: lib/l10n
+# File sinh ra (app_localizations*.dart) nằm cạnh ARB và CÓ commit. `flutter pub get`/build tự sinh lại.
+# Bẫy: flutter_tools xoá "output của lần trước" theo đường dẫn tuyệt đối ghi trong stamp
+# (app/build/*/gen_localizations.stamp, app/.dart_tool/flutter_build/*/). Chuyển repo sang chỗ khác mà
+# để lại symlink tên cũ → đường dẫn cũ trỏ đúng vào file mới → lần sinh đầu tiên sinh xong rồi xoá luôn.
+# Chuyển thư mục thì chạy `flutter clean` TRƯỚC lệnh flutter đầu tiên; lỡ mất file thì `flutter gen-l10n`.
+output-dir: lib/l10n
 template-arb-file: app_en.arb
 output-localization-file: app_localizations.dart
 output-class: AppLocalizations

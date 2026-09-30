@@ -87,6 +87,7 @@ class _SessionScreenState extends ConsumerState<SessionScreen> {
                     key: const Key('session.headerRow'),
                     height: SessionLayout.headerHeight,
                     child: Row(
+                      key: sessionHeaderKey,
                       children: [
                         for (var t = 0; t < SessionLayout.tracks; t++)
                           Expanded(

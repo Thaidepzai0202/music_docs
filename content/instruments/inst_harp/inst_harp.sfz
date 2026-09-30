@@ -1,0 +1,27 @@
+// inst_harp — Harp (VSCO-2 CE Harp, mf)
+// VSCO-2 Community Edition by Versilian Studios (Sam Gossner) / Ivy Audio (Simon Dalzell), CC0 1.0; github.com/sgossner/VSCO-2-CE — versilian-studios.com/vsco-community/
+// Rút gọn bằng engine/tools/le-import-library (agent 80, render/SampleImport.cpp): chọn phím gốc ≥ 3 nửa cung (zone đầu / cuối phủ tới phím 0 / 127), 1 lớp velocity, cắt đầu, cắt đuôi + fade, mono, FLAC 24-bit, tune đo bằng Yin, volume = cân loudness.
+<control> default_path=samples/
+<global> loop_mode=no_loop ampeg_attack=0.001 ampeg_release=1.20
+<region> lokey=0 hikey=29 pitch_keycenter=28 lovel=1 hivel=127 sample=harp_028_all.flac tune=15.05 volume=-2.6
+<region> lokey=30 hikey=33 pitch_keycenter=31 lovel=1 hivel=127 sample=harp_031_all.flac tune=21.77 volume=-0.1
+<region> lokey=34 hikey=36 pitch_keycenter=35 lovel=1 hivel=127 sample=harp_035_all.flac tune=13.86 volume=-2.6
+<region> lokey=37 hikey=39 pitch_keycenter=38 lovel=1 hivel=127 sample=harp_038_all.flac tune=5.25 volume=-4.6
+<region> lokey=40 hikey=43 pitch_keycenter=41 lovel=1 hivel=127 sample=harp_041_all.flac tune=7.12 volume=-2.0
+<region> lokey=44 hikey=46 pitch_keycenter=45 lovel=1 hivel=127 sample=harp_045_all.flac tune=3.71 volume=-3.5
+<region> lokey=47 hikey=50 pitch_keycenter=48 lovel=1 hivel=127 sample=harp_048_all.flac tune=2.46 volume=-4.9
+<region> lokey=51 hikey=53 pitch_keycenter=52 lovel=1 hivel=127 sample=harp_052_all.flac tune=4.01 volume=-1.9
+<region> lokey=54 hikey=57 pitch_keycenter=55 lovel=1 hivel=127 sample=harp_055_all.flac tune=8.15 volume=-3.3
+<region> lokey=58 hikey=60 pitch_keycenter=59 lovel=1 hivel=127 sample=harp_059_all.flac tune=12.61 volume=-3.9
+<region> lokey=61 hikey=63 pitch_keycenter=62 lovel=1 hivel=127 sample=harp_062_all.flac tune=12.35 volume=-3.1
+<region> lokey=64 hikey=67 pitch_keycenter=65 lovel=1 hivel=127 sample=harp_065_all.flac tune=0.99 volume=-5.3
+<region> lokey=68 hikey=70 pitch_keycenter=69 lovel=1 hivel=127 sample=harp_069_all.flac tune=9.40 volume=0.0
+<region> lokey=71 hikey=74 pitch_keycenter=72 lovel=1 hivel=127 sample=harp_072_all.flac tune=11.33 volume=-0.3
+<region> lokey=75 hikey=77 pitch_keycenter=76 lovel=1 hivel=127 sample=harp_076_all.flac tune=11.45 volume=-4.0
+<region> lokey=78 hikey=81 pitch_keycenter=79 lovel=1 hivel=127 sample=harp_079_all.flac tune=6.34 volume=-1.0
+<region> lokey=82 hikey=84 pitch_keycenter=83 lovel=1 hivel=127 sample=harp_083_all.flac tune=8.05 volume=-4.9
+<region> lokey=85 hikey=87 pitch_keycenter=86 lovel=1 hivel=127 sample=harp_086_all.flac tune=7.70 volume=-2.6
+<region> lokey=88 hikey=91 pitch_keycenter=89 lovel=1 hivel=127 sample=harp_089_all.flac tune=6.17 volume=-0.7
+<region> lokey=92 hikey=95 pitch_keycenter=93 lovel=1 hivel=127 sample=harp_093_all.flac tune=18.35 volume=-1.6
+<region> lokey=96 hikey=99 pitch_keycenter=98 lovel=1 hivel=127 sample=harp_098_all.flac tune=7.31 volume=-1.9
+<region> lokey=100 hikey=127 pitch_keycenter=101 lovel=1 hivel=127 sample=harp_101_all.flac tune=29.86 volume=-1.3

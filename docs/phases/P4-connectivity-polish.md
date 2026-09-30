@@ -28,6 +28,7 @@
 | [~] | P4-17 | Xử lý bộ nhớ thấp: nhả instrument không dùng, `LE_EVT_MEMORY_WARNING` | W33 | 1d |
 | [ ] | P4-18 | Checklist interruption và route đầy đủ (08 §6) | W33 | 1d |
 | [~] | P4-19 | An toàn khi bị kill: đang thu hoặc đang lưu → khôi phục được | W33 | 1d |
+| [ ] | P4-26 | Preview / cue đi đường riêng, KHÔNG vào bản ghi jam (`export.jamStart`) — như cue của Ableton (05 §3 preview.play) | W33 | 1d |
 | [ ] | P4-20 | Bug bash: chạy checklist 08 §6 hai lượt, sửa hết lỗi S1/S2 | W34 | 2d |
 | [~] | P4-21 | `PrivacyInfo.xcprivacy` (required-reason APIs) | W34 | 0.5d |
 | [~] | P4-22 | Màn Giấy phép (JUCE, Signalsmith MIT, Link, nội dung CC-BY) | W34 | 0.5d |

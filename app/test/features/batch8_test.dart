@@ -34,7 +34,7 @@ void main() {
     expect([s.name, s.track, s.i0], ['TRACK_MONITOR', 5, 2]);
     expect(h.session.project.trackAt(5)!.monitor, MonitorMode.always);
     expect(
-      find.descendant(of: find.byKey(const Key('mixer.monitor.5')), matching: find.text(S.monitorShort('always'))),
+      find.descendant(of: find.byKey(const Key('mixer.monitor.5')), matching: find.text(S.monitorBadge('always'))),
       findsOneWidget,
     );
     await h.unmount();

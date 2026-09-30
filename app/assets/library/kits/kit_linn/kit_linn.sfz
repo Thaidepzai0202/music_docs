@@ -1,0 +1,20 @@
+// kit_linn — 16 pad map General MIDI 36–51 (06 §4). Tổng hợp bằng code: engine/tools/le-gen-kits
+// (agent 80, render/DrumKits*.cpp). Không dùng sample bên thứ ba. volume = cân loudness trong kit.
+<control> default_path=samples/
+<global> loop_mode=one_shot ampeg_release=0.05
+<region> key=36 sample=kick.flac volume=-4.2 region_label=Kick
+<region> key=37 sample=rim.flac volume=-1.5 region_label=Side Stick
+<region> key=38 sample=snare.flac volume=-3.9 region_label=Snare
+<region> key=39 sample=clap.flac volume=-3.8 region_label=Clap
+<region> key=40 sample=snare2.flac volume=-4.7 region_label=Snare 2
+<region> key=41 sample=tom_floor_lo.flac volume=-5.4 region_label=Floor Tom L
+<region> key=42 sample=hat_closed.flac volume=-2.1 group=1 region_label=Closed Hat
+<region> key=43 sample=tom_floor_hi.flac volume=-6.0 region_label=Floor Tom H
+<region> key=44 sample=hat_pedal.flac group=1 region_label=Pedal Hat
+<region> key=45 sample=tom_lo.flac volume=-6.0 region_label=Low Tom
+<region> key=46 sample=hat_open.flac volume=-3.6 group=2 off_by=1 region_label=Open Hat
+<region> key=47 sample=tom_mid.flac volume=-6.3 region_label=Mid Tom
+<region> key=48 sample=tom_mid_hi.flac volume=-6.3 region_label=Hi-Mid Tom
+<region> key=49 sample=crash.flac volume=-3.3 region_label=Crash
+<region> key=50 sample=tom_hi.flac volume=-6.5 region_label=High Tom
+<region> key=51 sample=ride.flac volume=-4.8 region_label=Ride

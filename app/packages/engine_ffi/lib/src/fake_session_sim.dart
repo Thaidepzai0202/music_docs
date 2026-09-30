@@ -74,6 +74,11 @@ final class FakeSessionSim {
 
   /// Nốt đang giữ trong lượt overdub MIDI: track → (pitch → chỉ số nốt trong clip).
   final _odOpen = List.generate(_tracks, (_) => <int, int>{});
+
+  /// CLIP_CHANGED (05 §2): lần phát gần nhất (giây, theo đồng hồ mô phỏng) + còn thay đổi chưa báo — ≤ 10 lần/s.
+  final _clipChangedAt = List.generate(_tracks, (_) => List<double>.filled(_scenes, double.negativeInfinity));
+  final _clipChangedPending = List.generate(_tracks, (_) => List<bool>.filled(_scenes, false));
+  static const _clipChangedGap = 0.1;
   final _odNotesBefore = List<List<Map<String, num>>?>.filled(_tracks, null); // (dành cho undo MIDI nếu có sau này)
   final _warp = List.generate(_tracks, (_) => List<String>.filled(_scenes, 'stretch'));
   final _state = List.generate(_tracks, (_) => List<int>.filled(_scenes, LeClipState.LE_CLIP_EMPTY));
@@ -266,6 +271,7 @@ final class FakeSessionSim {
             's': (beat - _launchBeat[track]) % len,
             'd': 0.25,
           });
+          _clipChanged(track, od);
         }
       case LeCommandType.LE_CMD_NOTE_OFF:
         if (!validTrack()) return false;
@@ -282,6 +288,7 @@ final class FakeSessionSim {
           final len = _len[track][od]!;
           n['d'] = (((beat - _launchBeat[track]) % len) - n['s']! + len) % len;
           if (n['d']! < 1 / 64) n['d'] = 1 / 64;
+          _clipChanged(track, od);
         }
       case LeCommandType.LE_CMD_ALL_NOTES_OFF:
         for (var t = 0; t < _tracks; t++) {
@@ -446,6 +453,32 @@ final class FakeSessionSim {
       _applyDue(beat);
     }
     beat = end;
+    _flushClipChanged(force: false);
+  }
+
+  double get _nowSec => beat * 60 / bpm;
+
+  /// Nốt của clip MIDI đổi lúc overdub → CLIP_CHANGED ngay nếu đã qua 0.1 s từ lần trước, không thì gom lại.
+  void _clipChanged(int t, int s) {
+    if (_nowSec - _clipChangedAt[t][s] >= _clipChangedGap - 1e-9) {
+      _clipChangedAt[t][s] = _nowSec;
+      _clipChangedPending[t][s] = false;
+      _emit(ClipChanged(track: t, slot: s));
+    } else {
+      _clipChangedPending[t][s] = true;
+    }
+  }
+
+  void _flushClipChanged({required bool force, int? track, int? slot}) {
+    for (var t = 0; t < _tracks; t++) {
+      for (var s = 0; s < _scenes; s++) {
+        if (!_clipChangedPending[t][s] || (track != null && (t != track || s != slot))) continue;
+        if (!force && _nowSec - _clipChangedAt[t][s] < _clipChangedGap - 1e-9) continue;
+        _clipChangedAt[t][s] = _nowSec;
+        _clipChangedPending[t][s] = false;
+        _emit(ClipChanged(track: t, slot: s));
+      }
+    }
   }
 
   double? _nextEventBeat() {
@@ -622,6 +655,11 @@ final class FakeSessionSim {
   void _endOverdub(int t, int s) {
     _odOpen[t].clear();
     _odNotesBefore[t] = null;
+    if (_kind[t][s] == 'midi') {
+      // Luôn một lần CLIP_CHANGED cuối trước RECORDING_FINISHED.
+      _clipChangedPending[t][s] = true;
+      _flushClipChanged(force: true, track: t, slot: s);
+    }
     if (_kind[t][s] == 'audio') _undo[t][s] = true; // như engine: chỉ clip audio có lớp undo
     _emit(RecordingFinished(track: t, slot: s, frames: ((_len[t][s] ?? 0) * 60 / bpm * sampleRate).round()));
   }

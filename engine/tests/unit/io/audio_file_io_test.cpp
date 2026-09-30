@@ -101,6 +101,69 @@ TEST_CASE("decodeAudioFile: WAV/AIFF/FLAC, mono/stereo, giữ sample rate", "[io
     }
 }
 
+// 06 §4: sample thư viện là FLAC 24-bit / 48 kHz. registerBasicFormats() có FLAC vì JUCE_USE_FLAC mặc định 1 (CMake
+// không tắt). Round-trip: MỌI mẫu khớp trong 1 LSB 24-bit; sine + nhiễu để predictor FLAC làm việc thật.
+#if !JUCE_USE_FLAC
+#error "JUCE_USE_FLAC phải bật: thư viện nhạc cụ dùng FLAC (06 §4)"
+#endif
+TEST_CASE("FLAC 24-bit/48k stereo: round-trip từng mẫu ≤ 1 LSB; kit SFZ dùng FLAC nạp được; đo thời gian decode", "[io][audiofile][flac]") {
+    TempDir td;
+    juce::FlacAudioFormat flac;
+    auto write = [&](const std::string& path, int frames, std::uint32_t seed, juce::AudioBuffer<float>* keep) {
+        juce::File f(juce::String::fromUTF8(path.c_str()));
+        f.deleteFile();
+        std::unique_ptr<juce::OutputStream> os = std::make_unique<juce::FileOutputStream>(f);
+        auto w = flac.createWriterFor(os, juce::AudioFormatWriterOptions{}.withSampleRate(48000.0).withNumChannels(2).withBitsPerSample(24));
+        REQUIRE(w != nullptr);
+        juce::AudioBuffer<float> b(2, frames);
+        std::uint32_t x = seed;
+        for (int c = 0; c < 2; ++c)
+            for (int i = 0; i < frames; ++i) {
+                x = x * 1664525u + 1013904223u;
+                const float noise = ((float) (x >> 8) / 16777216.0f - 0.5f) * 0.2f;
+                b.setSample(c, i, 0.6f * (float) std::sin(2.0 * M_PI * (110.0 + 55.0 * c) * i / 48000.0) + noise);
+            }
+        REQUIRE(w->writeFromAudioSampleBuffer(b, 0, frames));
+        if (keep != nullptr) *keep = b;
+    };
+
+    const int frames = 48000 * 10;
+    juce::AudioBuffer<float> src;
+    write(td.path("long.flac"), frames, 1u, &src);
+    const double t0 = juce::Time::getMillisecondCounterHiRes();
+    const auto r = io::decodeAudioFile(td.path("long.flac"));
+    const double decodeMs = juce::Time::getMillisecondCounterHiRes() - t0;
+    REQUIRE(r.error == LE_OK);
+    REQUIRE(r.data->numChannels() == 2);
+    REQUIRE(r.data->numFrames() == frames);
+    REQUIRE(r.data->sampleRate() == 48000.0);
+    float worst = 0.0f;
+    for (int c = 0; c < 2; ++c)
+        for (int i = 0; i < frames; ++i) worst = std::max(worst, std::fabs(r.data->channel(c)[i] - src.getSample(c, i)));
+    CHECK(worst <= 1.0f / 8388608.0f * 1.01f);   // 1 LSB 24-bit (lượng tử hoá lúc ghi)
+
+    // Kit 16 pad FLAC (0.5 s mỗi pad) qua track.setInstrument — đúng đường nạp của thư viện
+    std::string sfz = "<group> loop_mode=one_shot\n";
+    for (int k = 0; k < 16; ++k) {
+        write(td.path(("pad" + std::to_string(k) + ".flac").c_str()), 24000, 100u + (std::uint32_t) k, nullptr);
+        sfz += "<region> key=" + std::to_string(36 + k) + " sample=pad" + std::to_string(k) + ".flac\n";
+    }
+    juce::File(juce::String(td.path("kit.sfz"))).replaceWithText(sfz);
+    Offline o(td.dir.getFullPathName().toStdString());
+    const double t1 = juce::Time::getMillisecondCounterHiRes();
+    const auto job = o.wait((juce::int64) o.call(R"({"op":"track.setInstrument","track":0,"instrument":{"kind":"sfz","path":"kit.sfz"}})")["result"]["jobId"]);
+    const double kitMs = juce::Time::getMillisecondCounterHiRes() - t1;
+    REQUIRE(job["status"].toString() == "done");
+    REQUIRE((int) job["result"]["samplesLoaded"] == 16);
+    const auto& inst = o.e->model().tracks[0].instrument;
+    REQUIRE(inst != nullptr);
+    REQUIRE(inst->zones.size() == 16);
+    REQUIRE(inst->zones[0].data->numFrames() == 24000);
+
+    std::printf("[flac] decode 10 s stereo 24-bit/48k: %.1f ms (%.0f× realtime); kit 16 pad × 0.5 s qua job: %.1f ms\n",
+                decodeMs, 10000.0 / std::max(decodeMs, 0.001), kitMs);
+}
+
 TEST_CASE("decodeAudioFile: > 2 kênh trộn về 2 (chẵn → trái, lẻ → phải)", "[io][audiofile]") {
     TempDir td;
     juce::WavAudioFormat wav;

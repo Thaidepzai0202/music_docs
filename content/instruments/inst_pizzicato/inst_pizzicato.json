@@ -1,0 +1,9 @@
+{
+  "id": "inst_pizzicato",
+  "name": { "en": "Pizzicato", "vi": "Pizzicato" },
+  "category": "Instruments/Strings",
+  "path": "instruments/inst_pizzicato/inst_pizzicato.sfz",
+  "range": [26, 88],
+  "tags": ["strings"],
+  "license": "CC0 1.0 — VSCO-2 Community Edition by Versilian Studios"
+}

@@ -1,0 +1,8 @@
+{
+  "id": "kit_trap",
+  "name": { "en": "Trap Kit", "vi": "Kit Trap" },
+  "category": "Drums",
+  "path": "kits/kit_trap/kit_trap.sfz",
+  "tags": ["drums"],
+  "license": "Self-synthesized (le-gen-kits), no third-party license"
+}

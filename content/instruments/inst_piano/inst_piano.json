@@ -1,0 +1,9 @@
+{
+  "id": "inst_piano",
+  "name": { "en": "Grand Piano", "vi": "Đại dương cầm" },
+  "category": "Instruments/Keys",
+  "path": "instruments/inst_piano/inst_piano.sfz",
+  "range": [19, 110],
+  "tags": ["keys"],
+  "license": "CC BY 3.0 — Salamander Grand Piano V3 by Alexander Holm (modified)"
+}

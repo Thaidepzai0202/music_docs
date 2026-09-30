@@ -33,3 +33,15 @@ Project cleanNames(Project p) {
     ],
   );
 }
+
+/// Tìm không phân biệt hoa thường và dấu tiếng Việt ("bo go" khớp "Bộ gõ").
+String foldSearch(String s) {
+  const from = 'àáạảãâầấậẩẫăằắặẳẵèéẹẻẽêềếệểễìíịỉĩòóọỏõôồốộổỗơờớợởỡùúụủũưừứựửữỳýỵỷỹđ';
+  const to = 'aaaaaaaaaaaaaaaaaeeeeeeeeeeeiiiiiooooooooooooooooouuuuuuuuuuuyyyyyd';
+  final b = StringBuffer();
+  for (final ch in s.toLowerCase().split('')) {
+    final i = from.indexOf(ch);
+    b.write(i < 0 ? ch : to[i]);
+  }
+  return b.toString();
+}

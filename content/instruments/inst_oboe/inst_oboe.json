@@ -1,0 +1,9 @@
+{
+  "id": "inst_oboe",
+  "name": { "en": "Oboe", "vi": "Oboe" },
+  "category": "Instruments/Winds & Brass",
+  "path": "instruments/inst_oboe/inst_oboe.sfz",
+  "range": [56, 91],
+  "tags": ["winds"],
+  "license": "CC0 1.0 — VSCO-2 Community Edition by Versilian Studios"
+}

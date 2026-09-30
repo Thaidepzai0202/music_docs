@@ -31,7 +31,7 @@ double Engine::memoryFootprintMB() {
 // Nhả (theo thứ tự rẻ → đắt):
 //  1) bản stretched của clip KHÔNG đang phát (cache trên đĩa còn → BPM đổi lần sau render lại nhanh);
 //  2) nhạc cụ tự thu không track nào dùng (gán lại → tự tạo lại từ cache zone);
-//  3) peaks của clip không còn trong model;
+//  3) peaks của clip không còn trong model; cache nghe thử của Browser (lượt đang phát giữ bản riêng);
 //  4) critical: thêm lớp undo overdub của ô không đang phát.
 // Clip đang phát, take đang thu, nhạc cụ đang dùng: KHÔNG đụng.
 std::int64_t Engine::releaseMemory(bool critical) {
@@ -69,6 +69,12 @@ std::int64_t Engine::releaseMemory(bool critical) {
             for (const auto& c : row) inModel |= c && c->clipId == it->first;
         it = inModel ? std::next(it) : peaks_.erase(it);
     }
+    for (const auto& p : previewCache_) {
+        if (p.audio != nullptr && p.audio.use_count() == 1) freed += bytesOf(p.audio.get());
+        if (p.instrument != nullptr && p.instrument.use_count() == 1)
+            for (const auto& smp : p.instrument->samples) freed += bytesOf(smp.get());
+    }
+    previewCache_.clear();
     if (snapshot) publishSnapshot();   // snapshot cũ (còn giữ bản stretched) được thu hồi ở block sau
     emitEvent(LE_EVT_MEMORY_WARNING, critical ? 1 : 0, 0, 0, memoryFootprintMB());
     return freed;

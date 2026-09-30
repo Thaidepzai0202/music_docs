@@ -1,0 +1,9 @@
+{
+  "id": "inst_organ",
+  "name": { "en": "Organ", "vi": "Organ" },
+  "category": "Instruments/Keys",
+  "path": "instruments/inst_organ/inst_organ.sfz",
+  "range": [36, 96],
+  "tags": ["keys"],
+  "license": "Self-synthesized (le-gen-instruments), no third-party license"
+}

@@ -1,0 +1,39 @@
+// inst_pizzicato — Pizzicato (VSCO-2 CE: contrabass < C2 · cello C2–B2 · viola C3–F#3 · violin ≥ G3)
+// VSCO-2 Community Edition by Versilian Studios (Sam Gossner) / Ivy Audio (Simon Dalzell), CC0 1.0; github.com/sgossner/VSCO-2-CE — versilian-studios.com/vsco-community/
+// Rút gọn bằng engine/tools/le-import-library (agent 80, render/SampleImport.cpp): chọn phím gốc ≥ 3 nửa cung (zone đầu / cuối phủ tới phím 0 / 127), 2 lớp velocity, cắt đầu, cắt đuôi + fade, mono, FLAC 24-bit, tune đo bằng Yin, volume = cân loudness.
+<control> default_path=samples/
+<global> loop_mode=no_loop ampeg_attack=0.001 ampeg_release=0.30
+<region> lokey=0 hikey=29 pitch_keycenter=28 lovel=1 hivel=95 sample=pizzicato_028_soft.flac tune=0.00 volume=-3.1
+<region> lokey=30 hikey=32 pitch_keycenter=31 lovel=1 hivel=95 sample=pizzicato_031_soft.flac tune=0.00 volume=-6.3
+<region> lokey=33 hikey=37 pitch_keycenter=34 lovel=1 hivel=95 sample=pizzicato_034_soft.flac tune=-3.35 volume=-4.5
+<region> lokey=38 hikey=41 pitch_keycenter=40 lovel=1 hivel=95 sample=pizzicato_040_soft.flac tune=-5.95 volume=-3.9
+<region> lokey=42 hikey=45 pitch_keycenter=43 lovel=1 hivel=95 sample=pizzicato_043_soft.flac tune=2.89 volume=-6.4
+<region> lokey=46 hikey=49 pitch_keycenter=47 lovel=1 hivel=95 sample=pizzicato_047_soft.flac tune=8.01 volume=-4.7
+<region> lokey=50 hikey=53 pitch_keycenter=52 lovel=1 hivel=95 sample=pizzicato_052_soft.flac tune=1.81 volume=-0.6
+<region> lokey=54 hikey=57 pitch_keycenter=55 lovel=1 hivel=95 sample=pizzicato_055_soft.flac tune=-3.03 volume=-6.1
+<region> lokey=58 hikey=60 pitch_keycenter=59 lovel=1 hivel=95 sample=pizzicato_059_soft.flac tune=-6.36 volume=-3.5
+<region> lokey=61 hikey=64 pitch_keycenter=62 lovel=1 hivel=95 sample=pizzicato_062_soft.flac tune=-2.62 volume=-5.1
+<region> lokey=65 hikey=67 pitch_keycenter=66 lovel=1 hivel=95 sample=pizzicato_066_soft.flac tune=-3.84 volume=-4.5
+<region> lokey=68 hikey=70 pitch_keycenter=69 lovel=1 hivel=95 sample=pizzicato_069_soft.flac tune=-0.04 volume=-6.1
+<region> lokey=71 hikey=74 pitch_keycenter=72 lovel=1 hivel=95 sample=pizzicato_072_soft.flac tune=17.47 volume=-4.9
+<region> lokey=75 hikey=77 pitch_keycenter=76 lovel=1 hivel=95 sample=pizzicato_076_soft.flac tune=6.51 volume=-4.1
+<region> lokey=78 hikey=81 pitch_keycenter=79 lovel=1 hivel=95 sample=pizzicato_079_soft.flac tune=4.86 volume=-3.3
+<region> lokey=82 hikey=84 pitch_keycenter=83 lovel=1 hivel=95 sample=pizzicato_083_soft.flac tune=0.00 volume=-2.4
+<region> lokey=85 hikey=127 pitch_keycenter=86 lovel=1 hivel=95 sample=pizzicato_086_soft.flac tune=0.00 volume=-2.4
+<region> lokey=0 hikey=29 pitch_keycenter=28 lovel=96 hivel=127 sample=pizzicato_028_hard.flac tune=2.37 volume=-3.0
+<region> lokey=30 hikey=32 pitch_keycenter=31 lovel=96 hivel=127 sample=pizzicato_031_hard.flac tune=1.32 volume=-5.0
+<region> lokey=33 hikey=37 pitch_keycenter=34 lovel=96 hivel=127 sample=pizzicato_034_hard.flac tune=-3.36 volume=-6.3
+<region> lokey=38 hikey=41 pitch_keycenter=40 lovel=96 hivel=127 sample=pizzicato_040_hard.flac tune=0.81 volume=-3.7
+<region> lokey=42 hikey=45 pitch_keycenter=43 lovel=96 hivel=127 sample=pizzicato_043_hard.flac tune=0.56 volume=-5.9
+<region> lokey=46 hikey=49 pitch_keycenter=47 lovel=96 hivel=127 sample=pizzicato_047_hard.flac tune=-4.05 volume=-4.6
+<region> lokey=50 hikey=53 pitch_keycenter=52 lovel=96 hivel=127 sample=pizzicato_052_hard.flac tune=-3.99 volume=-4.5
+<region> lokey=54 hikey=57 pitch_keycenter=55 lovel=96 hivel=127 sample=pizzicato_055_hard.flac tune=-0.02 volume=-5.3
+<region> lokey=58 hikey=60 pitch_keycenter=59 lovel=96 hivel=127 sample=pizzicato_059_hard.flac tune=3.44 volume=-5.9
+<region> lokey=61 hikey=64 pitch_keycenter=62 lovel=96 hivel=127 sample=pizzicato_062_hard.flac tune=-0.58 volume=-3.2
+<region> lokey=65 hikey=67 pitch_keycenter=66 lovel=96 hivel=127 sample=pizzicato_066_hard.flac tune=-0.02 volume=-6.4
+<region> lokey=68 hikey=70 pitch_keycenter=69 lovel=96 hivel=127 sample=pizzicato_069_hard.flac tune=0.21 volume=-5.2
+<region> lokey=71 hikey=74 pitch_keycenter=72 lovel=96 hivel=127 sample=pizzicato_072_hard.flac tune=2.16 volume=-3.9
+<region> lokey=75 hikey=77 pitch_keycenter=76 lovel=96 hivel=127 sample=pizzicato_076_hard.flac tune=0.56 volume=-4.2
+<region> lokey=78 hikey=81 pitch_keycenter=79 lovel=96 hivel=127 sample=pizzicato_079_hard.flac tune=4.47 volume=0.0
+<region> lokey=82 hikey=84 pitch_keycenter=83 lovel=96 hivel=127 sample=pizzicato_083_hard.flac tune=0.00 volume=-0.9
+<region> lokey=85 hikey=127 pitch_keycenter=86 lovel=96 hivel=127 sample=pizzicato_086_hard.flac tune=0.00 volume=-2.4

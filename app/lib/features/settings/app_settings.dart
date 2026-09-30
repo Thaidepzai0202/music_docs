@@ -36,6 +36,8 @@ final class AppSettings {
     this.defaultMonitor = MonitorMode.off,
     this.latencyOffsetSamples = 0,
     this.latencyMeasuredSamples,
+    this.favorites = const [],
+    this.autoPreview = true,
   });
 
   /// Số bar khi chạm ô trống trên track đang arm. 0 = Tự do: chạm lần hai để chốt (`CLIP_RECORD i0 = 0` rồi
@@ -59,6 +61,13 @@ final class AppSettings {
   /// Round-trip đo gần nhất (`latency.calibrate` measuredSamples), chỉ để hiển thị. null = chưa đo.
   final int? latencyMeasuredSamples;
 
+  /// ★ Yêu thích của Browser (07 §4.1e): khoá mục `kit:kit_808` / `instrument:…` / `loop:…` / `user:<id>`, theo thứ
+  /// tự thêm.
+  final List<String> favorites;
+
+  /// 🎧 Browser: chạm một mục thì tự nghe thử (`preview.play`).
+  final bool autoPreview;
+
   static const _monitorJson = {MonitorMode.off: 'off', MonitorMode.auto: 'auto', MonitorMode.always: 'on'};
 
   factory AppSettings.fromJson(Map<String, dynamic> j) => AppSettings(
@@ -70,6 +79,11 @@ final class AppSettings {
     defaultMonitor: {for (final e in _monitorJson.entries) e.value: e.key}[j['defaultMonitor']] ?? MonitorMode.off,
     latencyOffsetSamples: (j['latencyOffsetSamples'] as num?)?.toInt() ?? 0,
     latencyMeasuredSamples: (j['latencyMeasuredSamples'] as num?)?.toInt(),
+    favorites: [
+      for (final f in (j['favorites'] as List? ?? const []))
+        if (f is String && f.isNotEmpty) f,
+    ],
+    autoPreview: j['autoPreview'] as bool? ?? true,
   );
 
   Map<String, dynamic> toJson() => {
@@ -82,6 +96,8 @@ final class AppSettings {
     'defaultMonitor': _monitorJson[defaultMonitor],
     'latencyOffsetSamples': latencyOffsetSamples,
     if (latencyMeasuredSamples != null) 'latencyMeasuredSamples': latencyMeasuredSamples,
+    'favorites': favorites,
+    'autoPreview': autoPreview,
   };
 
   @override
@@ -94,7 +110,9 @@ final class AppSettings {
       other.bufferSize == bufferSize &&
       other.defaultMonitor == defaultMonitor &&
       other.latencyOffsetSamples == latencyOffsetSamples &&
-      other.latencyMeasuredSamples == latencyMeasuredSamples;
+      other.latencyMeasuredSamples == latencyMeasuredSamples &&
+      listEquals(other.favorites, favorites) &&
+      other.autoPreview == autoPreview;
 
   @override
   int get hashCode => Object.hash(
@@ -106,6 +124,8 @@ final class AppSettings {
     defaultMonitor,
     latencyOffsetSamples,
     latencyMeasuredSamples,
+    Object.hashAll(favorites),
+    autoPreview,
   );
 
   AppSettings copyWith({
@@ -117,6 +137,8 @@ final class AppSettings {
     MonitorMode? defaultMonitor,
     int? latencyOffsetSamples,
     int? latencyMeasuredSamples,
+    List<String>? favorites,
+    bool? autoPreview,
   }) => AppSettings(
     recordBars: recordBars ?? this.recordBars,
     midiRecordQuantize: midiRecordQuantize ?? this.midiRecordQuantize,
@@ -126,6 +148,8 @@ final class AppSettings {
     defaultMonitor: defaultMonitor ?? this.defaultMonitor,
     latencyOffsetSamples: latencyOffsetSamples ?? this.latencyOffsetSamples,
     latencyMeasuredSamples: latencyMeasuredSamples ?? this.latencyMeasuredSamples,
+    favorites: favorites ?? this.favorites,
+    autoPreview: autoPreview ?? this.autoPreview,
   );
 }
 
@@ -206,6 +230,19 @@ class SettingsController extends Notifier<AppSettings> {
       _set(state.copyWith(latencyMeasuredSamples: measuredSamples, latencyOffsetSamples: offsetSamples));
 
   void setOnboardingDone() => _set(state.copyWith(onboardingDone: true));
+
+  /// ★ Browser: thêm / bỏ [key] ("kit:kit_808"…). Trả true nếu sau đó là yêu thích.
+  bool toggleFavorite(String key) {
+    final on = !state.favorites.contains(key);
+    _set(
+      state.copyWith(
+        favorites: List.unmodifiable(on ? [...state.favorites, key] : state.favorites.where((f) => f != key)),
+      ),
+    );
+    return on;
+  }
+
+  void setAutoPreview(bool on) => _set(state.copyWith(autoPreview: on));
 
   void _set(AppSettings next) {
     if (next == state) return;

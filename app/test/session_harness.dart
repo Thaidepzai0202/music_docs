@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:engine_ffi/engine_ffi.dart';
@@ -8,6 +9,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:music_looper/app/router.dart';
 import 'package:music_looper/app/theme.dart';
 import 'package:music_looper/data/data_providers.dart';
+import 'package:music_looper/data/library_repository.dart';
 import 'package:music_looper/features/projects/demo_project.dart';
 import 'package:music_looper/features/session/project_controller.dart';
 import 'package:music_looper/features/session/session_screen.dart';
@@ -18,6 +20,11 @@ import 'package:music_looper/model/project_codec.dart';
 import 'test_utils.dart';
 
 Project demoProject() => ProjectCodec().decode(File('assets/demo/demo_project.json').readAsStringSync()).project;
+
+/// Manifest thư viện thật (tên kit / nhạc cụ {en, vi}) — cho localizeDemo trong test.
+LibraryManifest testLibrary() => LibraryManifest.fromJson(
+  jsonDecode(File('assets/library/manifest.json').readAsStringSync()) as Map<String, dynamic>,
+);
 
 /// Màn Session với FakeEngine + repository trong bộ nhớ, project demo đã mở.
 class SessionHarness {
@@ -42,7 +49,7 @@ class SessionHarness {
     );
     addTearDown(c.dispose);
     // Như app thật: demo được tạo bằng ngôn ngữ đang chạy (tên gốc tiếng Anh trong asset → ARB).
-    final p = project ?? localizeDemo(demoProject(), lookupAppLocalizations(locale));
+    final p = project ?? localizeDemo(demoProject(), lookupAppLocalizations(locale), library: testLibrary());
     await tester.runAsync(() => c.read(projectControllerProvider.notifier).open(p, dir: dir));
     await tester.pumpWidget(
       UncontrolledProviderScope(

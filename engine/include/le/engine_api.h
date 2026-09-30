@@ -139,7 +139,9 @@ typedef enum LeEventType {
     LE_EVT_MIDI_DEVICES       = 10,   /* danh sách đổi → gọi midi.listDevices */
     LE_EVT_MIDI_LEARNED       = 11,   /* a = kind (0 note, 1 cc), b = number */
     LE_EVT_ERROR              = 12,   /* a = LeError */
-    LE_EVT_MEMORY_WARNING     = 13    /* value = MB đang dùng */
+    LE_EVT_MEMORY_WARNING     = 13,   /* value = MB đang dùng */
+    LE_EVT_CLIP_CHANGED       = 14    /* a = track, b = slot: nội dung clip MIDI đổi phía engine (overdub MIDI) → đọc lại
+                                         clip.getMidi. ≤ 10 lần/s mỗi ô; luôn có 1 lần cuối trước RECORDING_FINISHED */
 } LeEventType;
 
 typedef void (*LeEventCallback)(int32_t type, int32_t a, int32_t b, int64_t jobId, double value);

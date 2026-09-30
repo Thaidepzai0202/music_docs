@@ -95,6 +95,7 @@ void RtEngine::prepare(double sampleRate, int maxBlockSize) {
     for (auto& g : monitorGain_) g.snap(0.0f);
     for (auto& f : fx_) f.prepare(sampleRate_);
     masterEq_.prepare(sampleRate_);
+    preview_.prepare(sampleRate_, maxBlock_);
     if (std::fabs(fxRate_ - sampleRate_) > 0.5) {
         // Sample rate đổi: Processor do main tạo ở SR cũ → prepare lại (giữ tham số, xoá state). Mọi instance RT có
         // thể chạm tới nằm trong current_, retiring_ hoặc bản đang chờ (EngineModel ⊆ bản build gần nhất).
@@ -270,9 +271,11 @@ void RtEngine::processChunk(const float* in0, const float* in1, float* outL, flo
     float* const chans[2] = {outL, outR};
     load_.processRt(chans, 2, numFrames);            // cộng dồn
 
-    // 3) Master gain → EQ3 (P3-15, bỏ qua khi phẳng) → limiter (-0.3 dBFS) → meter (P1-14).
+    // 3) Master gain → EQ3 (P3-15, bỏ qua khi phẳng) → preview Browser (−6 dB, không chạm khi im) → limiter (-0.3 dBFS)
+    //    → meter (P1-14).
     mixer_.applyMasterGain(outL, outR, numFrames);
     masterEq_.process(outL, outR, numFrames, fxCtx);
+    preview_.process(outL, outR, numFrames, toNrt_);
     mixer_.limitAndMeter(outL, outR, numFrames);
     recordJam(outL, outR, numFrames);                // P3-17: ghi đúng tiếng người chơi nghe (trước chirp đo latency)
     probe_.processRt(in0, chans, 2, numFrames);      // khi đang đo: GHI ĐÈ output bằng chirp (phải đứng cuối)

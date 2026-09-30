@@ -420,7 +420,10 @@ void Engine::handleMidiMessage(const RtMessage& m) {
             publishSnapshot();
         }
         acc.done.clear();
-        if (cm) emitEvent(LE_EVT_RECORDING_FINISHED, t, s, 0, (double) midiOverdubNotes_[t]);
+        if (cm) {
+            clipChanged(t, s, true);   // piano roll có đủ nốt TRƯỚC khi Dart lưu clip
+            emitEvent(LE_EVT_RECORDING_FINISHED, t, s, 0, (double) midiOverdubNotes_[t]);
+        }
         midiOverdubNotes_[t] = 0;
         return;
     }
@@ -447,6 +450,33 @@ void Engine::handleMidiMessage(const RtMessage& m) {
                      [](const dsp::MidiNote& a, const dsp::MidiNote& b) { return a.startBeat < b.startBeat; });
     cm->midi = std::move(clip);
     publishSnapshot();
+    clipChanged(t, s, false);   // ghi Live: nốt hiện trên piano roll gần như ngay (≤ 100 ms + 1 tick pump)
+}
+
+void Engine::clipChanged(int t, int s, bool final) {
+    const double now = debounceClockMs();
+    if (!final && clipChangedSent_[t][s] && now - clipChangedMs_[t][s] < kClipChangedMs) {
+        clipChangedPending_[t][s] = true;
+        anyClipChangedPending_ = true;
+        return;
+    }
+    clipChangedMs_[t][s] = now;
+    clipChangedSent_[t][s] = true;
+    clipChangedPending_[t][s] = false;
+    emitEvent(LE_EVT_CLIP_CHANGED, t, s, 0, 0.0);
+}
+
+void Engine::flushClipChanged() {
+    if (!anyClipChangedPending_) return;
+    const double now = debounceClockMs();
+    bool still = false;
+    for (int t = 0; t < LE_MAX_TRACKS; ++t)
+        for (int s = 0; s < LE_MAX_SCENES; ++s) {
+            if (!clipChangedPending_[t][s]) continue;
+            if (now - clipChangedMs_[t][s] >= kClipChangedMs) clipChanged(t, s, true);
+            else still = true;
+        }
+    anyClipChangedPending_ = still;
 }
 
 std::shared_ptr<const render::Peaks> Engine::peaksFor(const dsp::AudioData& data, const std::string& cachePath,
@@ -575,6 +605,8 @@ void Engine::drainRtToNrt() {
             handleCaptureFinished(msg);
         } else if (msg.kind == RtMessage::JamStopped) {
             handleJamStopped(msg);
+        } else if (msg.kind == RtMessage::PreviewReleased) {
+            handlePreviewReleased(msg);
         } else if (msg.kind == RtMessage::MidiLearned) {
             handleMidiLearned(msg);
         } else if (msg.kind == RtMessage::MappedChange) {
@@ -683,6 +715,7 @@ void Engine::pump() {
 
     // 1) Event + snapshot cũ + LaunchLog từ audio thread
     drainRtToNrt();
+    flushClipChanged();   // CLIP_CHANGED đã dồn (≤ 10 lần/s mỗi ô)
     while (const LaunchEvent* e = launchLog_.front()) {
         if (launchLogEntries_.size() < 1'000'000) launchLogEntries_.push_back(*e);
         launchLog_.pop();

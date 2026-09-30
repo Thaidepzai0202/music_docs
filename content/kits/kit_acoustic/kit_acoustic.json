@@ -1,0 +1,8 @@
+{
+  "id": "kit_acoustic",
+  "name": { "en": "Acoustic", "vi": "Trống thật" },
+  "category": "Drums",
+  "path": "kits/kit_acoustic/kit_acoustic.sfz",
+  "tags": ["drums"],
+  "license": "CC0 1.0 — Big Rusty Drums by Karoryfer Samples"
+}

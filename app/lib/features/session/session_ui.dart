@@ -1,3 +1,4 @@
+import '../clip/note_edit.dart';
 import '../clip/piano_roll.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/painting.dart';
@@ -37,6 +38,9 @@ final class SessionUi {
     this.dragTarget,
     this.pianoRollMode = PianoRollMode.select,
     this.panelExpanded = false,
+    this.grid = NoteEdit.defaultGrid,
+    this.clipKeyboard = false,
+    this.stepMode = false,
   });
 
   final SessionMode mode;
@@ -47,6 +51,17 @@ final class SessionUi {
   /// ⤢ ở tab Clip: panel cao ~70% màn hình để vẽ nốt / sửa clip (grid co lại, cuộn nếu hàng < 44 pt).
   /// Đổi tab hoặc thu gọn panel → về như cũ.
   final bool panelExpanded;
+
+  /// Lưới piano roll (07 §4.1b), dùng chung cho vẽ nốt và ⇥ Step.
+  final double grid;
+
+  /// Bàn phím / pad dưới piano roll ở tab Clip (07 §4.1d). Chỉ hiện khi panel ⤢ — panel thường không đủ chỗ.
+  final bool clipKeyboard;
+
+  /// ⇥ Step (07 §4.1d): phím bấm ghi nốt tại con trỏ; chạm lưới đặt con trỏ.
+  final bool stepMode;
+
+  bool get clipKeyboardVisible => clipKeyboard && panelExpanded;
 
   /// Ô đang chọn ở chế độ Edit.
   final CellRef? selected;
@@ -72,6 +87,9 @@ final class SessionUi {
     bool clearDrag = false,
     PianoRollMode? pianoRollMode,
     bool? panelExpanded,
+    double? grid,
+    bool? clipKeyboard,
+    bool? stepMode,
   }) => SessionUi(
     mode: mode ?? this.mode,
     selected: clearSelected ? null : (selected ?? this.selected),
@@ -81,6 +99,9 @@ final class SessionUi {
     dragTarget: clearDrag ? null : (dragTarget ?? this.dragTarget),
     pianoRollMode: pianoRollMode ?? this.pianoRollMode,
     panelExpanded: panelExpanded ?? this.panelExpanded,
+    grid: grid ?? this.grid,
+    clipKeyboard: clipKeyboard ?? this.clipKeyboard,
+    stepMode: stepMode ?? this.stepMode,
   );
 }
 
@@ -116,6 +137,17 @@ class SessionUiController extends Notifier<SessionUi> {
   void setPanelExpanded(bool expanded) => state = state.copyWith(panelExpanded: expanded);
 
   void setPianoRollMode(PianoRollMode mode) => state = state.copyWith(pianoRollMode: mode);
+
+  void setGrid(double grid) => state = state.copyWith(grid: grid);
+
+  /// Bật bàn phím thì mở luôn ⤢ (bàn phím chỉ hiện khi panel cao); tắt bàn phím thì tắt luôn Step.
+  void setClipKeyboard(bool on) => state = state.copyWith(
+    clipKeyboard: on,
+    panelExpanded: on || state.panelExpanded,
+    stepMode: on && state.stepMode,
+  );
+
+  void setStepMode(bool on) => state = state.copyWith(stepMode: on);
 
   /// Vị trí ngón tay cuối cùng khi kéo (để mở menu thả đúng chỗ) — không phải state UI.
   Offset lastDragPosition = Offset.zero;

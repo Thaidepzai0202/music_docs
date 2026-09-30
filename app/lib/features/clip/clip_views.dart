@@ -10,10 +10,12 @@ import '../../engine/engine_providers.dart';
 import '../../engine/engine_state.dart';
 import '../../engine/engine_state_ticker.dart';
 import '../../model/project.dart';
+import '../session/live_clip_notes.dart';
 import '../session/project_controller.dart';
 import '../session/session_layout.dart';
 import '../../engine/performance_actions.dart';
 import '../session/session_ui.dart';
+import 'clip_input.dart';
 import 'note_edit.dart';
 import 'pad_names.dart';
 import 'piano_roll.dart';
@@ -23,8 +25,9 @@ import '../../l10n/l10n.dart';
 /// Lịch sử sửa nốt theo clip (07 §4.1b: undo/redo 50 bước, chỉ trong phiên).
 final noteHistoriesProvider = Provider<NoteHistories>((ref) => NoteHistories());
 
-/// Tab Clip · clip MIDI (P2-19 + P2-29): piano roll chế độ ✏️ Vẽ / ⬚ Chọn, lưới, zoom, độ dài clip, ±quãng tám,
-/// undo/redo; Chọn: quantize, xoá nốt đã chọn, clear. Mỗi thao tác xong → `clip.setMidi` + model (một lần).
+/// Tab Clip · clip MIDI (P2-19 + P2-29 + P2-31): piano roll chế độ ✏️ Vẽ / ⬚ Chọn, lưới, zoom, độ dài clip,
+/// ±quãng tám, undo/redo; Chọn: chọn tất cả, nhân bản nhóm, xoá nốt đã chọn, quantize, clear. Mỗi thao tác xong →
+/// `clip.setMidi` + model (một lần). Lựa chọn giữ qua thao tác nhóm (dời / đổi độ dài / velocity / nhân bản).
 class MidiClipView extends ConsumerStatefulWidget {
   const MidiClipView({super.key, required this.track, required this.clip});
 
@@ -37,7 +40,12 @@ class MidiClipView extends ConsumerStatefulWidget {
 
 class _MidiClipViewState extends ConsumerState<MidiClipView> {
   Set<int> _selected = const {};
-  double _grid = NoteEdit.defaultGrid;
+
+  /// Danh sách nốt vừa commit: model trả về đúng danh sách này thì giữ lựa chọn, khác (undo, quantize…) thì bỏ.
+  List<Note>? _expect;
+
+  /// Lưới dùng chung với ⇥ Step (sessionUi.grid).
+  double get _grid => ref.read(sessionUiProvider).grid;
   int _zoom = 1;
   final _vertical = ScrollController();
 
@@ -58,14 +66,19 @@ class _MidiClipViewState extends ConsumerState<MidiClipView> {
   @override
   void didUpdateWidget(MidiClipView old) {
     super.didUpdateWidget(old);
-    if (old.clip.id != widget.clip.id || old.clip.notes != widget.clip.notes) _selected = const {};
+    // So theo giá trị: getter `notes` của freezed trả wrapper mới mỗi lần gọi.
+    if (old.clip.id != widget.clip.id ||
+        (!listEquals(old.clip.notes, widget.clip.notes) && !listEquals(widget.clip.notes, _expect))) {
+      _selected = const {};
+    }
   }
 
-  /// Một thao tác sửa nốt: ghi lịch sử (trạng thái TRƯỚC) rồi gửi engine + model.
-  void _commit(List<Note> notes, {double? length}) {
+  /// Một thao tác sửa nốt: ghi lịch sử (trạng thái TRƯỚC) rồi gửi engine + model; [selection] là lựa chọn sau đó.
+  void _commit(List<Note> notes, {double? length, Set<int> selection = const {}}) {
     _history.push(c.notes, c.lengthBeats);
+    _expect = notes;
     _ctl.setMidiNotes(widget.track, c.slot, notes, lengthBeats: length);
-    setState(() => _selected = const {});
+    setState(() => _selected = selection);
   }
 
   void _undo() {
@@ -78,6 +91,51 @@ class _MidiClipViewState extends ConsumerState<MidiClipView> {
     final r = _history.redo(c.notes, c.lengthBeats);
     if (r != null) _ctl.setMidiNotes(widget.track, c.slot, r.notes, lengthBeats: r.length);
     setState(() => _selected = const {});
+  }
+
+  /// Chọn nốt (chạm, khung, thước, chọn tất cả). Chọn ở chế độ Vẽ (kéo thước) → chuyển sang chế độ Chọn.
+  void _select(Set<int> s) {
+    setState(() => _selected = s);
+    if (s.isNotEmpty && ref.read(sessionUiProvider).pianoRollMode == PianoRollMode.draw) {
+      ref.read(sessionUiProvider.notifier).setPianoRollMode(PianoRollMode.select);
+    }
+  }
+
+  /// Nhân bản nhóm đã chọn, đặt ngay sau nó (07 §4.1b). Hết chỗ → hỏi tăng độ dài clip (bar nhỏ nhất đủ chứa).
+  Future<void> _duplicate(int beatsPerBar) async {
+    final before = c.notes;
+    final r = NoteEdit.duplicate(before, _selected, grid: _grid);
+    double? length;
+    if (r.end > c.lengthBeats + 1e-9) {
+      final need = (r.end / beatsPerBar - 1e-9).ceil();
+      final bars = lengthsInBars.where((b) => b >= need).firstOrNull;
+      if (bars == null) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(S.clipKhongDuChoToiDa(lengthsInBars.last))));
+        return;
+      }
+      final ok = await showDialog<bool>(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          title: Text(S.clipKhongDuCho),
+          content: Text(S.clipTangDoDaiHoi(bars)),
+          actions: [
+            TextButton(
+              key: const Key('midi.extend.cancel'),
+              onPressed: () => Navigator.pop(ctx, false),
+              child: Text(S.commonCancel),
+            ),
+            FilledButton(
+              key: const Key('midi.extend.ok'),
+              onPressed: () => Navigator.pop(ctx, true),
+              child: Text(S.clipTangDoDai),
+            ),
+          ],
+        ),
+      );
+      if (ok != true || !mounted || !listEquals(c.notes, before)) return;
+      length = bars * beatsPerBar.toDouble();
+    }
+    _commit(r.notes, length: length, selection: r.copies);
   }
 
   /// Nốt vừa thêm được nghe thử: NOTE_ON rồi NOTE_OFF sau 150 ms trên track (07 §4.1b).
@@ -112,7 +170,18 @@ class _MidiClipViewState extends ConsumerState<MidiClipView> {
     final pads = kitPath == null ? null : ref.watch(padNamesProvider(kitPath)).value;
     final kit = pads != null && pads.isNotEmpty;
     final mode = ref.watch(sessionUiProvider.select((u) => u.pianoRollMode));
+    ref.watch(sessionUiProvider.select((u) => u.grid));
+    final keyboard = ref.watch(sessionUiProvider.select((u) => u.clipKeyboardVisible));
+    final step = ref.watch(sessionUiProvider.select((u) => u.stepMode && u.clipKeyboardVisible));
+    // Sang chế độ Vẽ thì bỏ lựa chọn (chạm nốt ở chế độ Vẽ là xoá, không phải chọn).
+    ref.listen(sessionUiProvider.select((u) => u.pianoRollMode), (_, m) {
+      if (m == PianoRollMode.draw && _selected.isNotEmpty) setState(() => _selected = const {});
+    });
     final draw = mode == PianoRollMode.draw;
+    final selected = {
+      for (final i in _selected)
+        if (i < c.notes.length) i,
+    };
     final bars = (c.lengthBeats / beatsPerBar).round();
     final small = Theme.of(context).textTheme.bodySmall;
     Widget iconBtn(String key, IconData icon, String tip, VoidCallback? onPressed) => IconButton(
@@ -163,25 +232,24 @@ class _MidiClipViewState extends ConsumerState<MidiClipView> {
               selected: {mode},
               onSelectionChanged: (v) => ref.read(sessionUiProvider.notifier).setPianoRollMode(v.first),
             ),
-            if (draw)
-              PopupMenuButton<double>(
-                key: const Key('midi.grid'),
-                tooltip: S.clipLuoi,
-                onSelected: (g) => setState(() => _grid = g),
-                itemBuilder: (_) => [
-                  for (final e in NoteEdit.grids.entries)
-                    CheckedPopupMenuItem(
-                      key: Key('midi.grid.${e.key}'),
-                      value: e.value,
-                      checked: e.value == _grid,
-                      child: Text(e.key),
-                    ),
-                ],
-                child: _ToolChip(
-                  icon: Icons.grid_4x4,
-                  label: NoteEdit.grids.entries.firstWhere((e) => e.value == _grid).key,
-                ),
+            PopupMenuButton<double>(
+              key: const Key('midi.grid'),
+              tooltip: S.clipLuoi,
+              onSelected: (g) => ref.read(sessionUiProvider.notifier).setGrid(g),
+              itemBuilder: (_) => [
+                for (final e in NoteEdit.grids.entries)
+                  CheckedPopupMenuItem(
+                    key: Key('midi.grid.${e.key}'),
+                    value: e.value,
+                    checked: e.value == _grid,
+                    child: Text(e.key),
+                  ),
+              ],
+              child: _ToolChip(
+                icon: Icons.grid_4x4,
+                label: NoteEdit.grids.entries.firstWhere((e) => e.value == _grid).key,
               ),
+            ),
             PopupMenuButton<int>(
               key: const Key('midi.zoom'),
               tooltip: S.clipZoom,
@@ -210,6 +278,16 @@ class _MidiClipViewState extends ConsumerState<MidiClipView> {
               ],
               child: _ToolChip(icon: Icons.straighten, label: S.audioBars(bars)),
             ),
+            // 07 §4.1d: bàn phím / pad dưới piano roll (bật thì mở ⤢).
+            IconButton(
+              key: const Key('midi.keyboard'),
+              tooltip: S.instrumentBanPhim,
+              visualDensity: VisualDensity.compact,
+              isSelected: keyboard,
+              icon: const Icon(Icons.piano_outlined, size: 20),
+              selectedIcon: const Icon(Icons.piano, size: 20),
+              onPressed: () => ref.read(sessionUiProvider.notifier).setClipKeyboard(!keyboard),
+            ),
             if (!kit) ...[
               iconBtn('midi.octDown', Icons.keyboard_double_arrow_down, S.clipQuangTamXuong, () => _octave(1)),
               iconBtn('midi.octUp', Icons.keyboard_double_arrow_up, S.clipQuangTamLen, () => _octave(-1)),
@@ -217,6 +295,18 @@ class _MidiClipViewState extends ConsumerState<MidiClipView> {
             iconBtn('midi.undo', Icons.undo, S.clipHoanTacSua, _history.canUndo ? _undo : null),
             iconBtn('midi.redo', Icons.redo, S.clipLamLai, _history.canRedo ? _redo : null),
             if (!draw) ...[
+              iconBtn(
+                'midi.selectAll',
+                Icons.select_all,
+                S.clipChonTatCa,
+                c.notes.isEmpty ? null : () => _select({for (var i = 0; i < c.notes.length; i++) i}),
+              ),
+              iconBtn(
+                'midi.duplicate',
+                Icons.library_add_outlined,
+                S.clipNhanBan,
+                selected.isEmpty ? null : () => _duplicate(beatsPerBar),
+              ),
               PopupMenuButton<double>(
                 key: const Key('midi.quantize'),
                 tooltip: S.clipQuantize,
@@ -237,17 +327,17 @@ class _MidiClipViewState extends ConsumerState<MidiClipView> {
               ),
               IconButton(
                 key: const Key('midi.deleteNotes'),
-                tooltip: S.clipXoaNotDaChon(_selected.length),
+                tooltip: S.clipXoaNotDaChon(selected.length),
                 visualDensity: VisualDensity.compact,
-                onPressed: _selected.isEmpty
+                onPressed: selected.isEmpty
                     ? null
                     : () => _commit([
                         for (var i = 0; i < c.notes.length; i++)
-                          if (!_selected.contains(i)) c.notes[i],
+                          if (!selected.contains(i)) c.notes[i],
                       ]),
                 icon: Badge(
-                  isLabelVisible: _selected.isNotEmpty,
-                  label: Text('${_selected.length}'),
+                  isLabelVisible: selected.isNotEmpty,
+                  label: Text('${selected.length}'),
                   child: const Icon(Icons.delete_outline, size: 20),
                 ),
               ),
@@ -263,8 +353,11 @@ class _MidiClipViewState extends ConsumerState<MidiClipView> {
             kit: kit,
             mode: mode,
             grid: _grid,
+            stepCursor: step ? ref.read(stepCursorProvider) : null,
+            liveNotes: ref.read(liveClipNotesProvider).of(widget.track, c.slot),
+            onStepCursor: step ? (b) => ref.read(stepCursorProvider).value = b : null,
             zoom: _zoom,
-            selected: _selected,
+            selected: selected,
             color: color,
             track: widget.track,
             beatsPerBar: beatsPerBar,
@@ -272,10 +365,11 @@ class _MidiClipViewState extends ConsumerState<MidiClipView> {
             verticalController: _vertical,
             onToggle: (i) => setState(() {
               final s = {..._selected};
-              s.contains(i) ? s.remove(i) : s.add(i);
+              if (!s.remove(i)) s.add(i);
               _selected = s;
             }),
-            onCommit: _commit,
+            onSelect: _select,
+            onCommit: (notes, selection) => _commit(notes, selection: selection),
             onAudition: _audition,
           ),
         ),

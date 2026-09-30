@@ -137,6 +137,8 @@
 | ✓ | Bước | Kết quả đúng | Engine |
 |---|---|---|---|
 | [ ] | Chạm tên track Keys ở header → tab Instrument | Hiện bàn phím 2 quãng tám; track Drums hiện pad 4×4 | Fake |
+| [ ] | P2-35: Trống có thêm Kit Trap, Lo-fi, 606, 707, Linn; Nhạc cụ › Phím có Piano điện, Organ → gán, chơi thử cả dải phím | Engine thật (FLAC): kêu đủ 16 pad / cả dải, không click, velocity mạnh nhẹ khác nhau (Piano điện 2 lớp); Kit Trap pad 51 là "Riser" | Thật |
+| [ ] | Project demo mới → track Drums (Kit 808) → tab Instrument; rồi gán Kit 909, Bộ gõ (tab Browser) | 16 pad có tên dưới số nốt (Kick, Rim, Snare… Ride; bộ gõ: Conga Lo… Timbale Hi), tên dài xuống 2 dòng hoặc "…". Engine thật: pad nào cũng kêu, lực gõ cố định; Closed/Pedal Hat chặn Open Hat (bộ gõ: Triangle Mute chặn Triangle Open) | Fake/Thật |
 | [ ] | Chơi 10 ngón, trượt ngón qua phím, nhấc tay | Phím sáng/tắt đúng; **không còn nốt kêu** sau khi nhấc | Fake/Thật |
 | [ ] | Nút −/+ quãng | Dịch quãng; nốt đang giữ được tắt trước | Fake |
 | [ ] | "Thu âm mới" → nút đỏ | Meter nhảy, thời gian chạy, tự dừng ở 4 s | Fake |
@@ -154,12 +156,26 @@
 | [ ] | Cài đặt → số bar 2, quantize 1/16. Arm Keys → thu → chơi vài nốt | Chọn ô (Edit) → piano roll đúng nốt, playhead chạy | Fake |
 | [ ] | Quantize / chọn nốt → Xoá / Clear | Nốt đổi đúng, mở lại vẫn giữ | Fake |
 | [ ] | Edit → nhấn giữ ô trống của Keys → "Clip MIDI trống · 2 bar" | Có clip 8 beat, tab Clip mở piano roll ở chế độ ✏️ Vẽ, cột trái là phím đàn | Fake |
-| [ ] | Vẽ: chạm ô trống trên lưới | Nốt mới đúng ô (lưới 1/16), nghe thử ngắn ngay; engine thật: clip đang phát nghe nốt mới ở vòng kế tiếp, không treo nốt | Fake/Thật |
-| [ ] | Chạm nốt; kéo thân nốt; kéo mép phải nốt | Xoá / dời (snap, đổi cao độ) / đổi độ dài; chỉ gửi engine khi nhấc tay | Fake |
-| [ ] | Đổi lưới 1/4 · 1/8 · 1/32, zoom 2×/4× rồi cuộn ngang, ▲▼ quãng tám | Nốt mới theo lưới mới; cuộn mượt; ▲▼ dịch 1 quãng tám | Fake |
+| [ ] | Vẽ: chạm ô trống trên lưới | Nốt mới đúng ô (lưới 1/16), nghe thử ngắn khi nhấc tay; engine thật: clip đang phát nghe nốt mới ở vòng kế tiếp, không treo nốt | Fake/Thật |
+| [ ] | Vẽ: chạm ô trống, giữ rồi kéo sang phải; sau đó chạm một ô trống khác | Nốt dài theo ngón (snap, phủ tới hết ô dưới ngón), nhấc tay mới thành nốt; nốt chạm sau dài bằng nốt vừa vẽ. Đổi lưới → nốt chạm về 1 ô | Fake |
+| [ ] | Chạm nốt; kéo thân nốt; kéo tay nắm ở cuối nốt (vạch sáng, vùng bắt 32pt) | Xoá / dời (snap, đổi cao độ) / đổi độ dài; chỉ gửi engine khi nhấc tay | Fake |
+| [ ] | Nốt 1/16 ở zoom 1×: kéo ngay sau cuối nốt (tay nắm lòi ra ngoài); rồi chỉ chạm vào chỗ đó | Kéo → nốt dài ra. Chạm (chế độ Vẽ) → vẽ nốt mới ở ô đó, nốt ngắn không bị xoá | Fake |
+| [ ] | Đổi lưới 1/4 · 1/8 · 1/32, zoom 2×/4× rồi cuộn ngang **bằng 2 ngón**, ▲▼ quãng tám; kéo dọc cột phím bằng 1 ngón | Nốt mới theo lưới mới; cuộn 2 ngón mượt, không vẽ thêm nốt; cột phím cuộn dọc; ▲▼ dịch 1 quãng tám | Fake |
+| [ ] | Chế độ ⬚ Chọn: kéo khung trên nền trống; chạm nền trống; nút Chọn tất cả | Khung trắng mờ, viền các nốt trong khung; nhấc tay → chọn đúng các nốt đó. Chạm nền → bỏ chọn. Chọn tất cả → mọi nốt sáng | Fake |
+| [ ] | Kéo trên thước bar (hàng số 1 2 3 4) — thử cả ở chế độ Vẽ | Đoạn tô vàng; nhấc tay → chọn mọi nốt BẮT ĐẦU trong đoạn, ở mọi cao độ; tự chuyển sang chế độ Chọn | Fake |
+| [ ] | Chọn vài nốt → kéo một nốt trong nhóm chéo (sang phải + lên) và kéo quá mép phải clip | Cả nhóm đi tự do cả 2 trục, snap, bản mờ ở vị trí cũ; dừng ở cuối clip / hàng trên cùng mà không méo; nhấc tay gửi 1 lần; nhóm vẫn được chọn | Fake |
+| [ ] | Kéo tay nắm của một nốt đã chọn | Mọi nốt trong nhóm dài / ngắn thêm cùng một lượng (mỗi nốt ≥ 1 ô, không vượt clip) | Fake |
+| [ ] | Nhân bản (nút ⧉+) nhiều lần; rồi chọn nhóm sát cuối clip → Nhân bản | Bản chép nằm ngay sau nhóm, được chọn sẵn để bấm tiếp. Hết chỗ → hỏi "Tăng độ dài clip lên N bar?": Huỷ → không đổi; Tăng → clip dài ra, có bản chép. Quá 8 bar → báo không đủ chỗ | Fake |
+| [ ] | Thanh velocity dưới lưới: kéo một cột lên / xuống; chọn vài nốt rồi kéo cột của một nốt đã chọn | Cột cao theo velocity (1–127); nhấc tay mới gửi. Có chọn → cả nhóm đổi theo cùng tỉ lệ. ↶ lấy lại | Fake |
+| [ ] | Clip Chords (hợp âm): nhìn thanh velocity; kéo một cột khi không chọn gì; chọn 1 nốt của hợp âm rồi kéo cột đó; kéo cột khác không có nốt chọn | Mỗi hợp âm một cột, nhãn "×3", thân cột cao theo nốt to nhất. Không chọn → cả hợp âm đổi cùng tỉ lệ. Có chọn → chỉ nốt đã chọn đổi. Cột không có nốt chọn → chỉ cột đó đổi | Fake |
 | [ ] | Độ dài clip 1 bar khi có nốt ở bar 2; rồi ↶ / ↷ ở thanh công cụ | Nốt ngoài 1 bar bị bỏ; ↶ lấy lại (tối đa 50 bước, chỉ trong phiên) | Fake |
-| [ ] | Chọn clip của Drums (kit) | Mỗi hàng là một pad có tên (Kick, Snare, Hat closed…); không có ▲▼ quãng tám | Fake |
-| [ ] | Highlight Repaints khi kéo nốt lúc clip đang phát | Chỉ nốt đang kéo và vạch playhead đổi màu, lớp nốt và cột phím đứng yên | Fake |
+| [ ] | Chọn clip của Drums (kit) | Mỗi hàng là một pad có tên (Kick, Snare, Closed Hat… 16 hàng GM 36–51); không có ▲▼ quãng tám | Fake |
+| [ ] | Highlight Repaints khi kéo nốt / kéo cả nhóm / kéo cột velocity lúc clip đang phát | Kéo nốt: chỉ lớp nốt đang kéo và vạch playhead đổi màu; lớp nốt, cột phím, thước, thanh velocity đứng yên. Kéo velocity: chỉ thanh velocity đổi màu | Fake |
+| [ ] | Clip MIDI → nút 🎹 ở thanh công cụ; rồi bấm ⤢ để thu panel; bấm 🎹 lần nữa | Panel tự mở ⤢, bàn phím 2 quãng tám (track kit: pad 4×4 có tên) dưới piano roll; thu ⤢ thì bàn phím ẩn; 🎹 lần nữa → mở lại. Chơi 10 ngón không nốt treo | Fake/Thật |
+| [ ] | ● Ghi khi clip đang dừng; đánh vài nốt qua 2–3 vòng; bấm ● lần nữa; rồi ↶ | Clip tự launch, vào vòng thì nút đỏ "Đang ghi"; nốt đánh vào đúng chỗ trong vòng (quantize theo Cài đặt); bấm lại → dừng ghi, clip vẫn phát, nốt hiện trên piano roll; ↶ bỏ cả lượt ghi | Thật |
+| [ ] | Ô trống của track nhạc cụ → nút "Bàn phím" → ● Ghi | Tạo clip MIDI rỗng (độ dài theo Cài đặt "Độ dài thu", Tự do = 2 bar) rồi ghi như trên | Fake/Thật |
+| [ ] | ⇥ Từng nốt: bấm phím; giữ 2–3 phím rồi nhấc; Nghỉ; ⌫; chạm lưới ở bar 3; ↶ | Nốt dài 1 ô tại con trỏ (dải vàng), con trỏ tiến 1 ô; hợp âm cùng một vị trí; Nghỉ chỉ tiến; ⌫ lùi và xoá ô; chạm lưới chỉ dời con trỏ (không vẽ nốt); hết clip thì con trỏ vòng về đầu; ↶ từng bước | Fake |
+| [ ] | Highlight Repaints khi chơi bàn phím trong tab Clip | Chỉ mặt phím đổi màu, piano roll đứng yên | Fake |
 | [ ] | Thu audio 1–2 bar trên track 5 → chọn ô | Waveform; kéo 2 handle loop; zoom 2×/4×, cuộn ngang mượt | Fake |
 | [ ] | Kéo gain, đổi Re-Pitch | Engine thật: không có tiếng click | Thật |
 | [ ] | Nút ↶ ở header tab Clip (piano roll / waveform) sau khi overdub | Bật khi có lớp undo; bấm → clip trở về trước lượt overdub, nút mờ lại | Thật |
@@ -189,12 +205,22 @@
 
 | ✓ | Bước | Kết quả đúng | Engine |
 |---|---|---|---|
-| [ ] | Chọn track 6 → gán Kit | Track đổi sang nhạc cụ; engine thật: chơi pad nghe được | Fake/Thật |
+| [ ] | Cột trái: Trống · Nhạc cụ · Loop · Bản thu của tôi · ★ Yêu thích (vừa panel thường, không phải cuộn) | Trống: Kit 808, Kit 909, Bộ gõ…; **không** còn Kit tổng hợp. Project cũ dùng Kit tổng hợp vẫn mở và phát được | Fake/Thật |
+| [ ] | Nhạc cụ → thư mục (Phím, Synth…) → mở; bấm breadcrumb "Nhạc cụ" | Vào thư mục con, breadcrumb "Nhạc cụ › Phím"; bấm breadcrumb về gốc | Fake |
+| [ ] | Ô tìm kiếm: gõ "bo go", "piano", "click"; gõ chữ lạ; ✕ | Tìm trên toàn thư viện, không cần dấu; dòng phụ hiện thư mục của mục; không có → "Không có kết quả"; ✕ về danh mục | Fake |
+| [ ] | Chạm một kit / nhạc cụ / loop (🎧 bật); tắt 🎧 rồi chạm; rời tab Browser | Engine thật: kit phát groove ngắn, nhạc cụ phát câu ngắn, loop phát ngay; chạm mục khác thì thay tiếng; 🎧 tắt → không nghe; rời tab → dừng | Thật |
+| [ ] | Nhấn giữ một mục → ★; mở ★ Yêu thích; mở lại app | Báo "Đã thêm vào Yêu thích", mục có ★; danh mục Yêu thích liệt kê; mở lại app vẫn còn (settings.json); nhấn giữ lần nữa → bỏ | Fake |
+| [ ] | Kéo biểu tượng của kit lên header track 6; kéo loop vào một ô trống; kéo loop vào ô đã có clip | Header / ô sáng viền vàng khi kéo qua; thả → gán kit (track đổi tên) / loop vào đúng ô; ô có clip → báo "Ô … đã có clip" | Fake |
+| [ ] | Bản thu của tôi (sau khi thu nhạc cụ mới ở tab Nhạc cụ) → chạm → gán | Liệt kê nhạc cụ tự thu của project; chạm nghe file thu; gán → track nhạc cụ mang tên bản thu | Thật |
+| [ ] | Chọn track 6 → gán Kit 808 | Track đổi sang nhạc cụ, header đổi tên "Kit 808"; engine thật: chơi pad nghe được | Fake/Thật |
+| [ ] | Track 6 (đang là Kit 808) → gán Kit 909; rồi Edit → đổi tên track thành tên riêng → gán Bộ gõ | Tên đổi theo kit (Kit 909). Có tên riêng rồi thì gán kit khác vẫn giữ tên riêng | Fake |
+| [ ] | Track nhạc cụ còn trống → gán loop; track nhạc cụ đang có clip MIDI → gán loop; track audio có clip → gán kit | Track trống thành track audio, tên về "Track N", có clip loop. Hai trường hợp còn lại: báo "…đang có clip…", không đổi gì | Fake |
+| [ ] | Tạo project mới; tạo lại project demo | Project mới: 8 track "Track 1–8" trống. Demo: track có nhạc mang tên nhạc cụ (Kit 808, Tone tổng hợp, Piano điện, Organ), không còn Drums / Bass / Keys / Lead | Fake |
 | [ ] | Gán loop Click 120 | Clip mới ở ô trống; engine thật: phát đúng nhịp | Fake/Thật |
 | [ ] | Chọn clip Click 120 vừa gán → tab Clip | Warp đang **Re-Pitch** (manifest `defaultWarp`); loop Sine 120 thì **Stretch** | Fake |
 | [ ] | Loop gắn tag `drums` (khi thư viện có) → đổi Warp sang Stretch | Chỗ nhãn "Warp" hiện gợi ý vàng "Loop trống nghe tự nhiên hơn khi Re-Pitch"; đổi lại Re-Pitch thì mất | Fake |
 | [ ] | Như trên rồi thoát project, mở lại, chọn clip đó | Gợi ý vẫn còn (tag lưu trong project) | Fake |
-| [ ] | iPad tiếng Anh → tab Browser | Tên tiếng Anh (Synth kit, Click 4 beats · 120…), dòng phụ hiện nhãn tag đã dịch (Drums · Test); gán loop → clip lấy tên tiếng Anh | Fake |
+| [ ] | iPad tiếng Anh → tab Browser | Tên tiếng Anh (808 Kit, Percussion, Click 4 beats · 120…), dòng phụ hiện nhãn tag đã dịch (Drums / Percussion); gán loop → clip lấy tên tiếng Anh | Fake |
 
 ---
 

@@ -1,0 +1,27 @@
+// inst_horn — French Horn (VSCO-2 CE F Horn, sustain)
+// VSCO-2 Community Edition by Versilian Studios (Sam Gossner) / Ivy Audio (Simon Dalzell), CC0 1.0; github.com/sgossner/VSCO-2-CE — versilian-studios.com/vsco-community/
+// Rút gọn bằng engine/tools/le-import-library (agent 80, render/SampleImport.cpp): chọn phím gốc ≥ 3 nửa cung (zone đầu / cuối phủ tới phím 0 / 127), 2 lớp velocity, cắt đầu, loop crossfade, mono, FLAC 24-bit, tune đo bằng Yin, volume = cân loudness.
+<control> default_path=samples/
+<global> loop_mode=loop_continuous ampeg_attack=0.010 ampeg_release=0.30
+<region> lokey=0 hikey=34 pitch_keycenter=33 lovel=1 hivel=95 sample=horn_033_all.flac tune=11.08 volume=-1.2 loop_start=82528 loop_end=149759
+<region> lokey=35 hikey=37 pitch_keycenter=36 lovel=1 hivel=95 sample=horn_036_soft.flac tune=3.57 volume=-3.0 loop_start=91937 loop_end=153599
+<region> lokey=38 hikey=41 pitch_keycenter=39 lovel=1 hivel=95 sample=horn_039_soft.flac tune=5.05 volume=-1.1 loop_start=86696 loop_end=152639
+<region> lokey=42 hikey=44 pitch_keycenter=43 lovel=1 hivel=95 sample=horn_043_soft.flac tune=2.01 volume=0.0 loop_start=83032 loop_end=152639
+<region> lokey=45 hikey=48 pitch_keycenter=46 lovel=1 hivel=95 sample=horn_046_soft.flac tune=-4.33 volume=-2.1 loop_start=94930 loop_end=149759
+<region> lokey=49 hikey=51 pitch_keycenter=50 lovel=1 hivel=95 sample=horn_050_soft.flac tune=-1.14 volume=-2.9 loop_start=77418 loop_end=150719
+<region> lokey=52 hikey=55 pitch_keycenter=53 lovel=1 hivel=95 sample=horn_053_soft.flac tune=3.18 volume=-2.5 loop_start=77728 loop_end=149759
+<region> lokey=56 hikey=58 pitch_keycenter=57 lovel=1 hivel=95 sample=horn_057_soft.flac tune=6.76 volume=-2.6 loop_start=82800 loop_end=150719
+<region> lokey=59 hikey=67 pitch_keycenter=60 lovel=1 hivel=95 sample=horn_060_soft.flac tune=-1.53 volume=-4.2 loop_start=85617 loop_end=153599
+<region> lokey=68 hikey=75 pitch_keycenter=74 lovel=1 hivel=95 sample=horn_074_all.flac tune=-4.73 volume=-5.1 loop_start=107192 loop_end=152639
+<region> lokey=76 hikey=127 pitch_keycenter=77 lovel=1 hivel=95 sample=horn_077_all.flac tune=-1.16 volume=-6.0 loop_start=96992 loop_end=149759
+<region> lokey=0 hikey=34 pitch_keycenter=33 lovel=96 hivel=127 sample=horn_033_all.flac tune=11.08 volume=-1.2 loop_start=82528 loop_end=149759
+<region> lokey=35 hikey=37 pitch_keycenter=36 lovel=96 hivel=127 sample=horn_036_hard.flac tune=3.21 volume=-1.3 loop_start=92216 loop_end=150719
+<region> lokey=38 hikey=41 pitch_keycenter=39 lovel=96 hivel=127 sample=horn_039_hard.flac tune=-0.59 volume=-0.3 loop_start=98937 loop_end=150719
+<region> lokey=42 hikey=44 pitch_keycenter=43 lovel=96 hivel=127 sample=horn_043_hard.flac tune=2.77 volume=-0.2 loop_start=46881 loop_end=150719
+<region> lokey=45 hikey=48 pitch_keycenter=46 lovel=96 hivel=127 sample=horn_046_hard.flac tune=-2.51 volume=-3.2 loop_start=43255 loop_end=153599
+<region> lokey=49 hikey=51 pitch_keycenter=50 lovel=96 hivel=127 sample=horn_050_hard.flac tune=-4.87 volume=-4.1 loop_start=99337 loop_end=153599
+<region> lokey=52 hikey=55 pitch_keycenter=53 lovel=96 hivel=127 sample=horn_053_hard.flac tune=4.56 volume=-2.3 loop_start=54424 loop_end=149759
+<region> lokey=56 hikey=58 pitch_keycenter=57 lovel=96 hivel=127 sample=horn_057_hard.flac tune=2.96 volume=-2.5 loop_start=104600 loop_end=151679
+<region> lokey=59 hikey=67 pitch_keycenter=60 lovel=96 hivel=127 sample=horn_060_hard.flac tune=7.05 volume=-4.8 loop_start=106760 loop_end=152639
+<region> lokey=68 hikey=75 pitch_keycenter=74 lovel=96 hivel=127 sample=horn_074_all.flac tune=-4.73 volume=-5.1 loop_start=107192 loop_end=152639
+<region> lokey=76 hikey=127 pitch_keycenter=77 lovel=96 hivel=127 sample=horn_077_all.flac tune=-1.16 volume=-6.0 loop_start=96992 loop_end=149759

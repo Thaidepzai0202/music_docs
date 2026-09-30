@@ -1,5 +1,7 @@
 // P4-13 Settings đầy đủ + P4-12 hiệu chỉnh latency: Audio (buffer, micro, mặc định khi thu), Độ trễ (đo + bù tay),
 // MIDI (thiết bị + learn), Link, Giấy phép, Giới thiệu.
+import 'dart:io';
+
 import 'package:engine_ffi/engine_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -10,6 +12,8 @@ import 'package:music_looper/engine/engine_providers.dart';
 import 'package:music_looper/features/fx/fx_specs.dart';
 import 'package:music_looper/features/session/project_controller.dart';
 import 'package:music_looper/features/settings/app_settings.dart';
+import 'package:music_looper/data/license_credits.dart';
+import 'package:music_looper/features/settings/sections/licenses_section.dart';
 import 'package:music_looper/services/engine_settings.dart';
 import 'package:music_looper/model/ids.dart';
 import 'package:music_looper/model/project.dart';
@@ -390,17 +394,50 @@ void main() {
     await h.unmount();
   });
 
+  test('ghi công lấy nguyên văn từ mục "## Ghi công" của file giấy phép (bỏ markdown, giữ link)', () {
+    final salamander = licenseCredit(File('../content/LICENSES/SALAMANDER-GRAND-PIANO.md').readAsStringSync())!;
+    expect(salamander, startsWith('Salamander Grand Piano V3 by Alexander Holm — licensed under Creative Commons'));
+    expect(salamander, contains('(http://creativecommons.org/licenses/by/3.0/)'));
+    expect(salamander, contains('https://archive.org/details/SalamanderGrandPianoV3'));
+    expect(salamander, isNot(contains('**')));
+    expect(
+      licenseCredit(File('../content/LICENSES/VSCO-2-CE.md').readAsStringSync()),
+      contains('released under CC0 1.0'),
+    );
+    expect(licenseCredit(File('../content/LICENSES/SYNTHESIZED.md').readAsStringSync()), isNull);
+  });
+
   testWidgets('Giấy phép: nội dung + thư viện (mở toàn văn), LinkKit chưa có → mờ, gói Flutter', (tester) async {
     final h = await openSettings(tester, section: 'licenses');
+    await tester.runAsync(() => Future<void>.delayed(const Duration(milliseconds: 50))); // đọc file để lấy ghi công
+    await h.settle();
     expect(find.byKey(const Key('licenses.content.SYNTHESIZED.md')), findsOneWidget);
+    // P2-35: ghi công hiện thẳng câu chữ — Salamander (CC BY 3.0, bắt buộc) và VSCO-2 CE (CC0, được đề nghị).
+    expect(find.byKey(const Key('licenses.credit.SALAMANDER-GRAND-PIANO.md')), findsOneWidget);
+    expect(find.byKey(const Key('licenses.credit.VSCO-2-CE.md')), findsOneWidget);
+    expect(find.byKey(const Key('licenses.credit.BIG-RUSTY-DRUMS.md')), findsOneWidget);
+    expect(find.textContaining('Alexander Holm'), findsOneWidget);
+    expect(find.textContaining('creativecommons.org/licenses/by/3.0'), findsOneWidget);
+    expect(find.textContaining('Versilian Studios'), findsOneWidget);
     expect(tester.widget<ListTile>(find.byKey(const Key('licenses.lib.Ableton Link (LinkKit)'))).enabled, isFalse);
+    await tester.scrollUntilVisible(
+      find.byKey(const Key('licenses.lib.Signalsmith Stretch')),
+      200,
+      scrollable: find.descendant(of: find.byType(LicensesSection), matching: find.byType(Scrollable)).first,
+    );
+    await h.settle();
     await tester.tap(find.byKey(const Key('licenses.lib.Signalsmith Stretch')));
     await tester.runAsync(() => Future<void>.delayed(const Duration(milliseconds: 20)));
     await h.settle();
     expect(find.textContaining('MIT License'), findsOneWidget);
     Navigator.of(tester.element(find.byKey(const Key('licenses.text')))).pop();
     await h.settle();
-    await tester.ensureVisible(find.byKey(const Key('licenses.flutter')));
+    // Danh sách dựng lười: cuộn tới mục gói Flutter (nằm dưới nhóm Ghi công + nội dung + thư viện).
+    await tester.scrollUntilVisible(
+      find.byKey(const Key('licenses.flutter')),
+      200,
+      scrollable: find.descendant(of: find.byType(LicensesSection), matching: find.byType(Scrollable)).first,
+    );
     await h.settle();
     await tester.tap(find.byKey(const Key('licenses.flutter')));
     await h.settle();

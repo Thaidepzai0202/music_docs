@@ -62,15 +62,19 @@ class TrackHeader extends ConsumerWidget {
     final ticker = ref.watch(engineStateTickerProvider);
     final ctl = ref.read(projectControllerProvider.notifier);
     final selected = ref.watch(sessionUiProvider.select((u) => u.selectedTrack == track));
+    // Đang kéo mục Browser vào header này (07 §4.1e) → viền vàng.
+    final dropping = ref.watch(sessionUiProvider.select((u) => u.dragTarget == CellRef(track, -1)));
     // Chỉ phát (thiếu quyền mic): khoá arm của track audio (07 §4.0).
     final armLocked = info.isAudio && !ref.watch(canRecordAudioProvider);
     return Container(
       decoration: BoxDecoration(
         color: selected ? const Color(0xFF22262D) : AppColors.surface,
-        border: Border(
-          top: BorderSide(color: info.color, width: 3),
-          right: const BorderSide(color: AppColors.background, width: 2),
-        ),
+        border: dropping
+            ? Border.all(color: AppColors.queued, width: 2)
+            : Border(
+                top: BorderSide(color: info.color, width: 3),
+                right: const BorderSide(color: AppColors.background, width: 2),
+              ),
       ),
       padding: const EdgeInsets.fromLTRB(6, 4, 6, 4),
       child: Column(

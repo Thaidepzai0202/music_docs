@@ -32,6 +32,12 @@ final class _FakeHarness implements ClipEngineHarness {
   void addSample(String path, {required bool pitched}) => fake.addSample(path, pitched: pitched);
 
   @override
+  String get libraryDir => '/tmp';
+
+  @override
+  void addTextFile(String path, String content) => fake.addTextFile(path);
+
+  @override
   void makeCalibrationSilent() => fake.calibrateFailure = 'NO_SIGNAL';
 
   @override

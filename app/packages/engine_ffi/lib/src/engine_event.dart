@@ -21,6 +21,7 @@ sealed class EngineEvent {
     LeEventType.LE_EVT_MIDI_LEARNED => MidiLearned(isCc: a == 1, number: b),
     LeEventType.LE_EVT_ERROR => EngineErrorEvent(errorCode: a, track: b, slot: value.round()),
     LeEventType.LE_EVT_MEMORY_WARNING => MemoryWarning(megabytes: value, critical: a == 1),
+    LeEventType.LE_EVT_CLIP_CHANGED => ClipChanged(track: a, slot: b),
     _ => UnknownEngineEvent(type: type, a: a, b: b, jobId: jobId, value: value),
   };
 }
@@ -36,6 +37,17 @@ final class RecordingFinished extends EngineEvent {
   final int frames;
   @override
   String toString() => 'RecordingFinished(track: $track, slot: $slot, frames: $frames)';
+}
+
+/// Nội dung clip MIDI đổi trong lúc overdub (nốt từ bàn phím app hoặc MIDI ngoài) → đọc lại `clip.getMidi` để vẽ nốt
+/// ngay. Tối đa 10 lần/s mỗi ô, luôn có một lần cuối trước RECORDING_FINISHED (05 §2 `LE_EVT_CLIP_CHANGED`).
+final class ClipChanged extends EngineEvent {
+  const ClipChanged({required this.track, required this.slot});
+
+  final int track;
+  final int slot;
+  @override
+  String toString() => 'ClipChanged(track: $track, slot: $slot)';
 }
 
 final class JobProgress extends EngineEvent {

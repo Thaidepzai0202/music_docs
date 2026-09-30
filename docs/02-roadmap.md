@@ -175,5 +175,7 @@ Cắt từ trên xuống. Mỗi mục đã cắt được chuyển sang backlog 
 | Ngày | Thay đổi | Lý do |
 |---|---|---|
 | 2026-09-29 | Tạo kế hoạch v1 | Kết quả phiên grill-me |
+| 2026-09-30 | Thêm P2-32 → P2-35: track không chia loại, ghi Live/Step trong tab Clip, Browser kiểu Ableton, thư viện mở rộng (6 kit, 16 nhạc cụ, FLAC) | Người dùng yêu cầu sau khi thử trên iPad |
+| 2026-09-29 | Thêm P2-30 (3 kit trống × 16 âm) và P2-31 (piano roll v2) | Phản hồi của người dùng khi thử trên iPad: kit chỉ có 3–4 âm, và chỉnh độ dài hoặc dời nhiều nốt còn khó |
 | 2026-09-29 | Kéo **pedal mode** (vòng đầu quyết định BPM) và **vẽ nốt trong piano roll** vào MVP (P1-39, P2-28, P2-29) | Người dùng yêu cầu 2 cách tạo loop: bật loop rồi đánh, và click ô để vẽ nốt |
 | 2026-09-29 | UI hỗ trợ tiếng Anh + tiếng Việt (quyết định #17) | Người dùng chọn. Thêm việc l10n cho 77 và metadata 2 ngôn ngữ ở P4-23 |

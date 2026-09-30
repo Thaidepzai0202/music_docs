@@ -1,0 +1,8 @@
+{
+  "id": "kit_perc",
+  "name": { "en": "Percussion", "vi": "Bộ gõ" },
+  "category": "Drums",
+  "path": "kits/kit_perc/kit_perc.sfz",
+  "tags": ["percussion"],
+  "license": "Self-synthesized (le-gen-kits), no third-party license"
+}

@@ -1,0 +1,8 @@
+{
+  "id": "kit_808",
+  "name": { "en": "808 Kit", "vi": "Kit 808" },
+  "category": "Drums",
+  "path": "kits/kit_808/kit_808.sfz",
+  "tags": ["drums"],
+  "license": "Self-synthesized (le-gen-kits), no third-party license"
+}

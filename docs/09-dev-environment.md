@@ -25,6 +25,7 @@
 - Bộ docs này nằm **trong repo** tại `music-app/docs/`.
 - `/Users/apple/Desktop/MUSIC/music-app` là **symlink tương thích** trỏ về `MUSIC docs` (để đường dẫn cũ còn chạy).
 - **Đường dẫn có dấu cách:** mọi script phải quote `"$ROOT"`; CMake dùng `$<LINK_LIBRARY:WHOLE_ARCHIVE,…>` thay cho `-Wl,-force_load,<path>` (chuỗi đó bị tách ở dấu cách). Sau khi chuyển thư mục: xoá `build/`, chạy `flutter clean` → `flutter pub get` → `flutter gen-l10n` → `pod install` (LANG=en_US.UTF-8).
+- **Bẫy khi chuyển hoặc đổi tên thư mục repo mà vẫn để lại symlink** (77 tìm ra 29/09): flutter_tools xoá "output của lần build trước" bằng cách so **chuỗi đường dẫn tuyệt đối** ghi trong stamp (`app/build/…/gen_localizations.stamp`, `app/.dart_tool/flutter_build/…`). Đường dẫn cũ đi qua symlink lại trỏ đúng vào file mới, nên lần build đầu ở chỗ mới sẽ **xoá chính các file vừa sinh** (`lib/l10n/app_localizations*.dart`). Cách tránh: **chạy `flutter clean` TRƯỚC lệnh flutter đầu tiên ở đường dẫn mới**. `app/l10n.yaml` giờ ghi rõ `output-dir`, và bootstrap chạy thêm `flutter gen-l10n` để phòng hờ.
 
 ```
 music-app/
@@ -137,6 +138,7 @@ endif()
   - Đặt deployment target Mac là 15.0.
   - `RTSAN_OPTIONS=halt_on_error=true`. Riêng test self-check dùng `abort_on_error=0`, nếu không CTest sẽ coi là crash.
 - **`-Wfunction-effects`** được bật cho `loopcore`. Chỗ nào an toàn nhưng chưa được đánh dấu thì tắt cảnh báo cục bộ bằng pragma, kèm lý do (`mach_absolute_time`, `SPSCQueue::pop`).
+- **Watchdog / TSan:** mỗi test CTest tối đa 1800 s (`mac-tsan`: 3600 s, env `LE_TEST_TIMEOUT` để đổi); `le-tests` in `--durations` nên khi quá giờ thấy được test cuối đã xong. `mac-tsan` lọc `~[content]~[instruments]~[kits]` (test dữ liệu thư viện, một thread) qua cache `LE_TEST_FILTER`; các test đó vẫn chạy ở debug / rtsan / asan.
 - **Lưu ý:** RTSan chỉ kiểm tra **bên trong** `RtEngine::process`. Lock của JUCE `AudioDeviceManager` nằm ở tầng gọi bên ngoài, nên RTSan không thấy (03 §8).
 
 ---

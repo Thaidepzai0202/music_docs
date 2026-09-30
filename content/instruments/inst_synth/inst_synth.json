@@ -1,0 +1,9 @@
+{
+  "id": "inst_synth",
+  "name": { "en": "Synth Tone", "vi": "Tone tổng hợp" },
+  "category": "Instruments/Synth",
+  "path": "instruments/inst_synth/inst_synth.sfz",
+  "range": [12, 108],
+  "tags": ["synth"],
+  "license": "Self-synthesized (le-gen-instruments), no third-party license"
+}

@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../app/theme.dart';
 import '../../../model/project.dart';
 import '../../browser/browser_panel.dart';
+import '../../clip/clip_input.dart';
 import '../../clip/clip_views.dart';
 import '../../fx/fx_panel.dart';
 import '../../instrument/instrument_panel.dart';
@@ -134,16 +135,62 @@ class ClipPanel extends ConsumerWidget {
     if (sel == null) {
       return Center(child: Text(S.sessionBatEditRoiChamMot, style: small));
     }
-    if (clip == null) {
+    // 07 §4.1d: track nhạc cụ có bàn phím / pad dưới piano roll, kể cả ở ô trống (● Ghi / ⇥ Step tạo clip MIDI rỗng).
+    final instrument = ref.watch(
+      projectControllerProvider.select((s) {
+        final t = s?.project.trackAt(sel.track);
+        return t?.kind == TrackKind.instrument ? t?.instrument : null;
+      }),
+    );
+    final keyboard = ref.watch(sessionUiProvider.select((u) => u.clipKeyboardVisible));
+    if (clip == null && instrument == null) {
       return Center(child: Text(S.sessionOTrong(sel.track + 1, sel.slot + 1), style: small));
     }
+    final kit = switch (instrument) {
+      SfzInstrumentRef(:final path) => path.startsWith('kits/'),
+      _ => false,
+    };
+    final showKeyboard = keyboard && instrument != null && clip is! AudioClip;
     return Padding(
       key: const Key('clipPanel'),
       padding: const EdgeInsets.fromLTRB(12, 8, 12, 8),
-      child: switch (clip) {
-        MidiClip() => MidiClipView(key: ValueKey(clip.id), track: sel.track, clip: clip),
-        AudioClip() => AudioClipView(key: ValueKey(clip.id), track: sel.track, clip: clip),
-      },
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Expanded(
+            child: switch (clip) {
+              MidiClip() => MidiClipView(key: ValueKey(clip.id), track: sel.track, clip: clip),
+              AudioClip() => AudioClipView(key: ValueKey(clip.id), track: sel.track, clip: clip),
+              null => Center(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(S.clipOTrongBanPhim, style: small, textAlign: TextAlign.center),
+                    if (!keyboard) ...[
+                      const SizedBox(height: 8),
+                      OutlinedButton.icon(
+                        key: const Key('clip.emptyKeyboard'),
+                        onPressed: () => ref.read(sessionUiProvider.notifier).setClipKeyboard(true),
+                        icon: const Icon(Icons.piano, size: 18),
+                        label: Text(S.instrumentBanPhim),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+            },
+          ),
+          if (showKeyboard)
+            SizedBox(
+              height: ClipKeyboardSection.headerHeight + ClipKeyboardSection.surfaceHeight(kit: kit),
+              child: ClipKeyboardSection(
+                key: ValueKey('clipKeyboard.${sel.track}.${sel.slot}'),
+                track: sel.track,
+                slot: sel.slot,
+              ),
+            ),
+        ],
+      ),
     );
   }
 }

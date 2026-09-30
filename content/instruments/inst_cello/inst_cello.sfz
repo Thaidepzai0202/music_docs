@@ -1,0 +1,31 @@
+// inst_cello — Cello (VSCO-2 CE Cello Section, sustain vibrato)
+// VSCO-2 Community Edition by Versilian Studios (Sam Gossner) / Ivy Audio (Simon Dalzell), CC0 1.0; github.com/sgossner/VSCO-2-CE — versilian-studios.com/vsco-community/
+// Rút gọn bằng engine/tools/le-import-library (agent 80, render/SampleImport.cpp): chọn phím gốc ≥ 3 nửa cung (zone đầu / cuối phủ tới phím 0 / 127), 2 lớp velocity, cắt đầu, loop crossfade, mono, FLAC 24-bit, tune đo bằng Yin, volume = cân loudness.
+<control> default_path=samples/
+<global> loop_mode=loop_continuous ampeg_attack=0.010 ampeg_release=0.35
+<region> lokey=0 hikey=38 pitch_keycenter=36 lovel=1 hivel=95 sample=cello_036_soft.flac tune=0.12 volume=-1.7 loop_start=99064 loop_end=149759
+<region> lokey=39 hikey=41 pitch_keycenter=40 lovel=1 hivel=95 sample=cello_040_soft.flac tune=3.70 volume=-1.0 loop_start=42388 loop_end=149759
+<region> lokey=42 hikey=45 pitch_keycenter=43 lovel=1 hivel=95 sample=cello_043_soft.flac tune=1.96 volume=-3.0 loop_start=106080 loop_end=153599
+<region> lokey=46 hikey=48 pitch_keycenter=47 lovel=1 hivel=95 sample=cello_047_soft.flac tune=-1.72 volume=-3.2 loop_start=49904 loop_end=151679
+<region> lokey=49 hikey=51 pitch_keycenter=50 lovel=1 hivel=95 sample=cello_050_soft.flac tune=-3.81 volume=-1.4 loop_start=110184 loop_end=152639
+<region> lokey=52 hikey=55 pitch_keycenter=53 lovel=1 hivel=95 sample=cello_053_soft.flac tune=-1.67 volume=-3.3 loop_start=92376 loop_end=152639
+<region> lokey=56 hikey=58 pitch_keycenter=57 lovel=1 hivel=95 sample=cello_057_soft.flac tune=1.34 volume=-2.9 loop_start=95256 loop_end=152639
+<region> lokey=59 hikey=62 pitch_keycenter=60 lovel=1 hivel=95 sample=cello_060_soft.flac tune=0.14 volume=-3.1 loop_start=90211 loop_end=153599
+<region> lokey=63 hikey=65 pitch_keycenter=64 lovel=1 hivel=95 sample=cello_064_soft.flac tune=2.54 volume=-2.3 loop_start=107264 loop_end=150719
+<region> lokey=66 hikey=69 pitch_keycenter=67 lovel=1 hivel=95 sample=cello_067_soft.flac tune=-2.55 volume=-3.2 loop_start=60072 loop_end=149759
+<region> lokey=70 hikey=72 pitch_keycenter=71 lovel=1 hivel=95 sample=cello_071_soft.flac tune=1.66 volume=-2.4 loop_start=88743 loop_end=150719
+<region> lokey=73 hikey=75 pitch_keycenter=74 lovel=1 hivel=95 sample=cello_074_soft.flac tune=-2.20 volume=-1.8 loop_start=96671 loop_end=152639
+<region> lokey=76 hikey=127 pitch_keycenter=77 lovel=1 hivel=95 sample=cello_077_soft.flac tune=2.66 volume=-3.2 loop_start=90680 loop_end=152639
+<region> lokey=0 hikey=38 pitch_keycenter=36 lovel=96 hivel=127 sample=cello_036_hard.flac tune=0.29 volume=-2.1 loop_start=113740 loop_end=152639
+<region> lokey=39 hikey=41 pitch_keycenter=40 lovel=96 hivel=127 sample=cello_040_hard.flac tune=3.15 volume=-0.1 loop_start=82813 loop_end=153599
+<region> lokey=42 hikey=45 pitch_keycenter=43 lovel=96 hivel=127 sample=cello_043_hard.flac tune=0.32 volume=-2.0 loop_start=66065 loop_end=152639
+<region> lokey=46 hikey=48 pitch_keycenter=47 lovel=96 hivel=127 sample=cello_047_hard.flac tune=-0.08 volume=-2.0 loop_start=94586 loop_end=153599
+<region> lokey=49 hikey=51 pitch_keycenter=50 lovel=96 hivel=127 sample=cello_050_hard.flac tune=-0.21 volume=-2.4 loop_start=56299 loop_end=149759
+<region> lokey=52 hikey=55 pitch_keycenter=53 lovel=96 hivel=127 sample=cello_053_hard.flac tune=-2.35 volume=-1.2 loop_start=46269 loop_end=153599
+<region> lokey=56 hikey=58 pitch_keycenter=57 lovel=96 hivel=127 sample=cello_057_hard.flac tune=1.82 volume=0.0 loop_start=88289 loop_end=150719
+<region> lokey=59 hikey=62 pitch_keycenter=60 lovel=96 hivel=127 sample=cello_060_hard.flac tune=1.38 volume=-1.5 loop_start=41467 loop_end=153599
+<region> lokey=63 hikey=65 pitch_keycenter=64 lovel=96 hivel=127 sample=cello_064_hard.flac tune=1.48 volume=-1.3 loop_start=101866 loop_end=150719
+<region> lokey=66 hikey=69 pitch_keycenter=67 lovel=96 hivel=127 sample=cello_067_hard.flac tune=2.07 volume=-1.3 loop_start=38218 loop_end=151679
+<region> lokey=70 hikey=72 pitch_keycenter=71 lovel=96 hivel=127 sample=cello_071_hard.flac tune=-0.53 volume=-1.4 loop_start=81447 loop_end=152639
+<region> lokey=73 hikey=75 pitch_keycenter=74 lovel=96 hivel=127 sample=cello_074_hard.flac tune=-1.71 volume=-1.6 loop_start=41201 loop_end=149759
+<region> lokey=76 hikey=127 pitch_keycenter=77 lovel=96 hivel=127 sample=cello_077_hard.flac tune=0.82 volume=-1.7 loop_start=77087 loop_end=151679

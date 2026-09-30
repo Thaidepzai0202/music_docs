@@ -19,7 +19,15 @@ String? _findDylib() {
 
 /// Một engine cho cả file (le_create chỉ gọi được 1 lần mỗi process).
 final class _RealHarness implements ClipEngineHarness {
-  _RealHarness(this.engine);
+  _RealHarness(this.engine, this.libraryDir);
+
+  @override
+  final String libraryDir;
+
+  @override
+  void addTextFile(String path, String content) => File(path)
+    ..parent.createSync(recursive: true)
+    ..writeAsStringSync(content);
 
   @override
   final EngineClient engine;
@@ -86,7 +94,7 @@ void main() {
       skip = 'Engine chưa bật sim (${(sim['error'] as Map?)?['code']}) — build với LE_ENABLE_SIM';
     } else {
       // sim.offline tự khởi động OfflineDeviceIO, không gọi le_audio_start.
-      harness = _RealHarness(client);
+      harness = _RealHarness(client, dir.path);
     }
     tearDownAll(() {
       client.dispose();

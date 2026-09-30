@@ -127,6 +127,15 @@ void main() {
       // ⤢ panel tab Clip ~70% màn hình: piano roll lớn, grid cuộn.
       await tester.tap(find.byKey(const Key('session.panel.expand')));
       await h.settle();
+      // P2-33: bàn phím dưới piano roll + hàng ● Ghi / ⇥ Step (Nghỉ, ⌫) / quãng tám.
+      await tester.tap(find.byKey(const Key('midi.keyboard')));
+      await h.settle();
+      await tester.tap(find.byKey(const Key('clip.step')));
+      await h.settle();
+      await tester.tap(find.byKey(const Key('clip.step')));
+      await h.settle();
+      await tester.tap(find.byKey(const Key('midi.keyboard')));
+      await h.settle();
       await tester.tap(find.byKey(const Key('session.panel.expand')));
       await h.settle();
       await tester.tap(find.byKey(const Key('transport.more')));

@@ -1,0 +1,9 @@
+{
+  "id": "inst_violin",
+  "name": { "en": "Violin", "vi": "Violin" },
+  "category": "Instruments/Strings",
+  "path": "instruments/inst_violin/inst_violin.sfz",
+  "range": [53, 98],
+  "tags": ["strings"],
+  "license": "CC0 1.0 — VSCO-2 Community Edition by Versilian Studios"
+}

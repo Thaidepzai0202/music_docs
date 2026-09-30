@@ -136,11 +136,17 @@
       }
     }
   },
-  "browserAssignHint": "+ = {action}",
-  "@browserAssignHint": {
+  "browserBanThuCuaToi": "My recordings",
+  "@browserBanThuCuaToi": {},
+  "browserChuaCoBanThu": "No recordings yet. Record a new instrument in the Instrument tab.",
+  "@browserChuaCoBanThu": {},
+  "browserChuaCoYeuThich": "No favorites yet. Long-press an item to add it.",
+  "@browserChuaCoYeuThich": {},
+  "browserDaBoYeuThich": "Removed from Favorites: {name}",
+  "@browserDaBoYeuThich": {
     "placeholders": {
-      "action": {
-        "type": "Object"
+      "name": {
+        "type": "String"
       }
     }
   },
@@ -155,6 +161,14 @@
       }
     }
   },
+  "browserDaThemYeuThich": "Added to Favorites: {name}",
+  "@browserDaThemYeuThich": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "browserGan": "assign → {trackName}",
   "@browserGan": {
     "placeholders": {
@@ -163,6 +177,10 @@
       }
     }
   },
+  "browserKeoVaoTrack": "Drag onto a track header or clip cell",
+  "@browserKeoVaoTrack": {},
+  "browserKhongCoKetQua": "No results",
+  "@browserKhongCoKetQua": {},
   "browserKhongDocDuocThuVien": "Couldn't read the library: {e}",
   "@browserKhongDocDuocThuVien": {
     "placeholders": {
@@ -171,10 +189,6 @@
       }
     }
   },
-  "browserKit": "Kit",
-  "@browserKit": {},
-  "browserLoop": "Loop",
-  "@browserLoop": {},
   "browserLoopInfo": "{bpm} BPM · {beats, plural, =1{1 beat} other{{beats} beats}}",
   "@browserLoopInfo": {
     "placeholders": {
@@ -186,16 +200,11 @@
       }
     }
   },
-  "browserNhacCu": "Instruments",
-  "@browserNhacCu": {},
-  "browserSection": "{title} ({count})",
-  "@browserSection": {
+  "browserODaCoClip": "Cell {cell} already has a clip",
+  "@browserODaCoClip": {
     "placeholders": {
-      "title": {
-        "type": "Object"
-      },
-      "count": {
-        "type": "Object"
+      "cell": {
+        "type": "int"
       }
     }
   },
@@ -207,10 +216,30 @@
       }
     }
   },
+  "browserThuMucTrong": "This folder is empty",
+  "@browserThuMucTrong": {},
+  "browserTimKiem": "Search library",
+  "@browserTimKiem": {},
+  "browserTrackAudioCoClip": "This audio track has clips. Pick an empty track to assign an instrument.",
+  "@browserTrackAudioCoClip": {},
   "browserTrackNayKhongConO": "No empty cells left on this track",
   "@browserTrackNayKhongConO": {},
+  "browserTrackNhacCuCoClip": "This instrument track has MIDI clips. Pick an empty track for the loop.",
+  "@browserTrackNhacCuCoClip": {},
+  "browserTuNgheThu": "Auto preview",
+  "@browserTuNgheThu": {},
+  "browserYeuThich": "Favorites",
+  "@browserYeuThich": {},
+  "clipChoClipChay": "Starting…",
+  "@clipChoClipChay": {},
+  "clipChonTatCa": "Select all",
+  "@clipChonTatCa": {},
   "clipClear": "Clear",
   "@clipClear": {},
+  "clipCuonHaiNgon": "Scroll with two fingers",
+  "@clipCuonHaiNgon": {},
+  "clipDangGhi": "Recording",
+  "@clipDangGhi": {},
   "clipDoDaiClip": "Clip length",
   "@clipDoDaiClip": {},
   "clipDrumsHint": "Drum loops sound more natural with Re-Pitch",
@@ -223,10 +252,22 @@
       }
     }
   },
+  "clipGhi": "Record",
+  "@clipGhi": {},
   "clipHoanTacOverdub": "Undo overdub",
   "@clipHoanTacOverdub": {},
   "clipHoanTacSua": "Undo",
   "@clipHoanTacSua": {},
+  "clipKhongDuCho": "Not enough room in the clip",
+  "@clipKhongDuCho": {},
+  "clipKhongDuChoToiDa": "{bars, plural, =1{Not enough room: a clip can be at most 1 bar.} other{Not enough room: a clip can be at most {bars} bars.}}",
+  "@clipKhongDuChoToiDa": {
+    "placeholders": {
+      "bars": {
+        "type": "int"
+      }
+    }
+  },
   "clipLamLai": "Redo",
   "@clipLamLai": {},
   "clipLoopTuSBeatGoc": "Loop from {p0} s · {p1} beats · original {p2} BPM",
@@ -243,12 +284,18 @@
       }
     }
   },
+  "clipLuiVaXoa": "Back and delete",
+  "@clipLuiVaXoa": {},
   "clipLuoi": "Grid",
   "@clipLuoi": {},
   "clipModeChon": "Select",
   "@clipModeChon": {},
   "clipModeVe": "Draw",
   "@clipModeVe": {},
+  "clipNghi": "Rest",
+  "@clipNghi": {},
+  "clipNhanBan": "Duplicate selected notes",
+  "@clipNhanBan": {},
   "clipNotBeat": "{p0, plural, =1{1 note} other{{p0} notes}} · {p1} beats",
   "@clipNotBeat": {
     "placeholders": {
@@ -260,6 +307,8 @@
       }
     }
   },
+  "clipOTrongBanPhim": "Empty cell. Open the keyboard to play, record live or enter notes step by step.",
+  "@clipOTrongBanPhim": {},
   "clipQuangTamLen": "Octave up",
   "@clipQuangTamLen": {},
   "clipQuangTamXuong": "Octave down",
@@ -274,6 +323,20 @@
       }
     }
   },
+  "clipStep": "Step",
+  "@clipStep": {},
+  "clipTangDoDai": "Extend clip",
+  "@clipTangDoDai": {},
+  "clipTangDoDaiHoi": "{bars, plural, =1{Extend the clip to 1 bar to fit the copy?} other{Extend the clip to {bars} bars to fit the copy?}}",
+  "@clipTangDoDaiHoi": {
+    "placeholders": {
+      "bars": {
+        "type": "int"
+      }
+    }
+  },
+  "clipVelocity": "Velocity",
+  "@clipVelocity": {},
   "clipWarp": "Warp",
   "@clipWarp": {},
   "clipXoaNotDaChon": "Delete selected ({p0})",
@@ -286,6 +349,8 @@
   },
   "clipZoom": "Zoom",
   "@clipZoom": {},
+  "commonCancel": "Cancel",
+  "@commonCancel": {},
   "commonOk": "OK",
   "@commonOk": {},
   "demoName": "{token, select, demo{Demo} drums{Drums} bass{Bass} keys{Keys} lead{Lead} beatA{Beat A} beatB{Beat B} fill{Fill} halfTime{Half-time} bassA{Bass A} bassB{Bass B} walk{Walk} chords{Chords} stab{Stab} melody{Melody} hook{Hook} other{{token}}}",
@@ -565,7 +630,15 @@
       }
     }
   },
-  "libraryTag": "{tag, select, drums{Drums} bass{Bass} keys{Keys} synth{Synth} pad{Pad} click{Click} tone{Tone} test{Test} hiphop{Hip-hop} funk{Funk} melody{Melody} vocal{Vocal} fx{FX} other{{tag}}}",
+  "libraryFolder": "{name, select, drums{Drums} instruments{Instruments} keys{Keys} strings{Strings} windsBrass{Winds & Brass} synth{Synth} loops{Loops} other{{name}}}",
+  "@libraryFolder": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "libraryTag": "{tag, select, drums{Drums} bass{Bass} keys{Keys} synth{Synth} pad{Pad} click{Click} tone{Tone} test{Test} hiphop{Hip-hop} funk{Funk} melody{Melody} vocal{Vocal} fx{FX} strings{Strings} winds{Winds} brass{Brass} percussion{Percussion} other{{tag}}}",
   "@libraryTag": {
     "placeholders": {
       "tag": {
@@ -577,6 +650,8 @@
   "@licensesChuaCoFileGiayPhep": {},
   "licensesChuaTichHopP406": "Not integrated yet (P4-06)",
   "@licensesChuaTichHopP406": {},
+  "licensesGhiCong": "Credits",
+  "@licensesGhiCong": {},
   "licensesGiayPhepCacGoiFlutter": "Licenses of Flutter/Dart packages",
   "@licensesGiayPhepCacGoiFlutter": {},
   "licensesGoiFlutterDart": "Flutter / Dart packages",
@@ -827,8 +902,8 @@
   "@mixerMonitorTat": {},
   "mixerMonitorTuDongKhiArm": "Monitor: Auto (when armed)",
   "@mixerMonitorTuDongKhiArm": {},
-  "monitorShort": "{mode, select, off{Off} auto{Auto} always{On} other{{mode}}}",
-  "@monitorShort": {
+  "monitorBadge": "{mode, select, off{Off} auto{Auto} always{On} other{{mode}}}",
+  "@monitorBadge": {
     "placeholders": {
       "mode": {
         "type": "String"

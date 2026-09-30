@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/router.dart';
 import '../../app/theme.dart';
+import '../../data/library_repository.dart';
 import '../../data/data_providers.dart';
 import '../../data/project_repository.dart';
 import '../../engine/engine_providers.dart';
@@ -99,7 +100,7 @@ class _ProjectsScreenState extends ConsumerState<ProjectsScreen> {
   }
 
   Future<void> _createDemo() => _run(() async {
-    await createDemoProject(_repo);
+    await createDemoProject(_repo, library: ref.read(libraryRepositoryProvider));
     _reload();
   });
 

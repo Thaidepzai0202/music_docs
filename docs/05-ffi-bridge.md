@@ -157,7 +157,8 @@ typedef enum LeEventType {
     LE_EVT_MIDI_DEVICES       = 10,   /* danh sách đổi → gọi midi.listDevices */
     LE_EVT_MIDI_LEARNED       = 11,   /* a = kind (0 note, 1 cc), b = number */
     LE_EVT_ERROR              = 12,   /* a = LeError */
-    LE_EVT_MEMORY_WARNING     = 13    /* value = MB đang dùng */
+    LE_EVT_MEMORY_WARNING     = 13,   /* value = MB đang dùng */
+    LE_EVT_CLIP_CHANGED       = 14    /* a = track, b = slot: nội dung clip MIDI vừa đổi (overdub trộn nốt), tối đa 10 lần/s; thêm 30/09, không phá ABI */
 } LeEventType;
 
 typedef void (*LeEventCallback)(int32_t type, int32_t a, int32_t b, int64_t jobId, double value);
@@ -264,6 +265,8 @@ LE_EXPORT int32_t le_get_peaks(const char* clipId, int32_t level,
 | `launchLog.read` | `{sinceIndex}` | `{events:[{index, beat, track, slot, kind:"launch"\|"stop"\|"record"\|"scene"}], nextIndex}`. Giữ tối đa 4096 sự kiện gần nhất | P1 (P1-17) |
 | `sim.offline` | `{enabled, sampleRate:48000, blockSize:128}` | `{}`. **Chỉ có ở bản build test** (Mac, `LE_ENABLE_SIM`). Thay device thật bằng `OfflineDeviceIO`; phải gọi khi audio chưa chạy. Bản iOS release trả `NOT_IMPLEMENTED` | P1 (test) |
 | `sim.advance` | `{frames}` hoặc `{beats}` | `{beat, frames}`. Render **đồng bộ** trên main, output bị bỏ đi. Đây là ngoại lệ duy nhất của luật "< 1ms", vì chỉ dùng trong test. Để test hợp đồng Dart (vd. `clip_scheduler_contract.dart`) chạy được với engine thật | P1 (test) |
+| `preview.play` | `{source:{kind:"sfz",path,base?} \| {kind:"audio",file,base?}, note?:60, durationMs?:1500}` | `{}`. **`base`: `"library"` (mặc định, đường dẫn tương đối theo `libraryDir`) \| `"project"` (tương đối theo thư mục của `project.open`, dùng cho Bản thu của tôi).** Nghe thử trong Browser qua **kênh preview riêng** (một sampler ngoài các track, trộn vào master trước limiter). Không ảnh hưởng track hay transport. Gọi lần nữa thì dừng bản đang nghe. Kit thì phát một groove ngắn. Nạp chạy trên worker; lần đầu có thể trễ khoảng 100ms. **Giới hạn đã biết:** (1) tiếng preview có trong bản ghi jam (`export.jamStart` ghi sau limiter) — P4-26 tách đường cue; (2) nạp lỗi (file hỏng, SFZ sai) không được báo: reply `{}` trả trước khi nạp, chỉ `FILE_NOT_FOUND` / `INVALID_ARG` báo đồng bộ | P2 |
+| `preview.stop` | – | `{}` | P2 |
 | `job.result` | `{jobId}` | `{status:"running"\|"done"\|"failed", result?, error?}` | P1 |
 | `job.cancel` | `{jobId}` | `{}` | P1 |
 

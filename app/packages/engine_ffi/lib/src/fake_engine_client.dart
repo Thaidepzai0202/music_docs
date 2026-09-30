@@ -98,6 +98,15 @@ final class FakeEngineClient implements EngineApi {
     _silentFiles.remove(path);
   }
 
+  /// File khác (SFZ…) coi như có trên đĩa — cho `preview.play` kiểm file như engine.
+  void addTextFile(String path) => _textFiles.add(path);
+  final _textFiles = <String>{};
+  bool _fileExists(String path) => _capturedSeconds.containsKey(path) || _textFiles.contains(path);
+
+  /// `LeConfig.libraryDir` và thư mục của `project.open` — gốc của đường dẫn tương đối (05 §3 `base`).
+  String _libraryDir = '';
+  String? _projectDir;
+
   String? _capPath;
   double _capMax = 0;
   double _capElapsed = 0;
@@ -146,6 +155,10 @@ final class FakeEngineClient implements EngineApi {
 
   /// `memory.pressure` / engine.info.memoryMB.
   double memoryMB = 180;
+
+  /// Nguồn đang nghe thử (`preview.play`, đã điền `base`), null = không nghe. [previewCount] = số lần gọi play.
+  Map<String, Object?>? preview;
+  int previewCount = 0;
 
   /// Target đang learn (`midi.learnStart`), null = không learn.
   Map<String, dynamic>? midiLearnTarget;
@@ -294,6 +307,7 @@ final class FakeEngineClient implements EngineApi {
   @override
   int create(EngineConfig config) {
     lastConfig = config;
+    _libraryDir = config.libraryDir;
     _state.ref
       ..sampleRate = config.preferredSampleRate
       ..bufferSize = config.preferredBufferSize
@@ -486,6 +500,33 @@ final class FakeEngineClient implements EngineApi {
         memoryMB -= freed;
         emit(MemoryWarning(critical: level == 'critical', megabytes: memoryMB));
         return _ok({'freedMB': freed, 'usedMB': memoryMB});
+      case 'preview.play':
+        // 05 §3: kênh preview riêng — không đụng track / transport; gọi lần nữa thì thay bản đang nghe.
+        final src = request['source'];
+        final note = request['note'] ?? 60, dur = request['durationMs'] ?? 1500;
+        if (src is! Map) return _err('INVALID_ARG', 'source: {kind:"sfz",path} | {kind:"audio",file}');
+        final base = src['base'] ?? 'library';
+        final ref = switch (src['kind']) {
+          'sfz' => src['path'],
+          'audio' => src['file'],
+          _ => null,
+        };
+        if (ref is! String || ref.isEmpty || (base != 'library' && base != 'project')) {
+          return _err('INVALID_ARG', 'source: kind sfz|audio, path/file khác rỗng, base library|project');
+        }
+        if (note is! int || note < 0 || note > 127 || dur is! num || dur <= 0) {
+          return _err('INVALID_ARG', 'note 0..127, durationMs > 0');
+        }
+        final root = base == 'library' ? _libraryDir : _projectDir;
+        // Như engine (68): base "project" khi chưa project.open → INVALID_ARG; thiếu file → FILE_NOT_FOUND.
+        if (root == null) return _err('INVALID_ARG', 'base "project" cần project.open trước');
+        if (!_fileExists('$root/$ref')) return _err('FILE_NOT_FOUND', 'không có file $ref');
+        preview = Map.unmodifiable({...src.cast<String, Object?>(), 'base': base});
+        previewCount++;
+        return _ok(const {});
+      case 'preview.stop':
+        preview = null;
+        return _ok(const {});
       case 'link.enable':
         final en = request['enabled'], sync = request['startStopSync'];
         if (en is! bool || sync is! bool) return _err('INVALID_ARG', 'enabled/startStopSync: bool');
@@ -1004,6 +1045,7 @@ final class FakeEngineClient implements EngineApi {
         }
         return _ok(const {});
       case 'project.open' || 'project.close':
+        _projectDir = op == 'project.open' ? r['dir'] as String? : null;
         session.reset();
         // Như engine: project mới không mang FX/nhạc cụ/master của project cũ (replay chỉ gửi giá trị khác mặc định).
         fx.clear();
